@@ -1288,8 +1288,98 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-      
-#line 1293 "tarea4.tab.c" /* yacc.c:1646  */
+        case 16:
+#line 47 "tarea4.y" /* yacc.c:1646  */
+    {printf("%d\n", (yyvsp[-2]));}
+#line 1295 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 17:
+#line 50 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-2]) == 1)(yyvsp[0]);}
+#line 1301 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 18:
+#line 51 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-3]) == 1)(yyvsp[-1]);(yyvsp[0]);}
+#line 1307 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 19:
+#line 54 "tarea4.y" /* yacc.c:1646  */
+    {while((yyvsp[-2]))(yyvsp[0]);}
+#line 1313 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 20:
+#line 55 "tarea4.y" /* yacc.c:1646  */
+    {for((yyvsp[-6]);(yyvsp[-4]);(yyvsp[-2]))(yyvsp[0]);}
+#line 1319 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 25:
+#line 66 "tarea4.y" /* yacc.c:1646  */
+    {(yyval) = (yyvsp[-2]) + (yyvsp[0]);}
+#line 1325 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 26:
+#line 67 "tarea4.y" /* yacc.c:1646  */
+    {(yyval) = (yyvsp[-2]) - (yyvsp[0]);}
+#line 1331 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 28:
+#line 71 "tarea4.y" /* yacc.c:1646  */
+    {(yyval) = (yyvsp[-2]) * (yyvsp[0]);}
+#line 1337 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 29:
+#line 72 "tarea4.y" /* yacc.c:1646  */
+    {(yyval) = (yyvsp[-2]) / (yyvsp[0]);}
+#line 1343 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 31:
+#line 76 "tarea4.y" /* yacc.c:1646  */
+    {(yyval) = (yyvsp[-1]);}
+#line 1349 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 35:
+#line 82 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-2]) < (yyvsp[0])){return 1;}}
+#line 1355 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 36:
+#line 83 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-2]) > (yyvsp[0])){return 1;}}
+#line 1361 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 37:
+#line 84 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-2]) == (yyvsp[0])){return 1;}}
+#line 1367 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 38:
+#line 85 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-2]) <= (yyvsp[0])){return 1;}}
+#line 1373 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 39:
+#line 86 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-2]) >= (yyvsp[0])){return 1;}}
+#line 1379 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+
+#line 1383 "tarea4.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires

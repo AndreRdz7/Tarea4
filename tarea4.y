@@ -44,15 +44,15 @@ stmt : assig_stmt
 
 assig_stmt : SET ID expr SEMICOLON
            | READ ID SEMICOLON
-           | PRINT expr SEMICOLON
+           | PRINT expr SEMICOLON {printf("%d\n", $1);}
 ;
 
-if_stmt : IF PARENI expresion PAREND stmt
-        | IFELSE PARENI expresion PAREND stmt stmt
+if_stmt : IF PARENI expresion PAREND stmt {if($3 == 1)$5;}
+        | IFELSE PARENI expresion PAREND stmt stmt {if($3 == 1)$5;$6;}
 ;
 
-iter_stmt : WHILE PARENI expresion PAREND stmt
-          | FOR SET ID expr TO expr STEP expr DO stmt
+iter_stmt : WHILE PARENI expresion PAREND stmt {while($3)$5;}
+          | FOR SET ID expr TO expr STEP expr DO stmt {for($4;$6;$8)$10;}
 ;
 
 cmp_stmt : LLAVEI LLAVED
@@ -63,27 +63,27 @@ stmt_lst : stmt
          | stmt_lst stmt
 ;
 
-expr : expr SUMA term
-     | expr RESTA term
+expr : expr SUMA term {$$ = $1 + $3;}
+     | expr RESTA term {$$ = $1 - $3;}
      | term
 ;
 
-term : term MULTI factor
-     | term DIVIDE factor
+term : term MULTI factor {$$ = $1 * $3;}
+     | term DIVIDE factor {$$ = $1 / $3;}
      | factor
 ;
 
-factor : PARENI expr PAREND
+factor : PARENI expr PAREND {$$ = $2;}
        | ID
        | NUMI
        | NUMF
 ;
 
-expresion : expr MENOR expr
-          | expr MAYOR expr
-          | expr IGUAL expr
-          | expr MENORI expr
-          | expr MAYORI expr
+expresion : expr MENOR expr {if($1 < $3){return 1;}}
+          | expr MAYOR expr {if($1 > $3){return 1;}}
+          | expr IGUAL expr {if($1 == $3){return 1;}}
+          | expr MENORI expr {if($1 <= $3){return 1;}}
+          | expr MAYORI expr {if($1 >= $3){return 1;}}
 ;
 
 %%
