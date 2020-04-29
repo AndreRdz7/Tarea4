@@ -64,12 +64,30 @@
 /* Copy the first part of user declarations.  */
 #line 6 "tarea4.y" /* yacc.c:339  */
 
+
 #include<stdio.h>
+#include<stdlib.h> 
 #include<math.h>
+#include <string.h>
+ 
 extern int yylex();
 int yyerror(char const * s);
 
-#line 73 "tarea4.tab.c" /* yacc.c:339  */
+union data {
+  int i;
+  float f;
+};
+
+struct Node{
+  char name[256];
+  union data val;
+  struct Node *next;
+};
+
+
+
+
+#line 91 "tarea4.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -156,7 +174,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 160 "tarea4.tab.c" /* yacc.c:358  */
+#line 178 "tarea4.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -457,10 +475,10 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    21,    21,    24,    25,    28,    29,    32,    35,    36,
-      39,    40,    41,    42,    45,    46,    47,    50,    51,    54,
-      55,    58,    59,    62,    63,    66,    67,    68,    71,    72,
-      73,    76,    77,    78,    79,    82,    83,    84,    85,    86
+       0,    39,    39,    42,    43,    46,    47,    50,    53,    54,
+      57,    58,    59,    60,    63,    64,    65,    68,    69,    72,
+      73,    76,    77,    80,    81,    84,    85,    86,    89,    90,
+      91,    94,    95,    96,    97,   100,   101,   102,   103,   104
 };
 #endif
 
@@ -1289,97 +1307,97 @@ yyreduce:
   switch (yyn)
     {
         case 16:
-#line 47 "tarea4.y" /* yacc.c:1646  */
+#line 65 "tarea4.y" /* yacc.c:1646  */
     {printf("%d\n", (yyvsp[-2]));}
-#line 1295 "tarea4.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 17:
-#line 50 "tarea4.y" /* yacc.c:1646  */
-    {if((yyvsp[-2]) == 1)(yyvsp[0]);}
-#line 1301 "tarea4.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 18:
-#line 51 "tarea4.y" /* yacc.c:1646  */
-    {if((yyvsp[-3]) == 1)(yyvsp[-1]);(yyvsp[0]);}
-#line 1307 "tarea4.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 19:
-#line 54 "tarea4.y" /* yacc.c:1646  */
-    {while((yyvsp[-2]))(yyvsp[0]);}
 #line 1313 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
-  case 20:
-#line 55 "tarea4.y" /* yacc.c:1646  */
-    {for((yyvsp[-6]);(yyvsp[-4]);(yyvsp[-2]))(yyvsp[0]);}
+  case 17:
+#line 68 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-2]) == 1)(yyvsp[0]);}
 #line 1319 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
-  case 25:
-#line 66 "tarea4.y" /* yacc.c:1646  */
-    {(yyval) = (yyvsp[-2]) + (yyvsp[0]);}
+  case 18:
+#line 69 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-3]) == 1)(yyvsp[-1]);(yyvsp[0]);}
 #line 1325 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
-  case 26:
-#line 67 "tarea4.y" /* yacc.c:1646  */
-    {(yyval) = (yyvsp[-2]) - (yyvsp[0]);}
+  case 19:
+#line 72 "tarea4.y" /* yacc.c:1646  */
+    {while((yyvsp[-2]))(yyvsp[0]);}
 #line 1331 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
-  case 28:
-#line 71 "tarea4.y" /* yacc.c:1646  */
-    {(yyval) = (yyvsp[-2]) * (yyvsp[0]);}
+  case 20:
+#line 73 "tarea4.y" /* yacc.c:1646  */
+    {for((yyvsp[-6]);(yyvsp[-4]);(yyvsp[-2]))(yyvsp[0]);}
 #line 1337 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
-  case 29:
-#line 72 "tarea4.y" /* yacc.c:1646  */
-    {(yyval) = (yyvsp[-2]) / (yyvsp[0]);}
+  case 25:
+#line 84 "tarea4.y" /* yacc.c:1646  */
+    {(yyval) = (yyvsp[-2]) + (yyvsp[0]);}
 #line 1343 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
-  case 31:
-#line 76 "tarea4.y" /* yacc.c:1646  */
-    {(yyval) = (yyvsp[-1]);}
+  case 26:
+#line 85 "tarea4.y" /* yacc.c:1646  */
+    {(yyval) = (yyvsp[-2]) - (yyvsp[0]);}
 #line 1349 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
-  case 35:
-#line 82 "tarea4.y" /* yacc.c:1646  */
-    {if((yyvsp[-2]) < (yyvsp[0])){return 1;}}
+  case 28:
+#line 89 "tarea4.y" /* yacc.c:1646  */
+    {(yyval) = (yyvsp[-2]) * (yyvsp[0]);}
 #line 1355 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
-  case 36:
-#line 83 "tarea4.y" /* yacc.c:1646  */
-    {if((yyvsp[-2]) > (yyvsp[0])){return 1;}}
+  case 29:
+#line 90 "tarea4.y" /* yacc.c:1646  */
+    {(yyval) = (yyvsp[-2]) / (yyvsp[0]);}
 #line 1361 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
-  case 37:
-#line 84 "tarea4.y" /* yacc.c:1646  */
-    {if((yyvsp[-2]) == (yyvsp[0])){return 1;}}
+  case 31:
+#line 94 "tarea4.y" /* yacc.c:1646  */
+    {(yyval) = (yyvsp[-1]);}
 #line 1367 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
-  case 38:
-#line 85 "tarea4.y" /* yacc.c:1646  */
-    {if((yyvsp[-2]) <= (yyvsp[0])){return 1;}}
+  case 35:
+#line 100 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-2]) < (yyvsp[0])){return 1;}}
 #line 1373 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
-  case 39:
-#line 86 "tarea4.y" /* yacc.c:1646  */
-    {if((yyvsp[-2]) >= (yyvsp[0])){return 1;}}
+  case 36:
+#line 101 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-2]) > (yyvsp[0])){return 1;}}
 #line 1379 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
+  case 37:
+#line 102 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-2]) == (yyvsp[0])){return 1;}}
+#line 1385 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
 
-#line 1383 "tarea4.tab.c" /* yacc.c:1646  */
+  case 38:
+#line 103 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-2]) <= (yyvsp[0])){return 1;}}
+#line 1391 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 39:
+#line 104 "tarea4.y" /* yacc.c:1646  */
+    {if((yyvsp[-2]) >= (yyvsp[0])){return 1;}}
+#line 1397 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+
+#line 1401 "tarea4.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1607,7 +1625,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 89 "tarea4.y" /* yacc.c:1906  */
+#line 107 "tarea4.y" /* yacc.c:1906  */
 
 
 int yyerror(char const * s) {
@@ -1615,6 +1633,7 @@ int yyerror(char const * s) {
 }
 
 void main() {
+  struct Node *symbol = NULL;
   yyparse();
 }
 

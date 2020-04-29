@@ -4,10 +4,103 @@
 */
 
 %{
-#include<stdio.h>
-#include<math.h>
+
+#include <stdio.h>
+#include <stdlib.h> 
+#include <math.h>
+#include <string.h>
+ 
 extern int yylex();
 int yyerror(char const * s);
+
+union data {
+  int i;
+  float f;
+};
+
+struct Node{
+  char name[256];
+  char type;
+  union data val;
+  struct Node *next;
+} node_t;
+
+void printList(node_t *head){
+  node_t *current = head;
+  printf("Tabla de símbolos:\n")
+  while(current != NULL){
+    if(current->type == 'i'){
+      printf("%s: %d\n",current->name, current->val.i);
+      current = current->next;
+    }else{
+      printf("%s: %f\n", current->name, current->val.f);
+      current = current->next;
+    }
+  }
+}
+
+void raiseDuplicateVar(char *name){
+  printf("La variable %s ya ha sido declarada\n",name);
+  exit(0);
+}
+
+void raiseInvalidType(char *name){
+  printf("La variable %s tiene otro tipo de dato\n",name);
+  exit(0);
+}
+
+void raiseNoExistingVar(char *name){
+  printf("La variable %s no ha sido declarada\n",name);
+  exit(0);
+}
+
+void push(node_t *head, char *name, char type){
+  node_t *current = head;
+  while(current->next != NULL){
+    if(strcmp(current->name, name) == 0){
+      raiseDuplicateVar(name);
+    }
+    current = current->next;
+  }
+  current->next = (node_t*)malloc(sizeof(node_t));
+  current->next->type = type;
+  current->next->name = name;
+  current->next->next = NULL;
+}
+
+void setInt(node_t *head, char *name, int val){
+  node_t *current = head;
+  while(current->next != NULL){
+    if(strcmp(current->name,name) == 0){
+      if(current->type == 'i'){
+        current->val.i = val;
+        return;
+      }
+      else{
+        raiseInvalidType(name);
+      }
+    }
+    current = current->next;
+  }
+  raiseNoExistingVar(name);
+}
+void setFloat(node_t *head, char *name, float val){
+  node_t *current = head;
+  while(current->next != NULL){
+    if(strcmp(current->name,name) == 0){
+      if(current->type == 'f'){
+        current->val.f = val;
+        return;
+      }
+      else{
+        raiseInvalidType(name);
+      }
+    }
+    current = current->next;
+  }
+  raiseNoExistingVar(name);
+}
+
 %}
 
 %token NUMI NUMF PROGRAM VAR INT FLOAT SET READ PRINT IF IFELSE
@@ -93,6 +186,9 @@ int yyerror(char const * s) {
 }
 
 void main() {
+  node_t *symbol = NULL;
+  symbol = (node_t*)malloc(sizeof(node_t));
   yyparse();
+  printList();
 }
 
