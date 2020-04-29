@@ -65,29 +65,18 @@
 #line 6 "tarea4.y" /* yacc.c:339  */
 
 
-#include<stdio.h>
-#include<stdlib.h> 
-#include<math.h>
+#include <stdio.h>
+#include <stdlib.h> 
+#include <math.h>
 #include <string.h>
  
 extern int yylex();
 int yyerror(char const * s);
 
-union data {
-  int i;
-  float f;
-};
-
-struct Node{
-  char name[256];
-  union data val;
-  struct Node *next;
-};
 
 
 
-
-#line 91 "tarea4.tab.c" /* yacc.c:339  */
+#line 80 "tarea4.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -174,7 +163,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 178 "tarea4.tab.c" /* yacc.c:358  */
+#line 167 "tarea4.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -475,10 +464,10 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    39,    39,    42,    43,    46,    47,    50,    53,    54,
-      57,    58,    59,    60,    63,    64,    65,    68,    69,    72,
-      73,    76,    77,    80,    81,    84,    85,    86,    89,    90,
-      91,    94,    95,    96,    97,   100,   101,   102,   103,   104
+       0,    28,    28,    31,    32,    35,    36,    39,    42,    43,
+      46,    47,    48,    49,    52,    53,    54,    57,    58,    61,
+      62,    65,    66,    69,    70,    73,    74,    75,    78,    79,
+      80,    83,    84,    85,    86,    89,    90,    91,    92,    93
 };
 #endif
 
@@ -1307,97 +1296,97 @@ yyreduce:
   switch (yyn)
     {
         case 16:
-#line 65 "tarea4.y" /* yacc.c:1646  */
+#line 54 "tarea4.y" /* yacc.c:1646  */
     {printf("%d\n", (yyvsp[-2]));}
-#line 1313 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1302 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 68 "tarea4.y" /* yacc.c:1646  */
+#line 57 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-2]) == 1)(yyvsp[0]);}
-#line 1319 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1308 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 69 "tarea4.y" /* yacc.c:1646  */
+#line 58 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-3]) == 1)(yyvsp[-1]);(yyvsp[0]);}
-#line 1325 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1314 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 72 "tarea4.y" /* yacc.c:1646  */
+#line 61 "tarea4.y" /* yacc.c:1646  */
     {while((yyvsp[-2]))(yyvsp[0]);}
-#line 1331 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1320 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 73 "tarea4.y" /* yacc.c:1646  */
+#line 62 "tarea4.y" /* yacc.c:1646  */
     {for((yyvsp[-6]);(yyvsp[-4]);(yyvsp[-2]))(yyvsp[0]);}
-#line 1337 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1326 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 84 "tarea4.y" /* yacc.c:1646  */
+#line 73 "tarea4.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-2]) + (yyvsp[0]);}
-#line 1343 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1332 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 85 "tarea4.y" /* yacc.c:1646  */
+#line 74 "tarea4.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-2]) - (yyvsp[0]);}
-#line 1349 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1338 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 89 "tarea4.y" /* yacc.c:1646  */
+#line 78 "tarea4.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-2]) * (yyvsp[0]);}
-#line 1355 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1344 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 90 "tarea4.y" /* yacc.c:1646  */
+#line 79 "tarea4.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-2]) / (yyvsp[0]);}
-#line 1361 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1350 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 94 "tarea4.y" /* yacc.c:1646  */
+#line 83 "tarea4.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-1]);}
-#line 1367 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1356 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 100 "tarea4.y" /* yacc.c:1646  */
+#line 89 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-2]) < (yyvsp[0])){return 1;}}
-#line 1373 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1362 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 101 "tarea4.y" /* yacc.c:1646  */
+#line 90 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-2]) > (yyvsp[0])){return 1;}}
-#line 1379 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1368 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 102 "tarea4.y" /* yacc.c:1646  */
+#line 91 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-2]) == (yyvsp[0])){return 1;}}
-#line 1385 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1374 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 103 "tarea4.y" /* yacc.c:1646  */
+#line 92 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-2]) <= (yyvsp[0])){return 1;}}
-#line 1391 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1380 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 104 "tarea4.y" /* yacc.c:1646  */
+#line 93 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-2]) >= (yyvsp[0])){return 1;}}
-#line 1397 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1386 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1401 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1390 "tarea4.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1625,15 +1614,106 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 107 "tarea4.y" /* yacc.c:1906  */
+#line 96 "tarea4.y" /* yacc.c:1906  */
 
 
 int yyerror(char const * s) {
   fprintf(stderr, "%s\n", s);
 }
 
+union data {
+  int i;
+  float f;
+};
+
+typedef struct Node{
+  char name[256];
+  char type;
+  union data val;
+  struct Node *next;
+} node_t;
+
+void printList(node_t *head){
+  node_t *current = head;
+  printf("Tabla de símbolos:\n");
+  while(current != NULL){
+    if(current->type == 'i'){
+      printf("%s: %d\n",current->name, current->val.i);
+      current = current->next;
+    }else{
+      printf("%s: %f\n", current->name, current->val.f);
+      current = current->next;
+    }
+  }
+}
+
+void raiseDuplicateVar(char *name){
+  printf("La variable %s ya ha sido declarada\n",name);
+  exit(0);
+}
+
+void raiseInvalidType(char *name){
+  printf("La variable %s tiene otro tipo de dato\n",name);
+  exit(0);
+}
+
+void raiseNoExistingVar(char *name){
+  printf("La variable %s no ha sido declarada\n",name);
+  exit(0);
+}
+
+void push(node_t *head, char *name, char type){
+  node_t *current = head;
+  while(current->next != NULL){
+    if(strcmp(current->name, name) == 0){
+      raiseDuplicateVar(name);
+    }
+    current = current->next;
+  }
+  current->next = (node_t*)malloc(sizeof(node_t));
+  current->next->type = type;
+  strcpy(current->next->name, name);
+  current->next->next = NULL;
+}
+
+void setInt(node_t *head, char *name, int val){
+  node_t *current = head;
+  while(current->next != NULL){
+    if(strcmp(current->name,name) == 0){
+      if(current->type == 'i'){
+        current->val.i = val;
+        return;
+      }
+      else{
+        raiseInvalidType(name);
+      }
+    }
+    current = current->next;
+  }
+  raiseNoExistingVar(name);
+}
+
+void setFloat(node_t *head, char *name, float val){
+  node_t *current = head;
+  while(current->next != NULL){
+    if(strcmp(current->name,name) == 0){
+      if(current->type == 'f'){
+        current->val.f = val;
+        return;
+      }
+      else{
+        raiseInvalidType(name);
+      }
+    }
+    current = current->next;
+  }
+  raiseNoExistingVar(name);
+}
+
 void main() {
-  struct Node *symbol = NULL;
+  node_t *symbol = NULL;
+  symbol = (node_t*)malloc(sizeof(node_t));
   yyparse();
+  printList(symbol);
 }
 
