@@ -13,7 +13,25 @@
 extern int yylex();
 int yyerror(char const * s);
 
+union data {
+  int i;
+  float f;
+};
 
+typedef struct Node{
+  char name[256];
+  char type;
+  union data val;
+  struct Node *next;
+} node_t;
+
+void declareVariable(node_t*, char*);
+void printList(node_t*);
+void raiseDuplicateVar(char* name);
+void raiseInvalidType(char* name);
+void raiseNoExistingVar(char* name);
+
+node_t* symbol = (node_t*)malloc(sizeof(node_t));
 
 %}
 
@@ -36,7 +54,7 @@ decls : dec SEMICOLON decls
       | dec
 ;
 
-dec : VAR ID COLON tipo 
+dec : VAR ID {declareVariable(symbol, yytext);} COLON tipo 
 ;
 
 tipo : INT
@@ -99,18 +117,6 @@ int yyerror(char const * s) {
   fprintf(stderr, "%s\n", s);
 }
 
-union data {
-  int i;
-  float f;
-};
-
-typedef struct Node{
-  char name[256];
-  char type;
-  union data val;
-  struct Node *next;
-} node_t;
-
 void printList(node_t *head){
   node_t *current = head;
   printf("Tabla de símbolos:\n");
@@ -140,7 +146,7 @@ void raiseNoExistingVar(char *name){
   exit(0);
 }
 
-void push(node_t *head, char *name, char type){
+void declareVariable(node_t *head, char *name){
   node_t *current = head;
   while(current->next != NULL){
     if(strcmp(current->name, name) == 0){
@@ -149,9 +155,12 @@ void push(node_t *head, char *name, char type){
     current = current->next;
   }
   current->next = (node_t*)malloc(sizeof(node_t));
-  current->next->type = type;
   strcpy(current->next->name, name);
   current->next->next = NULL;
+}
+
+void addTypeToVariable(node_t *head, char type){
+
 }
 
 void setInt(node_t *head, char *name, int val){
@@ -189,8 +198,6 @@ void setFloat(node_t *head, char *name, float val){
 }
 
 void main() {
-  node_t *symbol = NULL;
-  symbol = (node_t*)malloc(sizeof(node_t));
   yyparse();
   printList(symbol);
 }
