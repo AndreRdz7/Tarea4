@@ -25,13 +25,14 @@ typedef struct Node{
   struct Node *next;
 } node_t;
 
+void setTable();
 void declareVariable(node_t*, char*);
 void printList(node_t*);
 void raiseDuplicateVar(char* name);
 void raiseInvalidType(char* name);
 void raiseNoExistingVar(char* name);
 
-node_t* symbol = (node_t*)malloc(sizeof(node_t));
+node_t* symbol = NULL;
 
 %}
 
@@ -54,7 +55,7 @@ decls : dec SEMICOLON decls
       | dec
 ;
 
-dec : VAR ID {declareVariable(symbol, yytext);} COLON tipo 
+dec : VAR ID {declareVariable(symbol, "yytext");} COLON tipo 
 ;
 
 tipo : INT
@@ -115,6 +116,10 @@ expresion : expr MENOR expr {if($1 < $3){return 1;}}
 
 int yyerror(char const * s) {
   fprintf(stderr, "%s\n", s);
+}
+
+void setTable(){
+  symbol = (node_t*)malloc(sizeof(node_t));
 }
 
 void printList(node_t *head){
@@ -198,6 +203,7 @@ void setFloat(node_t *head, char *name, float val){
 }
 
 void main() {
+  setTable();
   yyparse();
   printList(symbol);
 }

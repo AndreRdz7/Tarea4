@@ -85,16 +85,17 @@ typedef struct Node{
   struct Node *next;
 } node_t;
 
+void setTable();
 void declareVariable(node_t*, char*);
 void printList(node_t*);
 void raiseDuplicateVar(char* name);
 void raiseInvalidType(char* name);
 void raiseNoExistingVar(char* name);
 
-node_t* symbol = (node_t*)malloc(sizeof(node_t));
+node_t* symbol = NULL;
 
 
-#line 98 "tarea4.tab.c" /* yacc.c:339  */
+#line 99 "tarea4.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -181,7 +182,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 185 "tarea4.tab.c" /* yacc.c:358  */
+#line 186 "tarea4.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -482,11 +483,11 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    46,    46,    49,    50,    53,    54,    57,    57,    60,
-      61,    64,    65,    66,    67,    70,    71,    72,    75,    76,
-      79,    80,    83,    84,    87,    88,    91,    92,    93,    96,
-      97,    98,   101,   102,   103,   104,   107,   108,   109,   110,
-     111
+       0,    47,    47,    50,    51,    54,    55,    58,    58,    61,
+      62,    65,    66,    67,    68,    71,    72,    73,    76,    77,
+      80,    81,    84,    85,    88,    89,    92,    93,    94,    97,
+      98,    99,   102,   103,   104,   105,   108,   109,   110,   111,
+     112
 };
 #endif
 
@@ -1318,103 +1319,103 @@ yyreduce:
   switch (yyn)
     {
         case 7:
-#line 57 "tarea4.y" /* yacc.c:1646  */
-    {declareVariable(symbol, yytext);}
-#line 1324 "tarea4.tab.c" /* yacc.c:1646  */
+#line 58 "tarea4.y" /* yacc.c:1646  */
+    {declareVariable(symbol, "yytext");}
+#line 1325 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 72 "tarea4.y" /* yacc.c:1646  */
+#line 73 "tarea4.y" /* yacc.c:1646  */
     {printf("%d\n", (yyvsp[-2]));}
-#line 1330 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1331 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 75 "tarea4.y" /* yacc.c:1646  */
+#line 76 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-2]) == 1)(yyvsp[0]);}
-#line 1336 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1337 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 76 "tarea4.y" /* yacc.c:1646  */
+#line 77 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-3]) == 1)(yyvsp[-1]);(yyvsp[0]);}
-#line 1342 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1343 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 79 "tarea4.y" /* yacc.c:1646  */
+#line 80 "tarea4.y" /* yacc.c:1646  */
     {while((yyvsp[-2]))(yyvsp[0]);}
-#line 1348 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1349 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 80 "tarea4.y" /* yacc.c:1646  */
+#line 81 "tarea4.y" /* yacc.c:1646  */
     {for((yyvsp[-6]);(yyvsp[-4]);(yyvsp[-2]))(yyvsp[0]);}
-#line 1354 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1355 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 91 "tarea4.y" /* yacc.c:1646  */
+#line 92 "tarea4.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-2]) + (yyvsp[0]);}
-#line 1360 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1361 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 92 "tarea4.y" /* yacc.c:1646  */
+#line 93 "tarea4.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-2]) - (yyvsp[0]);}
-#line 1366 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1367 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 96 "tarea4.y" /* yacc.c:1646  */
+#line 97 "tarea4.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-2]) * (yyvsp[0]);}
-#line 1372 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1373 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 97 "tarea4.y" /* yacc.c:1646  */
+#line 98 "tarea4.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-2]) / (yyvsp[0]);}
-#line 1378 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1379 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 101 "tarea4.y" /* yacc.c:1646  */
+#line 102 "tarea4.y" /* yacc.c:1646  */
     {(yyval) = (yyvsp[-1]);}
-#line 1384 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1385 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 107 "tarea4.y" /* yacc.c:1646  */
+#line 108 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-2]) < (yyvsp[0])){return 1;}}
-#line 1390 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1391 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 108 "tarea4.y" /* yacc.c:1646  */
+#line 109 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-2]) > (yyvsp[0])){return 1;}}
-#line 1396 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1397 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 109 "tarea4.y" /* yacc.c:1646  */
+#line 110 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-2]) == (yyvsp[0])){return 1;}}
-#line 1402 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1403 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 110 "tarea4.y" /* yacc.c:1646  */
+#line 111 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-2]) <= (yyvsp[0])){return 1;}}
-#line 1408 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1409 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 111 "tarea4.y" /* yacc.c:1646  */
+#line 112 "tarea4.y" /* yacc.c:1646  */
     {if((yyvsp[-2]) >= (yyvsp[0])){return 1;}}
-#line 1414 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1415 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1418 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1419 "tarea4.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1642,11 +1643,15 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 114 "tarea4.y" /* yacc.c:1906  */
+#line 115 "tarea4.y" /* yacc.c:1906  */
 
 
 int yyerror(char const * s) {
   fprintf(stderr, "%s\n", s);
+}
+
+void setTable(){
+  symbol = (node_t*)malloc(sizeof(node_t));
 }
 
 void printList(node_t *head){
@@ -1730,6 +1735,7 @@ void setFloat(node_t *head, char *name, float val){
 }
 
 void main() {
+  setTable();
   yyparse();
   printList(symbol);
 }
