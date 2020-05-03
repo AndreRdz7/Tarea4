@@ -48,7 +48,7 @@ prog : PROGRAM ID LLAVEI opt_decls LLAVED stmt
 ;
 
 opt_decls : decls 
-          | EPSILON 
+          | %empty 
 ;
 
 decls : dec SEMICOLON decls 
