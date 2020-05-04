@@ -15,7 +15,6 @@ ID [a-zA-Z_][a-zA-Z_0-9]∗
 
 {ENTERO}  {yylval = atoi(yytext); return NUMI;}
 {DECIMAL} {yylval = atoi(yytext); return NUMF;}
-""        {return EPSILON;}
 "program" {return PROGRAM;}
 "var"     {return VAR;}
 "int"     {return INT;}

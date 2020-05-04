@@ -76,8 +76,7 @@ extern int yydebug;
     MAYOR = 286,
     IGUAL = 287,
     MENORI = 288,
-    MAYORI = 289,
-    EPSILON = 290
+    MAYORI = 289
   };
 #endif
 

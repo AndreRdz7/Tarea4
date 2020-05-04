@@ -5,10 +5,19 @@
 
 %{
 
+/*
+1 - Equal
+0 - Different
+*/
+#define strong_helper(T1, T2) _Generic(( (T1){0} ), T2: 1, default: 0 )
+#define compare_types_strong(T1, T2) (strong_helper(T1,T2) && strong_helper(T2,T1))
+
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h> 
 #include <math.h>
 #include <string.h>
+#include <assert.h>
  
 extern int yylex();
 int yyerror(char const * s);
@@ -38,7 +47,7 @@ node_t* symbol = NULL;
 
 %token NUMI NUMF PROGRAM VAR INT FLOAT SET READ PRINT IF IFELSE
 WHILE FOR TO STEP DO ID SUMA RESTA DIVIDE MULTI PAREND PARENI 
-LLAVED LLAVEI COLON SEMICOLON MENOR MAYOR IGUAL MENORI MAYORI EPSILON
+LLAVED LLAVEI COLON SEMICOLON MENOR MAYOR IGUAL MENORI MAYORI
 
 %start prog
 
@@ -203,6 +212,12 @@ void setFloat(node_t *head, char *name, float val){
 }
 
 void main() {
+  /*
+  int x,xx;
+  float y;
+  printf("%d\n", compare_types_strong(typeof(x),typeof(xx)));
+  printf("%d\n", compare_types_strong(typeof(x),typeof(y)));
+  */
   setTable();
   yyparse();
   printList(symbol);
