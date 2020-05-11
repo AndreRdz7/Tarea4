@@ -9,7 +9,7 @@
 LETRA [A-Za-z]
 ENTERO [1-9][0-9]*
 DECIMAL {ENTERO}.{ENTERO}
-ID [a-zA-Z_][a-zA-Z_0-9]∗
+ID [a-zA-Z]*[0-9]*
 
 %%
 
@@ -29,14 +29,14 @@ ID [a-zA-Z_][a-zA-Z_0-9]∗
 "to"      {return TO;}
 "step"    {return STEP;}
 "do"      {return DO;}
-{ID}      {yylval.stringValue = strdup(yytext); return ID;}
+{ID}      {yylval.stringValue = yytext; return ID;}
 "+"       {return SUMA;}
 "-"       {return RESTA;}
 "*"       {return MULTI;}
 "/"       {return DIVIDE;}
 "("       {return PARENI;}
 ")"       {return PAREND;}
-"{"       {printf("se encontro una llave abierta\n");return LLAVEI;}
+"{"       {return LLAVEI;}
 "}"       {return LLAVED;}
 ":"       {return COLON;}
 ";"       {return SEMICOLON;}

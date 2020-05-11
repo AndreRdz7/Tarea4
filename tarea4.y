@@ -55,9 +55,9 @@ node_t* symbol = NULL;
   float floatValue;
   int var_type;
 }
-%token <int> NUMI "integer"
-%token <float> NUMF "float"
-%token <char const *> ID "identifier"
+%token <int> NUMI 
+%token <float> NUMF 
+%token <id> ID 
 
 %token  PROGRAM VAR INT FLOAT SET READ PRINT IF IFELSE
 WHILE FOR TO STEP DO SUMA RESTA DIVIDE MULTI PAREND PARENI 
@@ -258,8 +258,8 @@ int main(int argc, char **argv) {
   printf("%d\n", compare_types_strong(typeof(x),typeof(xx)));
   printf("%d\n", compare_types_strong(typeof(x),typeof(y)));
   */
-  //yyin = fopen(argv[1], "r+"); 
-  yyin = stdin;
+  yyin = fopen(argv[1], "r+"); 
+  //yyin = stdin;
   setTable();
   yyparse();
   printList(symbol->next);

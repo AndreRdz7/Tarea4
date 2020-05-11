@@ -520,14 +520,14 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "\"integer\"", "\"float\"",
-  "\"identifier\"", "PROGRAM", "VAR", "INT", "FLOAT", "SET", "READ",
-  "PRINT", "IF", "IFELSE", "WHILE", "FOR", "TO", "STEP", "DO", "SUMA",
-  "RESTA", "DIVIDE", "MULTI", "PAREND", "PARENI", "LLAVED", "LLAVEI",
-  "COLON", "SEMICOLON", "MENOR", "MAYOR", "IGUAL", "MENORI", "MAYORI",
-  "$accept", "prog", "opt_decls", "decls", "dec", "$@1", "tipo", "stmt",
-  "assig_stmt", "$@2", "if_stmt", "iter_stmt", "cmp_stmt", "stmt_lst",
-  "expr", "term", "factor", "expresion", YY_NULLPTR
+  "$end", "error", "$undefined", "NUMI", "NUMF", "ID", "PROGRAM", "VAR",
+  "INT", "FLOAT", "SET", "READ", "PRINT", "IF", "IFELSE", "WHILE", "FOR",
+  "TO", "STEP", "DO", "SUMA", "RESTA", "DIVIDE", "MULTI", "PAREND",
+  "PARENI", "LLAVED", "LLAVEI", "COLON", "SEMICOLON", "MENOR", "MAYOR",
+  "IGUAL", "MENORI", "MAYORI", "$accept", "prog", "opt_decls", "decls",
+  "dec", "$@1", "tipo", "stmt", "assig_stmt", "$@2", "if_stmt",
+  "iter_stmt", "cmp_stmt", "stmt_lst", "expr", "term", "factor",
+  "expresion", YY_NULLPTR
 };
 #endif
 
@@ -1718,8 +1718,8 @@ int main(int argc, char **argv) {
   printf("%d\n", compare_types_strong(typeof(x),typeof(xx)));
   printf("%d\n", compare_types_strong(typeof(x),typeof(y)));
   */
-  //yyin = fopen(argv[1], "r+"); 
-  yyin = stdin;
+  yyin = fopen(argv[1], "r+"); 
+  //yyin = stdin;
   setTable();
   yyparse();
   printList(symbol->next);
