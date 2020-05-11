@@ -1669,8 +1669,9 @@ void addTypeToVariable(node_t *head, char type){
 }
 
 void verifyID(node_t *head, char *name){
-  node_t *current = head->next;
+  node_t *current = head;
   while(current->next != NULL){
+    printf("valor en head: %s/n",current->name);
     if(strcmp(current->name, name) == 0){
       return;
     }
