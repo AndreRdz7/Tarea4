@@ -94,7 +94,7 @@ stmt : assig_stmt
 
 assig_stmt : SET ID {verifyID(symbol,yylval.stringValue);}expr SEMICOLON
            | READ ID SEMICOLON
-           | PRINT expr SEMICOLON
+           | PRINT {printf("after print");} expr SEMICOLON
 ;
 
 if_stmt : IF PARENI expresion PAREND stmt 
@@ -205,14 +205,12 @@ void addTypeToVariable(node_t *head, char type){
     current = current->next;
   }
   current->type = type;
-  printList(head);
 }
 
 void verifyID(node_t *head, char *name){
-  node_t *current = head;
-  while(current->next != NULL){
-    printf("valor en head: %s/n",current->name);
-    if(strcmp(current->name, name) == 0){
+  node_t *current = head->next;
+  while(current != NULL){
+    if(strcmp(current->name,name) == 0){
       return;
     }
     current = current->next;
@@ -265,6 +263,6 @@ int main(int argc, char **argv) {
   //yyin = stdin;
   setTable();
   yyparse();
-  printList(symbol->next);
+  printList(symbol);
 }
 
