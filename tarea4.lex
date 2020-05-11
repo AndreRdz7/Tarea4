@@ -29,14 +29,14 @@ ID [a-zA-Z_][a-zA-Z_0-9]∗
 "to"      {return TO;}
 "step"    {return STEP;}
 "do"      {return DO;}
-{ID}      {yylval.stringValue = yytext; return ID;}
+{ID}      {yylval.stringValue = strdup(yytext); return ID;}
 "+"       {return SUMA;}
 "-"       {return RESTA;}
 "*"       {return MULTI;}
 "/"       {return DIVIDE;}
 "("       {return PARENI;}
 ")"       {return PAREND;}
-"{"       {return LLAVEI;}
+"{"       {printf("se encontro una llave abierta\n");return LLAVEI;}
 "}"       {return LLAVED;}
 ":"       {return COLON;}
 ";"       {return SEMICOLON;}

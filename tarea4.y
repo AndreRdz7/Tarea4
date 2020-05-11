@@ -37,6 +37,7 @@ typedef struct Node{
 
 void setTable();
 void declareVariable(node_t*, char*);
+void verifyID(node_t*, char*);
 void addTypeToVariable(node_t*, char);
 void printList(node_t*);
 void raiseDuplicateVar(char* name);
@@ -91,7 +92,7 @@ stmt : assig_stmt
      | cmp_stmt
 ;
 
-assig_stmt : SET ID expr SEMICOLON
+assig_stmt : SET ID {verifyID(symbol,yylval.stringValue);}expr SEMICOLON
            | READ ID SEMICOLON
            | PRINT expr SEMICOLON
 ;
@@ -205,6 +206,17 @@ void addTypeToVariable(node_t *head, char type){
   current->type = type;
 }
 
+void verifyID(node_t *head, char *name){
+  node_t *current = head;
+  while(current->next != NULL){
+    if(strcmp(current->name, name) == 0){
+      return;
+    }
+    current = current->next;
+  }
+  raiseNoExistingVar(name);
+}
+
 void setInt(node_t *head, char *name, int val){
   node_t *current = head;
   while(current->next != NULL){
@@ -246,7 +258,8 @@ int main(int argc, char **argv) {
   printf("%d\n", compare_types_strong(typeof(x),typeof(xx)));
   printf("%d\n", compare_types_strong(typeof(x),typeof(y)));
   */
-  yyin = fopen(argv[1], "r+"); 
+  //yyin = fopen(argv[1], "r+"); 
+  yyin = stdin;
   setTable();
   yyparse();
   printList(symbol->next);

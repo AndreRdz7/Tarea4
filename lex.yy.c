@@ -862,7 +862,7 @@ YY_RULE_SETUP
 case 17:
 YY_RULE_SETUP
 #line 32 "tarea4.lex"
-{yylval.stringValue = yytext; return ID;}
+{yylval.stringValue = strdup(yytext); return ID;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
@@ -897,7 +897,7 @@ YY_RULE_SETUP
 case 24:
 YY_RULE_SETUP
 #line 39 "tarea4.lex"
-{return LLAVEI;}
+{printf("se encontro una llave abierta\n");return LLAVEI;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
