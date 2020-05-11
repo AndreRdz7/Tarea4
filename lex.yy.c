@@ -1952,15 +1952,4 @@ void yyfree (void * ptr )
 #line 48 "tarea4.lex"
 
 
-int main( argc, argv ) int argc; char **argv; {
-    ++argv, --argc;
-    if ( argc > 0 ){
-        FILE* fp = fopen( argv[0], "r+");
-        yyin = fp;
-    }else{
-        yyin = stdin;
-    }
-    yylex();
-    return 0;
 
-}

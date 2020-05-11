@@ -80,6 +80,7 @@
 #include <assert.h>
 
 extern int yylex();
+extern FILE *yyin;
 int yyerror(char const * s);
 
 union data {
@@ -106,7 +107,7 @@ void raiseInvalidCompatibleTypes();
 node_t* symbol = NULL;
 
 
-#line 110 "tarea4.tab.c" /* yacc.c:339  */
+#line 111 "tarea4.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -181,14 +182,14 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 50 "tarea4.y" /* yacc.c:355  */
+#line 51 "tarea4.y" /* yacc.c:355  */
 
   char* stringValue;
   int intValue;
   float floatValue;
   int var_type;
 
-#line 192 "tarea4.tab.c" /* yacc.c:355  */
+#line 193 "tarea4.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -205,7 +206,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 209 "tarea4.tab.c" /* yacc.c:358  */
+#line 210 "tarea4.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -505,11 +506,11 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    69,    69,    72,    73,    76,    77,    80,    80,    83,
-      84,    87,    88,    89,    90,    93,    94,    95,    98,    99,
-     102,   103,   106,   107,   110,   111,   114,   115,   116,   119,
-     120,   121,   124,   125,   126,   127,   130,   131,   132,   133,
-     134
+       0,    70,    70,    73,    74,    77,    78,    81,    81,    84,
+      85,    88,    89,    90,    91,    94,    95,    96,    99,   100,
+     103,   104,   107,   108,   111,   112,   115,   116,   117,   120,
+     121,   122,   125,   126,   127,   128,   131,   132,   133,   134,
+     135
 };
 #endif
 
@@ -1341,25 +1342,25 @@ yyreduce:
   switch (yyn)
     {
         case 7:
-#line 80 "tarea4.y" /* yacc.c:1646  */
+#line 81 "tarea4.y" /* yacc.c:1646  */
     {declareVariable(symbol, yylval.stringValue);}
-#line 1347 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1348 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 83 "tarea4.y" /* yacc.c:1646  */
+#line 84 "tarea4.y" /* yacc.c:1646  */
     {addTypeToVariable(symbol,'i');}
-#line 1353 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1354 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 84 "tarea4.y" /* yacc.c:1646  */
+#line 85 "tarea4.y" /* yacc.c:1646  */
     {addTypeToVariable(symbol, 'f');}
-#line 1359 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1360 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1363 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1364 "tarea4.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1587,7 +1588,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 137 "tarea4.y" /* yacc.c:1906  */
+#line 138 "tarea4.y" /* yacc.c:1906  */
 
 
 int yyerror(char const * s) {
@@ -1604,6 +1605,7 @@ void printList(node_t *head){
   node_t *current = head->next;
   printf("Tabla de símbolos:\n");
   while(current != NULL){
+    /*
     if(current->type == 'i'){
       printf("%s: %d\n",current->name, current->val.i);
       current = current->next;
@@ -1611,6 +1613,8 @@ void printList(node_t *head){
       printf("%s: %f\n", current->name, current->val.f);
       current = current->next;
     }
+    */
+    printf("%s: %c\n",current->name, current->type);
   }
 }
 
@@ -1689,13 +1693,14 @@ void setFloat(node_t *head, char *name, float val){
   raiseNoExistingVar(name);
 }
 
-void main() {
+int main(int argc, char **argv) {
   /*
   int x,xx;
   float y;
   printf("%d\n", compare_types_strong(typeof(x),typeof(xx)));
   printf("%d\n", compare_types_strong(typeof(x),typeof(y)));
   */
+  yyin = fopen(argv[1], "r+"); 
   setTable();
   yyparse();
   printList(symbol->next);

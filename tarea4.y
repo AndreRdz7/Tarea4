@@ -20,6 +20,7 @@
 #include <assert.h>
 
 extern int yylex();
+extern FILE *yyin;
 int yyerror(char const * s);
 
 union data {
@@ -150,6 +151,7 @@ void printList(node_t *head){
   node_t *current = head->next;
   printf("Tabla de símbolos:\n");
   while(current != NULL){
+    /*
     if(current->type == 'i'){
       printf("%s: %d\n",current->name, current->val.i);
       current = current->next;
@@ -157,6 +159,8 @@ void printList(node_t *head){
       printf("%s: %f\n", current->name, current->val.f);
       current = current->next;
     }
+    */
+    printf("%s: %c\n",current->name, current->type);
   }
 }
 
@@ -235,13 +239,14 @@ void setFloat(node_t *head, char *name, float val){
   raiseNoExistingVar(name);
 }
 
-void main() {
+int main(int argc, char **argv) {
   /*
   int x,xx;
   float y;
   printf("%d\n", compare_types_strong(typeof(x),typeof(xx)));
   printf("%d\n", compare_types_strong(typeof(x),typeof(y)));
   */
+  yyin = fopen(argv[1], "r+"); 
   setTable();
   yyparse();
   printList(symbol->next);
