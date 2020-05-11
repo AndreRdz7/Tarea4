@@ -96,6 +96,7 @@ typedef struct Node{
 
 void setTable();
 void declareVariable(node_t*, char*);
+void addTypeToVariable(node_t*, char);
 void printList(node_t*);
 void raiseDuplicateVar(char* name);
 void raiseInvalidType(char* name);
@@ -105,7 +106,7 @@ void raiseInvalidCompatibleTypes();
 node_t* symbol = NULL;
 
 
-#line 109 "tarea4.tab.c" /* yacc.c:339  */
+#line 110 "tarea4.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -180,13 +181,13 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 49 "tarea4.y" /* yacc.c:355  */
+#line 50 "tarea4.y" /* yacc.c:355  */
 
   char* stringValue;
   int intValue;
   float floatValue;
 
-#line 190 "tarea4.tab.c" /* yacc.c:355  */
+#line 191 "tarea4.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -203,7 +204,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 207 "tarea4.tab.c" /* yacc.c:358  */
+#line 208 "tarea4.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -503,11 +504,11 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    66,    66,    69,    70,    73,    74,    77,    77,    80,
-      81,    84,    85,    86,    87,    90,    91,    92,    95,    96,
-      99,   100,   103,   104,   107,   108,   111,   112,   113,   116,
-     117,   118,   121,   122,   123,   124,   127,   128,   129,   130,
-     131
+       0,    67,    67,    70,    71,    74,    75,    78,    78,    81,
+      82,    85,    86,    87,    88,    91,    92,    93,    96,    97,
+     100,   101,   104,   105,   108,   109,   112,   113,   114,   117,
+     118,   119,   122,   123,   124,   125,   128,   129,   130,   131,
+     132
 };
 #endif
 
@@ -1339,13 +1340,25 @@ yyreduce:
   switch (yyn)
     {
         case 7:
-#line 77 "tarea4.y" /* yacc.c:1646  */
+#line 78 "tarea4.y" /* yacc.c:1646  */
     {declareVariable(symbol, yylval.stringValue);}
-#line 1345 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1346 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 9:
+#line 81 "tarea4.y" /* yacc.c:1646  */
+    {addTypeToVariable(symbol,'i');}
+#line 1352 "tarea4.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 10:
+#line 82 "tarea4.y" /* yacc.c:1646  */
+    {addTypeToVariable(symbol, 'f');}
+#line 1358 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1349 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1362 "tarea4.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1573,7 +1586,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 134 "tarea4.y" /* yacc.c:1906  */
+#line 135 "tarea4.y" /* yacc.c:1906  */
 
 
 int yyerror(char const * s) {

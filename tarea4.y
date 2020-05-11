@@ -36,6 +36,7 @@ typedef struct Node{
 
 void setTable();
 void declareVariable(node_t*, char*);
+void addTypeToVariable(node_t*, char);
 void printList(node_t*);
 void raiseDuplicateVar(char* name);
 void raiseInvalidType(char* name);
@@ -77,8 +78,8 @@ decls : dec SEMICOLON decls
 dec : VAR ID {declareVariable(symbol, yylval.stringValue);} COLON tipo 
 ;
 
-tipo : INT
-     | FLOAT
+tipo : INT {addTypeToVariable(symbol,'i');}
+     | FLOAT {addTypeToVariable(symbol, 'f');}
 ;
 
 stmt : assig_stmt
@@ -144,7 +145,7 @@ void setTable(){
 }
 
 void printList(node_t *head){
-  node_t *current = head;
+  node_t *current = head->next;
   printf("Tabla de símbolos:\n");
   while(current != NULL){
     if(current->type == 'i'){
