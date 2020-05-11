@@ -13,8 +13,8 @@ ID [a-zA-Z_][a-zA-Z_0-9]∗
 
 %%
 
-{ENTERO}  {yylval = atoi(yytext); return NUMI;}
-{DECIMAL} {yylval = atoi(yytext); return NUMF;}
+{ENTERO}  {yylval.intValue = atoi(yytext); return NUMI;}
+{DECIMAL} {yylval.floatValue = atof(yytext); return NUMF;}
 "program" {return PROGRAM;}
 "var"     {return VAR;}
 "int"     {return INT;}
@@ -29,7 +29,7 @@ ID [a-zA-Z_][a-zA-Z_0-9]∗
 "to"      {return TO;}
 "step"    {return STEP;}
 "do"      {return DO;}
-{ID}      {return ID;}
+{ID}      {yylval.stringValue = yytext; return ID;}
 "+"       {return SUMA;}
 "-"       {return RESTA;}
 "*"       {return MULTI;}

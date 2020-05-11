@@ -782,12 +782,12 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 16 "tarea4.lex"
-{yylval = atoi(yytext); return NUMI;}
+{yylval.intValue = atoi(yytext); return NUMI;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 17 "tarea4.lex"
-{yylval = atoi(yytext); return NUMF;}
+{yylval.floatValue = atof(yytext); return NUMF;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
@@ -862,7 +862,7 @@ YY_RULE_SETUP
 case 17:
 YY_RULE_SETUP
 #line 32 "tarea4.lex"
-{return ID;}
+{yylval.stringValue = yytext; return ID;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP

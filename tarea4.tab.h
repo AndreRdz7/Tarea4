@@ -47,21 +47,21 @@ extern int yydebug;
   {
     NUMI = 258,
     NUMF = 259,
-    PROGRAM = 260,
-    VAR = 261,
-    INT = 262,
-    FLOAT = 263,
-    SET = 264,
-    READ = 265,
-    PRINT = 266,
-    IF = 267,
-    IFELSE = 268,
-    WHILE = 269,
-    FOR = 270,
-    TO = 271,
-    STEP = 272,
-    DO = 273,
-    ID = 274,
+    ID = 260,
+    PROGRAM = 261,
+    VAR = 262,
+    INT = 263,
+    FLOAT = 264,
+    SET = 265,
+    READ = 266,
+    PRINT = 267,
+    IF = 268,
+    IFELSE = 269,
+    WHILE = 270,
+    FOR = 271,
+    TO = 272,
+    STEP = 273,
+    DO = 274,
     SUMA = 275,
     RESTA = 276,
     DIVIDE = 277,
@@ -82,7 +82,19 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+
+union YYSTYPE
+{
+#line 49 "tarea4.y" /* yacc.c:1909  */
+
+  char* stringValue;
+  int intValue;
+  float floatValue;
+
+#line 95 "tarea4.tab.h" /* yacc.c:1909  */
+};
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

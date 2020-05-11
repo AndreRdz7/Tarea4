@@ -1,6 +1,6 @@
 /* 
-     Tarea 4
-     Implementación de tabla de símbolos y revision de tipo de datos correspondiente
+  Tarea 4
+  Implementación de tabla de símbolos y revision de tipo de datos correspondiente
 */
 
 %{
@@ -18,7 +18,7 @@
 #include <math.h>
 #include <string.h>
 #include <assert.h>
- 
+
 extern int yylex();
 int yyerror(char const * s);
 
@@ -40,13 +40,23 @@ void printList(node_t*);
 void raiseDuplicateVar(char* name);
 void raiseInvalidType(char* name);
 void raiseNoExistingVar(char* name);
+void raiseInvalidCompatibleTypes();
 
 node_t* symbol = NULL;
 
 %}
 
-%token NUMI NUMF PROGRAM VAR INT FLOAT SET READ PRINT IF IFELSE
-WHILE FOR TO STEP DO ID SUMA RESTA DIVIDE MULTI PAREND PARENI 
+%union{
+  char* stringValue;
+  int intValue;
+  float floatValue;
+}
+%token <int> NUMI "integer"
+%token <float> NUMF "float"
+%token <char const *> ID "identifier"
+
+%token  PROGRAM VAR INT FLOAT SET READ PRINT IF IFELSE
+WHILE FOR TO STEP DO SUMA RESTA DIVIDE MULTI PAREND PARENI 
 LLAVED LLAVEI COLON SEMICOLON MENOR MAYOR IGUAL MENORI MAYORI
 
 %start prog
@@ -64,7 +74,7 @@ decls : dec SEMICOLON decls
       | dec
 ;
 
-dec : VAR ID {declareVariable(symbol, "yytext");} COLON tipo 
+dec : VAR ID {declareVariable(symbol, yylval.stringValue);} COLON tipo 
 ;
 
 tipo : INT
@@ -79,15 +89,15 @@ stmt : assig_stmt
 
 assig_stmt : SET ID expr SEMICOLON
            | READ ID SEMICOLON
-           | PRINT expr SEMICOLON {printf("%d\n", $1);}
+           | PRINT expr SEMICOLON
 ;
 
-if_stmt : IF PARENI expresion PAREND stmt {if($3 == 1)$5;}
-        | IFELSE PARENI expresion PAREND stmt stmt {if($3 == 1)$5;$6;}
+if_stmt : IF PARENI expresion PAREND stmt 
+        | IFELSE PARENI expresion PAREND stmt stmt 
 ;
 
-iter_stmt : WHILE PARENI expresion PAREND stmt {while($3)$5;}
-          | FOR SET ID expr TO expr STEP expr DO stmt {for($4;$6;$8)$10;}
+iter_stmt : WHILE PARENI expresion PAREND stmt 
+          | FOR SET ID expr TO expr STEP expr DO stmt 
 ;
 
 cmp_stmt : LLAVEI LLAVED
@@ -98,27 +108,27 @@ stmt_lst : stmt
          | stmt_lst stmt
 ;
 
-expr : expr SUMA term {$$ = $1 + $3;}
-     | expr RESTA term {$$ = $1 - $3;}
+expr : expr SUMA term
+     | expr RESTA term
      | term
 ;
 
-term : term MULTI factor {$$ = $1 * $3;}
-     | term DIVIDE factor {$$ = $1 / $3;}
+term : term MULTI factor 
+     | term DIVIDE factor
      | factor
 ;
 
-factor : PARENI expr PAREND {$$ = $2;}
+factor : PARENI expr PAREND 
        | ID
        | NUMI
        | NUMF
 ;
 
-expresion : expr MENOR expr {if($1 < $3){return 1;}}
-          | expr MAYOR expr {if($1 > $3){return 1;}}
-          | expr IGUAL expr {if($1 == $3){return 1;}}
-          | expr MENORI expr {if($1 <= $3){return 1;}}
-          | expr MAYORI expr {if($1 >= $3){return 1;}}
+expresion : expr MENOR expr 
+          | expr MAYOR expr 
+          | expr IGUAL expr
+          | expr MENORI expr 
+          | expr MAYORI expr
 ;
 
 %%
@@ -129,6 +139,8 @@ int yyerror(char const * s) {
 
 void setTable(){
   symbol = (node_t*)malloc(sizeof(node_t));
+  strcpy(symbol->name, "__init__");
+  symbol->next = NULL;
 }
 
 void printList(node_t *head){
@@ -152,6 +164,11 @@ void raiseDuplicateVar(char *name){
 
 void raiseInvalidType(char *name){
   printf("La variable %s tiene otro tipo de dato\n",name);
+  exit(0);
+}
+
+void raiseInvalidCompatibleTypes(){
+  printf("Las variables tienen distintos tipos de dato y no pueden ser utilizarse en la misma operación\n");
   exit(0);
 }
 
@@ -220,6 +237,6 @@ void main() {
   */
   setTable();
   yyparse();
-  printList(symbol);
+  printList(symbol->next);
 }
 
