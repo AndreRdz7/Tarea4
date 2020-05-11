@@ -1622,6 +1622,7 @@ void printList(node_t *head){
     }
     */
     printf("%s: %c\n",current->name, current->type);
+    current = current->next;
   }
 }
 
@@ -1664,10 +1665,11 @@ void addTypeToVariable(node_t *head, char type){
     current = current->next;
   }
   current->type = type;
+  printList(head);
 }
 
 void verifyID(node_t *head, char *name){
-  node_t *current = head;
+  node_t *current = head->next;
   while(current->next != NULL){
     if(strcmp(current->name, name) == 0){
       return;
