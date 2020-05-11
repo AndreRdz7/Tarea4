@@ -35,6 +35,12 @@ typedef struct Node{
   struct Node *next;
 } node_t;
 
+struct Type{
+  int type;
+  int i;
+  float f;
+};
+
 void setTable();
 void declareVariable(node_t*, char*);
 void verifyID(node_t*, char*);
@@ -54,16 +60,19 @@ node_t* symbol = NULL;
   int intValue;
   float floatValue;
   int var_type;
+  struct Type* t;
 }
-%token <int> NUMI 
-%token <float> NUMF 
-%token <id> ID 
 
 %token  PROGRAM VAR INT FLOAT SET READ PRINT IF IFELSE
 WHILE FOR TO STEP DO SUMA RESTA DIVIDE MULTI PAREND PARENI 
 LLAVED LLAVEI COLON SEMICOLON MENOR MAYOR IGUAL MENORI MAYORI
 
+%token <var_type> NUMI NUMF 
+%token <stringValue> ID 
+
 %type <var_type> tipo INT FLOAT
+%type <var_type> expr term factor
+
 %start prog
 
 %%

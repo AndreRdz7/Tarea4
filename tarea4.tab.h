@@ -45,38 +45,38 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    NUMI = 258,
-    NUMF = 259,
-    ID = 260,
-    PROGRAM = 261,
-    VAR = 262,
-    INT = 263,
-    FLOAT = 264,
-    SET = 265,
-    READ = 266,
-    PRINT = 267,
-    IF = 268,
-    IFELSE = 269,
-    WHILE = 270,
-    FOR = 271,
-    TO = 272,
-    STEP = 273,
-    DO = 274,
-    SUMA = 275,
-    RESTA = 276,
-    DIVIDE = 277,
-    MULTI = 278,
-    PAREND = 279,
-    PARENI = 280,
-    LLAVED = 281,
-    LLAVEI = 282,
-    COLON = 283,
-    SEMICOLON = 284,
-    MENOR = 285,
-    MAYOR = 286,
-    IGUAL = 287,
-    MENORI = 288,
-    MAYORI = 289
+    PROGRAM = 258,
+    VAR = 259,
+    INT = 260,
+    FLOAT = 261,
+    SET = 262,
+    READ = 263,
+    PRINT = 264,
+    IF = 265,
+    IFELSE = 266,
+    WHILE = 267,
+    FOR = 268,
+    TO = 269,
+    STEP = 270,
+    DO = 271,
+    SUMA = 272,
+    RESTA = 273,
+    DIVIDE = 274,
+    MULTI = 275,
+    PAREND = 276,
+    PARENI = 277,
+    LLAVED = 278,
+    LLAVEI = 279,
+    COLON = 280,
+    SEMICOLON = 281,
+    MENOR = 282,
+    MAYOR = 283,
+    IGUAL = 284,
+    MENORI = 285,
+    MAYORI = 286,
+    NUMI = 287,
+    NUMF = 288,
+    ID = 289
   };
 #endif
 
@@ -85,14 +85,15 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 52 "tarea4.y" /* yacc.c:1909  */
+#line 58 "tarea4.y" /* yacc.c:1909  */
 
   char* stringValue;
   int intValue;
   float floatValue;
   int var_type;
+  struct Type* t;
 
-#line 96 "tarea4.tab.h" /* yacc.c:1909  */
+#line 97 "tarea4.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
