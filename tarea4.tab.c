@@ -186,8 +186,9 @@ union YYSTYPE
   char* stringValue;
   int intValue;
   float floatValue;
+  int var_type;
 
-#line 191 "tarea4.tab.c" /* yacc.c:355  */
+#line 192 "tarea4.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -204,7 +205,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 208 "tarea4.tab.c" /* yacc.c:358  */
+#line 209 "tarea4.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -504,11 +505,11 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    67,    67,    70,    71,    74,    75,    78,    78,    81,
-      82,    85,    86,    87,    88,    91,    92,    93,    96,    97,
-     100,   101,   104,   105,   108,   109,   112,   113,   114,   117,
-     118,   119,   122,   123,   124,   125,   128,   129,   130,   131,
-     132
+       0,    69,    69,    72,    73,    76,    77,    80,    80,    83,
+      84,    87,    88,    89,    90,    93,    94,    95,    98,    99,
+     102,   103,   106,   107,   110,   111,   114,   115,   116,   119,
+     120,   121,   124,   125,   126,   127,   130,   131,   132,   133,
+     134
 };
 #endif
 
@@ -1340,25 +1341,25 @@ yyreduce:
   switch (yyn)
     {
         case 7:
-#line 78 "tarea4.y" /* yacc.c:1646  */
+#line 80 "tarea4.y" /* yacc.c:1646  */
     {declareVariable(symbol, yylval.stringValue);}
-#line 1346 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1347 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 81 "tarea4.y" /* yacc.c:1646  */
+#line 83 "tarea4.y" /* yacc.c:1646  */
     {addTypeToVariable(symbol,'i');}
-#line 1352 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1353 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 82 "tarea4.y" /* yacc.c:1646  */
+#line 84 "tarea4.y" /* yacc.c:1646  */
     {addTypeToVariable(symbol, 'f');}
-#line 1358 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1359 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1362 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1363 "tarea4.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1586,7 +1587,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 135 "tarea4.y" /* yacc.c:1906  */
+#line 137 "tarea4.y" /* yacc.c:1906  */
 
 
 int yyerror(char const * s) {
@@ -1600,7 +1601,7 @@ void setTable(){
 }
 
 void printList(node_t *head){
-  node_t *current = head;
+  node_t *current = head->next;
   printf("Tabla de símbolos:\n");
   while(current != NULL){
     if(current->type == 'i'){
@@ -1647,7 +1648,11 @@ void declareVariable(node_t *head, char *name){
 }
 
 void addTypeToVariable(node_t *head, char type){
-
+  node_t *current = head;
+  while(current->next != NULL){
+    current = current->next;
+  }
+  current->type = type;
 }
 
 void setInt(node_t *head, char *name, int val){

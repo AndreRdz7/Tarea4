@@ -51,6 +51,7 @@ node_t* symbol = NULL;
   char* stringValue;
   int intValue;
   float floatValue;
+  int var_type;
 }
 %token <int> NUMI "integer"
 %token <float> NUMF "float"
@@ -60,6 +61,7 @@ node_t* symbol = NULL;
 WHILE FOR TO STEP DO SUMA RESTA DIVIDE MULTI PAREND PARENI 
 LLAVED LLAVEI COLON SEMICOLON MENOR MAYOR IGUAL MENORI MAYORI
 
+%type <var_type> tipo INT FLOAT
 %start prog
 
 %%
@@ -192,7 +194,11 @@ void declareVariable(node_t *head, char *name){
 }
 
 void addTypeToVariable(node_t *head, char type){
-
+  node_t *current = head;
+  while(current->next != NULL){
+    current = current->next;
+  }
+  current->type = type;
 }
 
 void setInt(node_t *head, char *name, int val){

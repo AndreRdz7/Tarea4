@@ -17,8 +17,8 @@ ID [a-zA-Z_][a-zA-Z_0-9]∗
 {DECIMAL} {yylval.floatValue = atof(yytext); return NUMF;}
 "program" {return PROGRAM;}
 "var"     {return VAR;}
-"int"     {return INT;}
-"float"   {return FLOAT;}
+"int"     {yylval.var_type = 1; return INT;}
+"float"   {yylval.var_type = 2; return FLOAT;}
 "set"     {return SET;}
 "read"    {return READ;}
 "print"   {return PRINT;}
@@ -46,3 +46,4 @@ ID [a-zA-Z_][a-zA-Z_0-9]∗
 "<="      {return MENORI;}
 ">="      {return MAYORI;}
 %%
+

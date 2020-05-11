@@ -802,12 +802,12 @@ YY_RULE_SETUP
 case 5:
 YY_RULE_SETUP
 #line 20 "tarea4.lex"
-{return INT;}
+{yylval.var_type = 1; return INT;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 21 "tarea4.lex"
-{return FLOAT;}
+{yylval.var_type = 2; return FLOAT;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
@@ -1952,3 +1952,15 @@ void yyfree (void * ptr )
 #line 48 "tarea4.lex"
 
 
+int main( argc, argv ) int argc; char **argv; {
+    ++argv, --argc;
+    if ( argc > 0 ){
+        FILE* fp = fopen( argv[0], "r+");
+        yyin = fp;
+    }else{
+        yyin = stdin;
+    }
+    yylex();
+    return 0;
+
+}

@@ -90,8 +90,9 @@ union YYSTYPE
   char* stringValue;
   int intValue;
   float floatValue;
+  int var_type;
 
-#line 95 "tarea4.tab.h" /* yacc.c:1909  */
+#line 96 "tarea4.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
