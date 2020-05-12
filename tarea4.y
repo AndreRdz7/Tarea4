@@ -35,11 +35,6 @@ typedef struct Node{
   struct Node *next;
 } node_t;
 
-struct Type{
-  int type;
-  int i;
-  float f;
-};
 
 void setTable();
 void declareVariable(node_t*, char*);
@@ -101,9 +96,9 @@ stmt : assig_stmt
      | cmp_stmt
 ;
 
-assig_stmt : SET ID {verifyID(symbol,yylval.stringValue);}expr SEMICOLON
-           | READ ID SEMICOLON
-           | PRINT {printf("after print");} expr SEMICOLON
+assig_stmt : SET ID expr SEMICOLON
+           | READ ID SEMICOLON {verifyID(symbol, $2);}
+           | PRINT expr SEMICOLON
 ;
 
 if_stmt : IF PARENI expresion PAREND stmt 
@@ -157,24 +152,6 @@ void setTable(){
   symbol->next = NULL;
 }
 
-void printList(node_t *head){
-  node_t *current = head->next;
-  printf("Tabla de símbolos:\n");
-  while(current != NULL){
-    /*
-    if(current->type == 'i'){
-      printf("%s: %d\n",current->name, current->val.i);
-      current = current->next;
-    }else{
-      printf("%s: %f\n", current->name, current->val.f);
-      current = current->next;
-    }
-    */
-    printf("%s: %c\n",current->name, current->type);
-    current = current->next;
-  }
-}
-
 void raiseDuplicateVar(char *name){
   printf("La variable %s ya ha sido declarada\n",name);
   exit(0);
@@ -193,6 +170,15 @@ void raiseInvalidCompatibleTypes(){
 void raiseNoExistingVar(char *name){
   printf("La variable %s no ha sido declarada\n",name);
   exit(0);
+}
+
+void printList(node_t *head){
+  node_t *current = head->next;
+  printf("Tabla de símbolos:\n");
+  while(current != NULL){
+    printf("%s: %c\n",current->name, current->type);
+    current = current->next;
+  }
 }
 
 void declareVariable(node_t *head, char *name){
@@ -217,7 +203,7 @@ void addTypeToVariable(node_t *head, char type){
 }
 
 void verifyID(node_t *head, char *name){
-  node_t *current = head->next;
+  node_t *current = head;
   while(current != NULL){
     if(strcmp(current->name,name) == 0){
       return;
@@ -227,46 +213,9 @@ void verifyID(node_t *head, char *name){
   raiseNoExistingVar(name);
 }
 
-void setInt(node_t *head, char *name, int val){
-  node_t *current = head;
-  while(current->next != NULL){
-    if(strcmp(current->name,name) == 0){
-      if(current->type == 'i'){
-        current->val.i = val;
-        return;
-      }
-      else{
-        raiseInvalidType(name);
-      }
-    }
-    current = current->next;
-  }
-  raiseNoExistingVar(name);
-}
-
-void setFloat(node_t *head, char *name, float val){
-  node_t *current = head;
-  while(current->next != NULL){
-    if(strcmp(current->name,name) == 0){
-      if(current->type == 'f'){
-        current->val.f = val;
-        return;
-      }
-      else{
-        raiseInvalidType(name);
-      }
-    }
-    current = current->next;
-  }
-  raiseNoExistingVar(name);
-}
-
 int main(int argc, char **argv) {
   /*
-  int x,xx;
-  float y;
-  printf("%d\n", compare_types_strong(typeof(x),typeof(xx)));
-  printf("%d\n", compare_types_strong(typeof(x),typeof(y)));
+  
   */
   yyin = fopen(argv[1], "r+"); 
   //yyin = stdin;

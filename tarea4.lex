@@ -7,8 +7,9 @@
 %}
 
 LETRA [A-Za-z]
-ENTERO [1-9][0-9]*
-DECIMAL {ENTERO}.{ENTERO}
+DIGITO [0-9]
+ENTERO ("-"|"")({DIGITO})({DIGITO})*
+DECIMAL ("-"|"")({DIGITO})({DIGITO})*(".")({DIGITO})({DIGITO})*
 ID [a-zA-Z]*[0-9]*
 
 %%
