@@ -23,18 +23,16 @@ extern int yylex();
 extern FILE *yyin;
 int yyerror(char const * s);
 
-union data {
-  int i;
-  float f;
-};
+enum Types {Int,Float};
 
 typedef struct Node{
   char name[256];
-  char type;
-  union data val;
+  enum Types type;
   struct Node *next;
 } node_t;
 
+int heapHead = 0;
+enum Types heap [256];
 
 void setTable();
 void declareVariable(node_t*, char*);
@@ -45,6 +43,11 @@ void raiseDuplicateVar(char* name);
 void raiseInvalidType(char* name);
 void raiseNoExistingVar(char* name);
 void raiseInvalidCompatibleTypes();
+void intToHeap();
+void floatToHeap();
+void addToExpr(node_t*, char*);
+void evaluate();
+char* getType(enum Types);
 
 node_t* symbol = NULL;
 
@@ -52,21 +55,15 @@ node_t* symbol = NULL;
 
 %union{
   char* stringValue;
-  int intValue;
-  float floatValue;
-  int var_type;
-  struct Type* t;
+  char* type;
 }
 
-%token  PROGRAM VAR INT FLOAT SET READ PRINT IF IFELSE
+%token  PROGRAM VAR NUMI NUMF SET READ PRINT IF IFELSE
 WHILE FOR TO STEP DO SUMA RESTA DIVIDE MULTI PAREND PARENI 
 LLAVED LLAVEI COLON SEMICOLON MENOR MAYOR IGUAL MENORI MAYORI
 
-%token <var_type> NUMI NUMF 
+%token <type> INT FLOAT 
 %token <stringValue> ID 
-
-%type <var_type> tipo INT FLOAT
-%type <var_type> expr term factor
 
 %start prog
 
@@ -96,17 +93,17 @@ stmt : assig_stmt
      | cmp_stmt
 ;
 
-assig_stmt : SET ID expr SEMICOLON
-           | READ ID SEMICOLON {verifyID(symbol, $2);}
-           | PRINT expr SEMICOLON
+assig_stmt : SET ID {verifyID(symbol, yylval.stringValue);} expr {evaluate();}SEMICOLON
+           | READ ID {verifyID(symbol, yylval.stringValue);} SEMICOLON 
+           | PRINT expr {evaluate();} SEMICOLON
 ;
 
-if_stmt : IF PARENI expresion PAREND stmt 
-        | IFELSE PARENI expresion PAREND stmt stmt 
+if_stmt : IF PARENI expresion {evaluate();} PAREND stmt 
+        | IFELSE PARENI expresion {evaluate();} PAREND stmt stmt 
 ;
 
-iter_stmt : WHILE PARENI expresion PAREND stmt 
-          | FOR SET ID expr TO expr STEP expr DO stmt 
+iter_stmt : WHILE PARENI expresion {evaluate();} PAREND stmt 
+          | FOR SET ID {verifyID(symbol, yylval.stringValue);} expr {evaluate();} TO expr {evaluate();} STEP expr {evaluate();} DO stmt 
 ;
 
 cmp_stmt : LLAVEI LLAVED
@@ -117,7 +114,7 @@ stmt_lst : stmt
          | stmt_lst stmt
 ;
 
-expr : expr SUMA term
+expr : expr SUMA term 
      | expr RESTA term
      | term
 ;
@@ -127,10 +124,10 @@ term : term MULTI factor
      | factor
 ;
 
-factor : PARENI expr PAREND 
-       | ID
-       | NUMI
-       | NUMF
+factor : PARENI expr {evaluate();} PAREND 
+       | ID {addToExpr(symbol, yylval.stringValue);}
+       | NUMI {intToHeap();}
+       | NUMF {floatToHeap();}
 ;
 
 expresion : expr MENOR expr 
@@ -172,6 +169,17 @@ void raiseNoExistingVar(char *name){
   exit(0);
 }
 
+char* getType(enum Types type){
+  switch(type){
+    case Int:
+      return "int";
+    case Float:
+      return "float";
+    default:
+      return "NULL";
+  }
+}
+
 void printList(node_t *head){
   node_t *current = head->next;
   printf("Tabla de símbolos:\n");
@@ -202,23 +210,55 @@ void addTypeToVariable(node_t *head, char type){
   current->type = type;
 }
 
+void addToExpr(node_t *head, char *name){
+  node_t *current = head;
+  while(current->next != NULL){
+    if(strcmp(current->name, name) == 0){
+      heap[heapHead] = current->type;
+      ++heapHead;
+    }
+  }
+}
+
+void intToHeap(){
+  heap[heapHead] = Float;
+  ++heapHead;
+}
+
+void floatToHeap(){
+  heap[heapHead] = Int;
+  ++heapHead;
+}
+
 void verifyID(node_t *head, char *name){
   node_t *current = head;
-  while(current != NULL){
-    if(strcmp(current->name,name) == 0){
-      return;
-    }
+  int exists = 0;
+  while(current->next != NULL){
     current = current->next;
+    if (strcmp(current->name, name) == 0){
+      exists = 1;
+    }
   }
-  raiseNoExistingVar(name);
+  if(exists == 0){
+    raiseNoExistingVar(name);
+  }
+}
+
+void evaluate(){
+  enum Types comparator = heap[0];
+  if(heapHead > 1){
+    for(int i = 1; i <= heapHead; i++){
+      if(heap[i] != comparator){
+        raiseInvalidCompatibleTypes();
+      }
+    }
+  }
+  memset(heap, '\0' , sizeof(heap));
+  heapHead = 0;
 }
 
 int main(int argc, char **argv) {
-  /*
-  
-  */
   yyin = fopen(argv[1], "r+"); 
-  //yyin = stdin;
   setTable();
   yyparse();
   printList(symbol);

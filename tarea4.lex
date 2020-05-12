@@ -14,12 +14,12 @@ ID [a-zA-Z]*[0-9]*
 
 %%
 
-{ENTERO}  {yylval.intValue = atoi(yytext); return NUMI;}
-{DECIMAL} {yylval.floatValue = atof(yytext); return NUMF;}
+{ENTERO}  {return NUMI;}
+{DECIMAL} {return NUMF;}
 "program" {return PROGRAM;}
 "var"     {return VAR;}
-"int"     {yylval.var_type = 1; return INT;}
-"float"   {yylval.var_type = 2; return FLOAT;}
+"int"     {return INT;}
+"float"   {return FLOAT;}
 "set"     {return SET;}
 "read"    {return READ;}
 "print"   {return PRINT;}

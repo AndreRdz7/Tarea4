@@ -47,8 +47,8 @@ extern int yydebug;
   {
     PROGRAM = 258,
     VAR = 259,
-    INT = 260,
-    FLOAT = 261,
+    NUMI = 260,
+    NUMF = 261,
     SET = 262,
     READ = 263,
     PRINT = 264,
@@ -74,8 +74,8 @@ extern int yydebug;
     IGUAL = 284,
     MENORI = 285,
     MAYORI = 286,
-    NUMI = 287,
-    NUMF = 288,
+    INT = 287,
+    FLOAT = 288,
     ID = 289
   };
 #endif
@@ -85,15 +85,12 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 53 "tarea4.y" /* yacc.c:1909  */
+#line 56 "tarea4.y" /* yacc.c:1909  */
 
   char* stringValue;
-  int intValue;
-  float floatValue;
-  int var_type;
-  struct Type* t;
+  char* type;
 
-#line 97 "tarea4.tab.h" /* yacc.c:1909  */
+#line 94 "tarea4.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
