@@ -45,38 +45,38 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    PROGRAM = 258,
-    VAR = 259,
-    NUMI = 260,
-    NUMF = 261,
-    SET = 262,
-    READ = 263,
-    PRINT = 264,
-    IF = 265,
-    IFELSE = 266,
-    WHILE = 267,
-    FOR = 268,
-    TO = 269,
-    STEP = 270,
-    DO = 271,
-    SUMA = 272,
-    RESTA = 273,
-    DIVIDE = 274,
-    MULTI = 275,
-    PAREND = 276,
-    PARENI = 277,
-    LLAVED = 278,
-    LLAVEI = 279,
-    COLON = 280,
-    SEMICOLON = 281,
-    MENOR = 282,
-    MAYOR = 283,
-    IGUAL = 284,
-    MENORI = 285,
-    MAYORI = 286,
-    INT = 287,
-    FLOAT = 288,
-    ID = 289
+    INT = 258,
+    FLOAT = 259,
+    ID = 260,
+    PROGRAM = 261,
+    VAR = 262,
+    NUMI = 263,
+    NUMF = 264,
+    SET = 265,
+    READ = 266,
+    PRINT = 267,
+    IF = 268,
+    IFELSE = 269,
+    WHILE = 270,
+    FOR = 271,
+    TO = 272,
+    STEP = 273,
+    DO = 274,
+    SUMA = 275,
+    RESTA = 276,
+    DIVIDE = 277,
+    MULTI = 278,
+    PAREND = 279,
+    PARENI = 280,
+    LLAVED = 281,
+    LLAVEI = 282,
+    COLON = 283,
+    SEMICOLON = 284,
+    MENOR = 285,
+    MAYOR = 286,
+    IGUAL = 287,
+    MENORI = 288,
+    MAYORI = 289
   };
 #endif
 
@@ -85,7 +85,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 56 "tarea4.y" /* yacc.c:1909  */
+#line 58 "tarea4.y" /* yacc.c:1909  */
 
   char* stringValue;
   char* type;

@@ -78,12 +78,13 @@
 #include <math.h>
 #include <string.h>
 #include <assert.h>
+#include <stdbool.h> 
 
 extern int yylex();
 extern FILE *yyin;
 int yyerror(char const * s);
 
-enum Types {Int,Float};
+enum Types {IntType, FloatType, NULLType};
 
 typedef struct Node{
   char name[256];
@@ -91,28 +92,29 @@ typedef struct Node{
   struct Node *next;
 } node_t;
 
-int heapHead = 0;
-enum Types heap [256];
+enum Types heap = NULLType;
 
-void setTable();
+void addToExpr(node_t*, char*);
+void addTypeToVariable(node_t*, char*);
 void declareVariable(node_t*, char*);
-void verifyID(node_t*, char*);
-void addTypeToVariable(node_t*, char);
+void floatToHeap();
+const char* getType(enum Types);
+void intToHeap();
 void printList(node_t*);
 void raiseDuplicateVar(char* name);
 void raiseInvalidType(char* name);
-void raiseNoExistingVar(char* name);
 void raiseInvalidCompatibleTypes();
-void intToHeap();
-void floatToHeap();
-void addToExpr(node_t*, char*);
-void evaluate();
-char* getType(enum Types);
-
-node_t* symbol = NULL;
+void raiseNoExistingVar(char* name);
+void resetHeap();
+void setTable();
+void verifyID(node_t*, char*);
 
 
-#line 116 "tarea4.tab.c" /* yacc.c:339  */
+node_t* symbol;
+node_t* lastInserted;
+
+
+#line 118 "tarea4.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -147,38 +149,38 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    PROGRAM = 258,
-    VAR = 259,
-    NUMI = 260,
-    NUMF = 261,
-    SET = 262,
-    READ = 263,
-    PRINT = 264,
-    IF = 265,
-    IFELSE = 266,
-    WHILE = 267,
-    FOR = 268,
-    TO = 269,
-    STEP = 270,
-    DO = 271,
-    SUMA = 272,
-    RESTA = 273,
-    DIVIDE = 274,
-    MULTI = 275,
-    PAREND = 276,
-    PARENI = 277,
-    LLAVED = 278,
-    LLAVEI = 279,
-    COLON = 280,
-    SEMICOLON = 281,
-    MENOR = 282,
-    MAYOR = 283,
-    IGUAL = 284,
-    MENORI = 285,
-    MAYORI = 286,
-    INT = 287,
-    FLOAT = 288,
-    ID = 289
+    INT = 258,
+    FLOAT = 259,
+    ID = 260,
+    PROGRAM = 261,
+    VAR = 262,
+    NUMI = 263,
+    NUMF = 264,
+    SET = 265,
+    READ = 266,
+    PRINT = 267,
+    IF = 268,
+    IFELSE = 269,
+    WHILE = 270,
+    FOR = 271,
+    TO = 272,
+    STEP = 273,
+    DO = 274,
+    SUMA = 275,
+    RESTA = 276,
+    DIVIDE = 277,
+    MULTI = 278,
+    PAREND = 279,
+    PARENI = 280,
+    LLAVED = 281,
+    LLAVEI = 282,
+    COLON = 283,
+    SEMICOLON = 284,
+    MENOR = 285,
+    MAYOR = 286,
+    IGUAL = 287,
+    MENORI = 288,
+    MAYORI = 289
   };
 #endif
 
@@ -187,12 +189,12 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 56 "tarea4.y" /* yacc.c:355  */
+#line 58 "tarea4.y" /* yacc.c:355  */
 
   char* stringValue;
   char* type;
 
-#line 196 "tarea4.tab.c" /* yacc.c:355  */
+#line 198 "tarea4.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -209,7 +211,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 213 "tarea4.tab.c" /* yacc.c:358  */
+#line 215 "tarea4.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -451,7 +453,7 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   99
+#define YYLAST   93
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  35
@@ -509,12 +511,12 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    72,    72,    75,    76,    79,    80,    83,    83,    86,
-      87,    90,    91,    92,    93,    96,    96,    96,    97,    97,
-      98,    98,   101,   101,   102,   102,   105,   105,   106,   106,
-     106,   106,   106,   109,   110,   113,   114,   117,   118,   119,
-     122,   123,   124,   127,   127,   128,   129,   130,   133,   134,
-     135,   136,   137
+       0,    75,    75,    78,    79,    82,    83,    86,    86,    89,
+      90,    93,    94,    95,    96,    99,    99,    99,   100,   100,
+     101,   101,   104,   104,   105,   105,   108,   108,   109,   109,
+     109,   109,   109,   112,   113,   116,   117,   120,   121,   122,
+     125,   126,   127,   130,   130,   131,   132,   133,   136,   137,
+     138,   139,   140
 };
 #endif
 
@@ -523,11 +525,11 @@ static const yytype_uint8 yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "PROGRAM", "VAR", "NUMI", "NUMF", "SET",
-  "READ", "PRINT", "IF", "IFELSE", "WHILE", "FOR", "TO", "STEP", "DO",
-  "SUMA", "RESTA", "DIVIDE", "MULTI", "PAREND", "PARENI", "LLAVED",
-  "LLAVEI", "COLON", "SEMICOLON", "MENOR", "MAYOR", "IGUAL", "MENORI",
-  "MAYORI", "INT", "FLOAT", "ID", "$accept", "prog", "opt_decls", "decls",
+  "$end", "error", "$undefined", "INT", "FLOAT", "ID", "PROGRAM", "VAR",
+  "NUMI", "NUMF", "SET", "READ", "PRINT", "IF", "IFELSE", "WHILE", "FOR",
+  "TO", "STEP", "DO", "SUMA", "RESTA", "DIVIDE", "MULTI", "PAREND",
+  "PARENI", "LLAVED", "LLAVEI", "COLON", "SEMICOLON", "MENOR", "MAYOR",
+  "IGUAL", "MENORI", "MAYORI", "$accept", "prog", "opt_decls", "decls",
   "dec", "$@1", "tipo", "stmt", "assig_stmt", "$@2", "$@3", "$@4", "$@5",
   "if_stmt", "$@6", "$@7", "iter_stmt", "$@8", "$@9", "$@10", "$@11",
   "$@12", "cmp_stmt", "stmt_lst", "expr", "term", "factor", "$@13",
@@ -547,10 +549,10 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -31
+#define YYPACT_NINF -33
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-31)))
+  (!!((Yystate) == (-33)))
 
 #define YYTABLE_NINF -1
 
@@ -561,17 +563,17 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-       9,   -30,    18,    -1,   -31,    16,    10,    19,   -31,    17,
-     -31,    67,    16,    20,    12,    13,    -3,    29,    30,    31,
-      41,    -2,   -31,   -31,   -31,   -31,   -31,   -31,   -19,   -31,
-     -31,   -31,   -31,    -3,   -31,     8,    -4,   -31,    -3,    -3,
-      -3,    27,   -31,   -31,    26,   -31,   -31,   -31,    -3,    28,
-       8,    -3,    -3,    34,    -3,    -3,    68,   -31,   -31,   -31,
-     -31,   -31,   -31,     8,   -31,    43,    -4,    -4,   -31,   -31,
-     -31,    -3,    -3,    -3,    -3,    -3,    44,    45,    49,    -3,
-      36,   -31,     8,     8,     8,     8,     8,    67,    67,    67,
-       8,   -31,   -31,    67,   -31,    57,   -31,    -3,     8,    72,
-      -3,     8,    56,    67,   -31
+      15,    18,    29,    20,   -33,    41,    46,    26,   -33,    24,
+     -33,    64,    41,    32,    49,    56,    -3,    37,    39,    40,
+      60,    -1,   -33,   -33,   -33,   -33,   -33,   -33,     0,   -33,
+     -33,   -33,   -33,   -33,    -3,   -13,    -6,   -33,    -3,    -3,
+      -3,    61,   -33,   -33,    23,   -33,   -33,   -33,    -3,    42,
+     -13,    -3,    -3,    43,    -3,    -3,    10,   -33,   -33,   -33,
+     -33,   -33,   -33,   -13,   -33,    58,    -6,    -6,   -33,   -33,
+     -33,    -3,    -3,    -3,    -3,    -3,    62,    63,    65,    -3,
+      59,   -33,   -13,   -13,   -13,   -13,   -13,    64,    64,    64,
+     -13,   -33,   -33,    64,   -33,    68,   -33,    -3,   -13,    72,
+      -3,   -13,    73,    64,   -33
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -582,7 +584,7 @@ static const yytype_uint8 yydefact[] =
        0,     0,     0,     0,     1,     4,     0,     0,     3,     6,
        7,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     2,    11,    12,    13,    14,     5,     0,    15,
-      18,    46,    47,     0,    45,    20,    39,    42,     0,     0,
+      18,    45,    46,    47,     0,    20,    39,    42,     0,     0,
        0,     0,    33,    35,     0,     9,    10,     8,     0,     0,
       43,     0,     0,     0,     0,     0,     0,    22,    24,    26,
       28,    34,    36,    16,    19,     0,    37,    38,    21,    41,
@@ -595,9 +597,9 @@ static const yytype_uint8 yydefact[] =
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -31,   -31,   -31,    70,   -31,   -31,   -31,   -20,   -31,   -31,
-     -31,   -31,   -31,   -31,   -31,   -31,   -31,   -31,   -31,   -31,
-     -31,   -31,   -31,   -31,   -16,   -24,   -25,   -31,     1
+     -33,   -33,   -33,    81,   -33,   -33,   -33,   -20,   -33,   -33,
+     -33,   -33,   -33,   -33,   -33,   -33,   -33,   -33,   -33,   -33,
+     -33,   -33,   -33,   -33,   -16,   -32,   -27,   -33,     6
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -613,47 +615,47 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      35,    43,    31,    32,     3,    14,    15,    16,    17,    18,
-      19,    20,     1,    45,    46,    54,    55,    50,     4,    33,
-       6,    42,    21,     5,    62,    51,    52,    66,    67,    69,
-      70,    34,    63,    14,    15,    16,    17,    18,    19,    20,
-      58,    59,    11,    12,    10,    28,    29,    30,    41,    61,
-      21,    38,    39,    40,    64,    82,    83,    84,    85,    86,
-      68,    60,    91,    90,    81,    87,    88,    92,    93,    94,
-      89,    97,   103,    96,    14,    15,    16,    17,    18,    19,
-      20,    98,    27,   104,   101,    51,    52,   100,     0,     0,
-       0,    21,     0,     0,     0,    71,    72,    73,    74,    75
+      35,    43,    31,    45,    46,    32,    33,    51,    52,    14,
+      15,    16,    17,    18,    19,    20,    54,    55,    50,    66,
+      67,     1,    34,     3,    62,    42,    21,    69,    70,     4,
+      51,    52,    63,    14,    15,    16,    17,    18,    19,    20,
+      71,    72,    73,    74,    75,    58,    59,     5,     6,    61,
+      21,    10,    11,    12,    29,    82,    83,    84,    85,    86,
+      28,    30,    38,    90,    39,    40,    60,    92,    93,    94,
+      41,    64,    68,    96,    14,    15,    16,    17,    18,    19,
+      20,    98,    81,   104,   101,    97,    87,    88,    91,    89,
+     100,    21,   103,    27
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_uint8 yycheck[] =
 {
-      16,    21,     5,     6,    34,     7,     8,     9,    10,    11,
-      12,    13,     3,    32,    33,    19,    20,    33,     0,    22,
-       4,    23,    24,    24,    44,    17,    18,    51,    52,    54,
-      55,    34,    48,     7,     8,     9,    10,    11,    12,    13,
-      39,    40,    23,    26,    34,    25,    34,    34,     7,    23,
-      24,    22,    22,    22,    26,    71,    72,    73,    74,    75,
-      26,    34,    26,    79,    21,    21,    21,    87,    88,    89,
-      21,    14,    16,    93,     7,     8,     9,    10,    11,    12,
-      13,    97,    12,   103,   100,    17,    18,    15,    -1,    -1,
-      -1,    24,    -1,    -1,    -1,    27,    28,    29,    30,    31
+      16,    21,     5,     3,     4,     8,     9,    20,    21,    10,
+      11,    12,    13,    14,    15,    16,    22,    23,    34,    51,
+      52,     6,    25,     5,    44,    26,    27,    54,    55,     0,
+      20,    21,    48,    10,    11,    12,    13,    14,    15,    16,
+      30,    31,    32,    33,    34,    39,    40,    27,     7,    26,
+      27,     5,    26,    29,     5,    71,    72,    73,    74,    75,
+      28,     5,    25,    79,    25,    25,     5,    87,    88,    89,
+      10,    29,    29,    93,    10,    11,    12,    13,    14,    15,
+      16,    97,    24,   103,   100,    17,    24,    24,    29,    24,
+      18,    27,    19,    12
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     3,    36,    34,     0,    24,     4,    37,    38,    39,
-      34,    23,    26,    40,     7,     8,     9,    10,    11,    12,
-      13,    24,    42,    43,    48,    51,    57,    38,    25,    34,
-      34,     5,     6,    22,    34,    59,    60,    61,    22,    22,
-      22,     7,    23,    42,    58,    32,    33,    41,    44,    46,
-      59,    17,    18,    47,    19,    20,    59,    63,    63,    63,
-      34,    23,    42,    59,    26,    62,    60,    60,    26,    61,
-      61,    27,    28,    29,    30,    31,    49,    50,    52,    53,
-      45,    21,    59,    59,    59,    59,    59,    21,    21,    21,
-      59,    26,    42,    42,    42,    54,    42,    14,    59,    55,
-      15,    59,    56,    16,    42
+       0,     6,    36,     5,     0,    27,     7,    37,    38,    39,
+       5,    26,    29,    40,    10,    11,    12,    13,    14,    15,
+      16,    27,    42,    43,    48,    51,    57,    38,    28,     5,
+       5,     5,     8,     9,    25,    59,    60,    61,    25,    25,
+      25,    10,    26,    42,    58,     3,     4,    41,    44,    46,
+      59,    20,    21,    47,    22,    23,    59,    63,    63,    63,
+       5,    26,    42,    59,    29,    62,    60,    60,    29,    61,
+      61,    30,    31,    32,    33,    34,    49,    50,    52,    53,
+      45,    24,    59,    59,    59,    59,    59,    24,    24,    24,
+      59,    29,    42,    42,    42,    54,    42,    17,    59,    55,
+      18,    59,    56,    19,    42
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -1352,115 +1354,115 @@ yyreduce:
   switch (yyn)
     {
         case 7:
-#line 83 "tarea4.y" /* yacc.c:1646  */
+#line 86 "tarea4.y" /* yacc.c:1646  */
     {declareVariable(symbol, yylval.stringValue);}
-#line 1358 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1360 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 86 "tarea4.y" /* yacc.c:1646  */
-    {addTypeToVariable(symbol,'i');}
-#line 1364 "tarea4.tab.c" /* yacc.c:1646  */
+#line 89 "tarea4.y" /* yacc.c:1646  */
+    {addTypeToVariable(symbol,yylval.type);}
+#line 1366 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 87 "tarea4.y" /* yacc.c:1646  */
-    {addTypeToVariable(symbol, 'f');}
-#line 1370 "tarea4.tab.c" /* yacc.c:1646  */
+#line 90 "tarea4.y" /* yacc.c:1646  */
+    {addTypeToVariable(symbol, yylval.type);}
+#line 1372 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 96 "tarea4.y" /* yacc.c:1646  */
+#line 99 "tarea4.y" /* yacc.c:1646  */
     {verifyID(symbol, yylval.stringValue);}
-#line 1376 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1378 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 96 "tarea4.y" /* yacc.c:1646  */
-    {evaluate();}
-#line 1382 "tarea4.tab.c" /* yacc.c:1646  */
+#line 99 "tarea4.y" /* yacc.c:1646  */
+    {resetHeap();}
+#line 1384 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 97 "tarea4.y" /* yacc.c:1646  */
+#line 100 "tarea4.y" /* yacc.c:1646  */
     {verifyID(symbol, yylval.stringValue);}
-#line 1388 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1390 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 98 "tarea4.y" /* yacc.c:1646  */
-    {evaluate();}
-#line 1394 "tarea4.tab.c" /* yacc.c:1646  */
+#line 101 "tarea4.y" /* yacc.c:1646  */
+    {resetHeap();}
+#line 1396 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 101 "tarea4.y" /* yacc.c:1646  */
-    {evaluate();}
-#line 1400 "tarea4.tab.c" /* yacc.c:1646  */
+#line 104 "tarea4.y" /* yacc.c:1646  */
+    {resetHeap();}
+#line 1402 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 102 "tarea4.y" /* yacc.c:1646  */
-    {evaluate();}
-#line 1406 "tarea4.tab.c" /* yacc.c:1646  */
+#line 105 "tarea4.y" /* yacc.c:1646  */
+    {resetHeap();}
+#line 1408 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 105 "tarea4.y" /* yacc.c:1646  */
-    {evaluate();}
-#line 1412 "tarea4.tab.c" /* yacc.c:1646  */
+#line 108 "tarea4.y" /* yacc.c:1646  */
+    {resetHeap();}
+#line 1414 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 106 "tarea4.y" /* yacc.c:1646  */
+#line 109 "tarea4.y" /* yacc.c:1646  */
     {verifyID(symbol, yylval.stringValue);}
-#line 1418 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1420 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 106 "tarea4.y" /* yacc.c:1646  */
-    {evaluate();}
-#line 1424 "tarea4.tab.c" /* yacc.c:1646  */
+#line 109 "tarea4.y" /* yacc.c:1646  */
+    {resetHeap();}
+#line 1426 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 106 "tarea4.y" /* yacc.c:1646  */
-    {evaluate();}
-#line 1430 "tarea4.tab.c" /* yacc.c:1646  */
+#line 109 "tarea4.y" /* yacc.c:1646  */
+    {resetHeap();}
+#line 1432 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 106 "tarea4.y" /* yacc.c:1646  */
-    {evaluate();}
-#line 1436 "tarea4.tab.c" /* yacc.c:1646  */
+#line 109 "tarea4.y" /* yacc.c:1646  */
+    {resetHeap();}
+#line 1438 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 127 "tarea4.y" /* yacc.c:1646  */
-    {evaluate();}
-#line 1442 "tarea4.tab.c" /* yacc.c:1646  */
+#line 130 "tarea4.y" /* yacc.c:1646  */
+    {resetHeap();}
+#line 1444 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 128 "tarea4.y" /* yacc.c:1646  */
+#line 131 "tarea4.y" /* yacc.c:1646  */
     {addToExpr(symbol, yylval.stringValue);}
-#line 1448 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1450 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 129 "tarea4.y" /* yacc.c:1646  */
+#line 132 "tarea4.y" /* yacc.c:1646  */
     {intToHeap();}
-#line 1454 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1456 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 130 "tarea4.y" /* yacc.c:1646  */
+#line 133 "tarea4.y" /* yacc.c:1646  */
     {floatToHeap();}
-#line 1460 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1462 "tarea4.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1464 "tarea4.tab.c" /* yacc.c:1646  */
+#line 1466 "tarea4.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1688,132 +1690,203 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 140 "tarea4.y" /* yacc.c:1906  */
+#line 143 "tarea4.y" /* yacc.c:1906  */
 
+/*
+@param head   symbol's table head
+@param name   variable trying to evaluate
 
-int yyerror(char const * s) {
-  fprintf(stderr, "%s\n", s);
+Validates if current variables are the same type
+*/
+void addToExpr(node_t *head, char *name){
+  node_t * current = head;
+  while(current->next != NULL){
+    current = current->next;
+    if (strcmp(current->name, name) == 0){
+      if(heap == NULLType){
+        heap =  current->type;
+      }else{
+        if(heap != current->type){
+          raiseInvalidCompatibleTypes();
+        }
+      }
+    }
+  }
 }
 
-void setTable(){
-  symbol = (node_t*)malloc(sizeof(node_t));
-  strcpy(symbol->name, "__init__");
-  symbol->next = NULL;
+/*
+@param head   symbol's table head
+@param type   type to add
+
+Adds the type to the last inserted symbol
+*/
+void addTypeToVariable(node_t *head, char *type){
+  if (strcmp(type, "int") == 0){
+    lastInserted->type = IntType;
+  }else{
+    lastInserted->type = FloatType;
+  }
 }
 
+/*
+@param head   symbol's table head
+@param name   variable's name
+
+Adds the variable to the symbol table, raises error 
+if found previously
+*/
+void declareVariable(node_t *head, char *name){
+  node_t *current = head;
+  while(current->next != NULL){
+    current = current->next;
+    if (strcmp(current->name, name) == 0){
+      raiseDuplicateVar(name);
+    }
+  }
+  node_t * newNode = (node_t*)malloc(sizeof(node_t));
+  current->next = newNode;
+  strcpy(newNode->name, name);
+  lastInserted = newNode;
+}
+
+/*
+Validates if float was the last value in heap
+*/
+void floatToHeap(){
+  if(heap == NULLType){
+    heap =  FloatType;
+  }else{
+    if(heap != FloatType){
+      raiseInvalidCompatibleTypes();
+    }
+  }
+}
+
+/*
+@param type   type of the variable to print it
+
+Returns variable as string (char*)
+*/
+const char* getType(enum Types type) {
+  switch (type) {
+    case IntType: return "int";
+    case FloatType: return "float";
+  }
+}
+
+/*
+Validates if int was the last value in heap
+*/
+void intToHeap(){
+  if(heap == NULLType){
+    heap =  IntType;
+  }else{
+    if(heap != IntType){
+      raiseInvalidCompatibleTypes();
+    }
+  }
+}
+
+/*
+@param head   symbol's table head
+
+Prints symbol's table when the program finishes
+*/
+void printList(node_t *head){
+  if(head != NULL){
+    printf("%s : %s\n", head->name, getType(head->type));
+    printList(head->next);
+  }
+}
+
+/*
+@param name   duplicated var name
+
+Raises error and exits program if a variable is tried
+to be declared twice
+*/
 void raiseDuplicateVar(char *name){
   printf("La variable %s ya ha sido declarada\n",name);
   exit(0);
 }
 
+/*
+@param name   incompatible type var
+
+Raises error and exits program if a variable is tried
+to get assigned to a wrong value
+*/
 void raiseInvalidType(char *name){
   printf("La variable %s tiene otro tipo de dato\n",name);
   exit(0);
 }
 
+/*
+Raises error and exits program if two variables of 
+different types are used in a expression
+*/
 void raiseInvalidCompatibleTypes(){
   printf("Las variables tienen distintos tipos de dato y no pueden ser utilizarse en la misma operación\n");
   exit(0);
 }
 
+/*
+@param name   Unexistent variable name
+
+Raises error and exits program if a variable is
+trying to be accessed without been declared
+*/
 void raiseNoExistingVar(char *name){
   printf("La variable %s no ha sido declarada\n",name);
   exit(0);
 }
 
-char* getType(enum Types type){
-  switch(type){
-    case Int:
-      return "int";
-    case Float:
-      return "float";
-    default:
-      return "NULL";
-  }
+/*
+Resets the current type in the heap for future 
+expression evaluation
+*/
+void resetHeap(){
+  heap = NULLType;
 }
 
-void printList(node_t *head){
-  node_t *current = head->next;
-  printf("Tabla de símbolos:\n");
-  while(current != NULL){
-    printf("%s: %c\n",current->name, current->type);
-    current = current->next;
-  }
+/*
+Initializes the table
+*/
+void setTable(){
+  symbol = (node_t*)malloc(sizeof(node_t));
+  strcpy(symbol->name, "__init__");
+  symbol->next = NULL;
+  lastInserted = symbol;
 }
 
-void declareVariable(node_t *head, char *name){
-  node_t *current = head;
-  while(current->next != NULL){
-    if(strcmp(current->name, name) == 0){
-      raiseDuplicateVar(name);
-    }
-    current = current->next;
-  }
-  current->next = (node_t*)malloc(sizeof(node_t));
-  strcpy(current->next->name, name);
-  current->next->next = NULL;
-}
+/*
+@param head   symbol's table head
+@param name   variable to be found
 
-void addTypeToVariable(node_t *head, char type){
-  node_t *current = head;
-  while(current->next != NULL){
-    current = current->next;
-  }
-  current->type = type;
-}
-
-void addToExpr(node_t *head, char *name){
-  node_t *current = head;
-  while(current->next != NULL){
-    if(strcmp(current->name, name) == 0){
-      heap[heapHead] = current->type;
-      ++heapHead;
-    }
-  }
-}
-
-void intToHeap(){
-  heap[heapHead] = Float;
-  ++heapHead;
-}
-
-void floatToHeap(){
-  heap[heapHead] = Int;
-  ++heapHead;
-}
-
+Checks if variable exists, raises error if not found
+*/
 void verifyID(node_t *head, char *name){
-  node_t *current = head;
-  int exists = 0;
+  node_t * current = head;
+  bool exists = false;
   while(current->next != NULL){
     current = current->next;
     if (strcmp(current->name, name) == 0){
-      exists = 1;
+      exists = true;
     }
   }
-  if(exists == 0){
+  if(exists == false){
     raiseNoExistingVar(name);
   }
 }
 
-void evaluate(){
-  printf("evaluating expression\n");
-  enum Types comparator = heap[0];
-  if(heapHead > 1){
-    for(int i = 1; i <= heapHead; i++){
-      if(heap[i] != comparator){
-        raiseInvalidCompatibleTypes();
-      }
-    }
-  }
-  memset(heap, '\0' , sizeof(heap));
-  heapHead = 0;
+int yyerror(char const * s) {
+  fprintf(stderr, "%s\n", s);
 }
 
 int main(int argc, char **argv) {
   yyin = fopen(argv[1], "r+"); 
   setTable();
   yyparse();
-  printList(symbol);
+  printf("Tabla de símbolos:\n");
+  printList(symbol->next);
 }
-

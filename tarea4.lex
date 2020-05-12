@@ -18,8 +18,8 @@ ID [a-zA-Z]*[0-9]*
 {DECIMAL} {return NUMF;}
 "program" {return PROGRAM;}
 "var"     {return VAR;}
-"int"     {return INT;}
-"float"   {return FLOAT;}
+"int"     {yylval.type = yytext; return INT;}
+"float"   {yylval.type = yytext; return FLOAT;}
 "set"     {return SET;}
 "read"    {return READ;}
 "print"   {return PRINT;}

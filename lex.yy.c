@@ -804,12 +804,12 @@ YY_RULE_SETUP
 case 5:
 YY_RULE_SETUP
 #line 21 "tarea4.lex"
-{return INT;}
+{yylval.type = yytext; return INT;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 22 "tarea4.lex"
-{return FLOAT;}
+{yylval.type = yytext; return FLOAT;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
