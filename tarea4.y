@@ -245,6 +245,7 @@ void verifyID(node_t *head, char *name){
 }
 
 void evaluate(){
+  printf("evaluating expression\n");
   enum Types comparator = heap[0];
   if(heapHead > 1){
     for(int i = 1; i <= heapHead; i++){

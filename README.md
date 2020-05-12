@@ -1,6 +1,6 @@
 # Tarea 4
 
-Instrucciones de compilación:
+Compile instructions:
 
 `flex tarea4.lex`
 
