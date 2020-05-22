@@ -784,22 +784,22 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 17 "tarea4.lex"
-{return NUMI;}
+{yylval.i = atoi(yytext); return NUMI;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 18 "tarea4.lex"
-{return NUMF;}
+{yylval.f = atof(yytext); return NUMF;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 19 "tarea4.lex"
-{return PROGRAM;}
+{yylval.terminal = yytext; return PROGRAM;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 20 "tarea4.lex"
-{return VAR;}
+{yylval.terminal = yytext; return VAR;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
@@ -814,52 +814,52 @@ YY_RULE_SETUP
 case 7:
 YY_RULE_SETUP
 #line 23 "tarea4.lex"
-{return SET;}
+{yylval.terminal = yytext; return SET;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 24 "tarea4.lex"
-{return READ;}
+{yylval.terminal = yytext; return READ;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 25 "tarea4.lex"
-{return PRINT;}
+{yylval.terminal = yytext; return PRINT;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 26 "tarea4.lex"
-{return IF;}
+{yylval.terminal = yytext; return IF;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 27 "tarea4.lex"
-{return IFELSE;}
+{yylval.terminal = yytext; return IFELSE;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 28 "tarea4.lex"
-{return WHILE;}
+{yylval.terminal = yytext; return WHILE;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 29 "tarea4.lex"
-{return FOR;}
+{yylval.terminal = yytext; return FOR;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 30 "tarea4.lex"
-{return TO;}
+{yylval.terminal = yytext; return TO;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 31 "tarea4.lex"
-{return STEP;}
+{yylval.terminal = yytext; return STEP;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 32 "tarea4.lex"
-{return DO;}
+{yylval.terminal = yytext; return DO;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
@@ -869,77 +869,77 @@ YY_RULE_SETUP
 case 18:
 YY_RULE_SETUP
 #line 34 "tarea4.lex"
-{return SUMA;}
+{yylval.terminal = yytext; return SUMA;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 35 "tarea4.lex"
-{return RESTA;}
+{yylval.terminal = yytext; return RESTA;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 36 "tarea4.lex"
-{return MULTI;}
+{yylval.terminal = yytext; return MULTI;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 37 "tarea4.lex"
-{return DIVIDE;}
+{yylval.terminal = yytext; return DIVIDE;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 38 "tarea4.lex"
-{return PARENI;}
+{yylval.terminal = yytext; return PARENI;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 39 "tarea4.lex"
-{return PAREND;}
+{yylval.terminal = yytext; return PAREND;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 40 "tarea4.lex"
-{return LLAVEI;}
+{yylval.terminal = yytext; return LLAVEI;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 41 "tarea4.lex"
-{return LLAVED;}
+{yylval.terminal = yytext; return LLAVED;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 42 "tarea4.lex"
-{return COLON;}
+{yylval.terminal = yytext; return COLON;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 43 "tarea4.lex"
-{return SEMICOLON;}
+{yylval.terminal = yytext; return SEMICOLON;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 44 "tarea4.lex"
-{return MENOR;}
+{yylval.terminal = yytext; return MENOR;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 45 "tarea4.lex"
-{return MAYOR;}
+{yylval.terminal = yytext; return MAYOR;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 46 "tarea4.lex"
-{return IGUAL;}
+{yylval.terminal = yytext; return IGUAL;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 47 "tarea4.lex"
-{return MENORI;}
+{yylval.terminal = yytext; return MENORI;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 48 "tarea4.lex"
-{return MAYORI;}
+{yylval.terminal = yytext; return MAYORI;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP

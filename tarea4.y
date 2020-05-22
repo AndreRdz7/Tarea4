@@ -25,15 +25,30 @@ extern FILE *yyin;
 int yyerror(char const * s);
 
 enum Types {IntType, FloatType, NULLType};
+enum TerminalTypes {INIT, ProgramType, VarType, SetType, ReadType, PrintType, IfType, IfelseType, WhileType, ForType, ToType, StepType, DoType, PlusType, MinusType, MultType, DivType, ColonType, SemicolonType, LessType, GreatType,EqualType, LessequalType, GreatequalType};
 
 typedef struct Node{
   char name[256];
   enum Types type;
+  union val{
+    int i;
+    float f;
+  } u_val;
   struct Node *next;
 } node_t;
 
+typedef struct Tree{
+  enum TerminalTypes type;
+  struct Tree* child[5];
+  struct Node* symbol;
+  int pos;
+  struct Tree *nextInstruction;
+} tree_t;
+
 enum Types heap = NULLType;
 
+void addInstructionToParent(tree_t*, enum TerminalTypes);
+void addInstructionToTree(tree_t*, enum TerminalTypes);
 void addToExpr(node_t*, char*);
 void addTypeToVariable(node_t*, char*);
 void declareVariable(node_t*, char*);
@@ -47,17 +62,24 @@ void raiseInvalidCompatibleTypes();
 void raiseNoExistingVar(char* name);
 void resetHeap();
 void setTable();
+void setTree();
 void verifyID(node_t*, char*);
 
 
 node_t* symbol;
 node_t* lastInserted;
+tree_t* syntax;
+tree_t* lastInstruction;
+tree_t* lastChild;
 
 %}
 
 %union{
   char* stringValue;
+  char* terminal;
   char* type;
+  float f;
+  int i;
 }
 
 %token <type> INT FLOAT 
@@ -96,7 +118,7 @@ stmt : assig_stmt
      | cmp_stmt
 ;
 
-assig_stmt : SET ID {verifyID(symbol, yylval.stringValue);} expr {resetHeap();}SEMICOLON
+assig_stmt : SET ID {verifyID(symbol, yylval.stringValue);} expr {resetHeap();} SEMICOLON
            | READ ID {verifyID(symbol, yylval.stringValue);} SEMICOLON 
            | PRINT expr {resetHeap();} SEMICOLON
 ;
@@ -141,6 +163,37 @@ expresion : expr MENOR expr
 ;
 
 %%
+/*
+@param parent new instruction's parent 
+@param instr  instruction to add to the parent
+
+Inserts the action of the instruction, usually to a semicolon
+*/
+void addInstructionToParent(tree_t *parent, enum TerminalTypes type){
+  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
+  newNode->type = type;
+  newNode->nextInstruction = NULL;
+  newNode->pos = 0;
+  parent->child[parent->pos] = newNode;
+  parent->pos = parent->pos + 1;
+  lastChild = newNode;
+}
+
+/*
+@param root   syntax tree's current root 
+@param instr  instruction to add to the tree
+
+Inserts a new instruction to the tree, usually
+when it ends with a semicolon
+*/
+void addInstructionToTree(tree_t *root, enum TerminalTypes type){
+  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
+  newNode->type = type;
+  newNode->pos = 0;
+  newNode->nextInstruction = NULL;
+  lastInstruction->nextInstruction = newNode;
+}
+
 /*
 @param head   symbol's table head
 @param name   variable trying to evaluate
@@ -309,6 +362,16 @@ void setTable(){
 }
 
 /*
+Initializes the syntax tree
+*/
+void setTree(){
+  syntax = (tree_t*)malloc(sizeof(tree_t));
+  syntax->type = INIT;
+  syntax->nextInstruction = NULL;
+  lastInstruction = syntax;
+}
+
+/*
 @param head   symbol's table head
 @param name   variable to be found
 
@@ -335,6 +398,7 @@ int yyerror(char const * s) {
 int main(int argc, char **argv) {
   yyin = fopen(argv[1], "r+"); 
   setTable();
+  setTree();
   yyparse();
   printf("Tabla de símbolos:\n");
   printList(symbol->next);

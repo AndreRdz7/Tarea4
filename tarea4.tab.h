@@ -85,12 +85,15 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 58 "tarea4.y" /* yacc.c:1909  */
+#line 76 "tarea4.y" /* yacc.c:1909  */
 
   char* stringValue;
+  char* terminal;
   char* type;
+  float f;
+  int i;
 
-#line 94 "tarea4.tab.h" /* yacc.c:1909  */
+#line 97 "tarea4.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

@@ -14,37 +14,37 @@ ID [a-zA-Z]*[0-9]*
 
 %%
 
-{ENTERO}  {return NUMI;}
-{DECIMAL} {return NUMF;}
-"program" {return PROGRAM;}
-"var"     {return VAR;}
+{ENTERO}  {yylval.i = atoi(yytext); return NUMI;}
+{DECIMAL} {yylval.f = atof(yytext); return NUMF;}
+"program" {yylval.terminal = yytext; return PROGRAM;}
+"var"     {yylval.terminal = yytext; return VAR;}
 "int"     {yylval.type = yytext; return INT;}
 "float"   {yylval.type = yytext; return FLOAT;}
-"set"     {return SET;}
-"read"    {return READ;}
-"print"   {return PRINT;}
-"if"      {return IF;}
-"ifelse"  {return IFELSE;}
-"while"   {return WHILE;}
-"for"     {return FOR;}
-"to"      {return TO;}
-"step"    {return STEP;}
-"do"      {return DO;}
+"set"     {yylval.terminal = yytext; return SET;}
+"read"    {yylval.terminal = yytext; return READ;}
+"print"   {yylval.terminal = yytext; return PRINT;}
+"if"      {yylval.terminal = yytext; return IF;}
+"ifelse"  {yylval.terminal = yytext; return IFELSE;}
+"while"   {yylval.terminal = yytext; return WHILE;}
+"for"     {yylval.terminal = yytext; return FOR;}
+"to"      {yylval.terminal = yytext; return TO;}
+"step"    {yylval.terminal = yytext; return STEP;}
+"do"      {yylval.terminal = yytext; return DO;}
 {ID}      {yylval.stringValue = yytext; return ID;}
-"+"       {return SUMA;}
-"-"       {return RESTA;}
-"*"       {return MULTI;}
-"/"       {return DIVIDE;}
-"("       {return PARENI;}
-")"       {return PAREND;}
-"{"       {return LLAVEI;}
-"}"       {return LLAVED;}
-":"       {return COLON;}
-";"       {return SEMICOLON;}
-"<"       {return MENOR;}
-">"       {return MAYOR;}
-"="       {return IGUAL;}
-"<="      {return MENORI;}
-">="      {return MAYORI;}
+"+"       {yylval.terminal = yytext; return SUMA;}
+"-"       {yylval.terminal = yytext; return RESTA;}
+"*"       {yylval.terminal = yytext; return MULTI;}
+"/"       {yylval.terminal = yytext; return DIVIDE;}
+"("       {yylval.terminal = yytext; return PARENI;}
+")"       {yylval.terminal = yytext; return PAREND;}
+"{"       {yylval.terminal = yytext; return LLAVEI;}
+"}"       {yylval.terminal = yytext; return LLAVED;}
+":"       {yylval.terminal = yytext; return COLON;}
+";"       {yylval.terminal = yytext; return SEMICOLON;}
+"<"       {yylval.terminal = yytext; return MENOR;}
+">"       {yylval.terminal = yytext; return MAYOR;}
+"="       {yylval.terminal = yytext; return IGUAL;}
+"<="      {yylval.terminal = yytext; return MENORI;}
+">="      {yylval.terminal = yytext; return MAYORI;}
 %%
 
