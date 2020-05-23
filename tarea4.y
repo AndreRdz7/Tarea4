@@ -118,9 +118,9 @@ stmt : assig_stmt
      | cmp_stmt
 ;
 
-assig_stmt : SET ID {verifyID(symbol, yylval.stringValue);} expr {resetHeap();} SEMICOLON
-           | READ ID {verifyID(symbol, yylval.stringValue);} SEMICOLON 
-           | PRINT expr {resetHeap();} SEMICOLON
+assig_stmt : SET ID {verifyID(symbol, yylval.stringValue);} expr {resetHeap();} SEMICOLON {addInstructionToTree(syntax, ColonType)}
+           | READ ID {verifyID(symbol, yylval.stringValue);} SEMICOLON {addInstructionToTree(syntax, ColonType)} 
+           | PRINT expr {resetHeap();} SEMICOLON {addInstructionToTree(syntax, ColonType)}
 ;
 
 if_stmt : IF PARENI expresion {resetHeap();} PAREND stmt 
@@ -155,11 +155,11 @@ factor : PARENI expr {resetHeap();} PAREND
        | NUMF {floatToHeap();}
 ;
 
-expresion : expr MENOR expr 
-          | expr MAYOR expr 
-          | expr IGUAL expr
-          | expr MENORI expr 
-          | expr MAYORI expr
+expresion : expr MENOR expr {addInstructionToTree(syntax, LessType)}
+          | expr MAYOR expr {addInstructionToTree(syntax, GreatType)}
+          | expr IGUAL expr {addInstructionToTree(syntax, EqualType)}
+          | expr MENORI expr {addInstructionToTree(syntax, LessequalType)}
+          | expr MAYORI expr {addInstructionToTree(syntax, GreatequalType)}
 ;
 
 %%
