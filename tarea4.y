@@ -12,6 +12,7 @@
 #define strong_helper(T1, T2) _Generic(( (T1){0} ), T2: 1, default: 0 )
 #define compare_types_strong(T1, T2) (strong_helper(T1,T2) && strong_helper(T2,T1))
 
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h> 
@@ -72,6 +73,17 @@ tree_t* syntax;
 tree_t* lastInstruction;
 tree_t* lastChild;
 
+/*
+Stack representation
+*/
+tree_t *st[1000];
+tree_t **stack;
+/*
+Stack methods
+*/
+#define push(sp, n) (*((sp)++) = (n))
+#define pop(sp) (*--(sp))
+
 %}
 
 %union{
@@ -108,7 +120,7 @@ decls : dec SEMICOLON decls
 dec : VAR ID {declareVariable(symbol, yylval.stringValue);} COLON tipo 
 ;
 
-tipo : INT {addTypeToVariable(symbol,yylval.type);}
+tipo : INT {addTypeToVariable(symbol, yylval.type);}
      | FLOAT {addTypeToVariable(symbol, yylval.type);}
 ;
 
@@ -118,9 +130,9 @@ stmt : assig_stmt
      | cmp_stmt
 ;
 
-assig_stmt : SET ID {verifyID(symbol, yylval.stringValue);} expr {resetHeap();} SEMICOLON {addInstructionToTree(syntax, ColonType)}
-           | READ ID {verifyID(symbol, yylval.stringValue);} SEMICOLON {addInstructionToTree(syntax, ColonType)} 
-           | PRINT expr {resetHeap();} SEMICOLON {addInstructionToTree(syntax, ColonType)}
+assig_stmt : SET ID {verifyID(symbol, yylval.stringValue);} expr {resetHeap();} SEMICOLON {addInstructionToTree(syntax, ColonType);}
+           | READ ID {verifyID(symbol, yylval.stringValue);} SEMICOLON {addInstructionToTree(syntax, ColonType);} 
+           | PRINT expr {resetHeap();} SEMICOLON {addInstructionToTree(syntax, ColonType);}
 ;
 
 if_stmt : IF PARENI expresion {resetHeap();} PAREND stmt 
@@ -155,11 +167,11 @@ factor : PARENI expr {resetHeap();} PAREND
        | NUMF {floatToHeap();}
 ;
 
-expresion : expr MENOR expr {addInstructionToTree(syntax, LessType)}
-          | expr MAYOR expr {addInstructionToTree(syntax, GreatType)}
-          | expr IGUAL expr {addInstructionToTree(syntax, EqualType)}
-          | expr MENORI expr {addInstructionToTree(syntax, LessequalType)}
-          | expr MAYORI expr {addInstructionToTree(syntax, GreatequalType)}
+expresion : expr MENOR expr {addInstructionToTree(syntax, LessType);}
+          | expr MAYOR expr {addInstructionToTree(syntax, GreatType);}
+          | expr IGUAL expr {addInstructionToTree(syntax, EqualType);}
+          | expr MENORI expr {addInstructionToTree(syntax, LessequalType);}
+          | expr MAYORI expr {addInstructionToTree(syntax, GreatequalType);}
 ;
 
 %%
@@ -399,6 +411,11 @@ int main(int argc, char **argv) {
   yyin = fopen(argv[1], "r+"); 
   setTable();
   setTree();
+  stack = st;
+  /*
+  push(stack, syntax);
+  tree_t* test = pop(stack);
+  */
   yyparse();
   printf("Tabla de símbolos:\n");
   printList(symbol->next);
