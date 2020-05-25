@@ -42,7 +42,8 @@ typedef struct Tree{
   enum TerminalTypes type;
   struct Tree* child[5];
   struct Node* symbol;
-  int pos;
+  int i;
+  float f;
   struct Tree *nextInstruction;
 } tree_t;
 
@@ -52,6 +53,7 @@ void addInstructionToParent(tree_t*, enum TerminalTypes);
 void addInstructionToTree(tree_t*, enum TerminalTypes);
 void addToExpr(node_t*, char*);
 void addTypeToVariable(node_t*, char*);
+tree_t* createBinaryNode(tree_t*, enum TerminalTypes, tree_t*, tree_t*);
 void declareVariable(node_t*, char*);
 void floatToHeap();
 const char* getType(enum Types);
@@ -72,17 +74,6 @@ node_t* lastInserted;
 tree_t* syntax;
 tree_t* lastInstruction;
 tree_t* lastChild;
-
-/*
-Stack representation
-*/
-tree_t *st[1000];
-tree_t **stack;
-/*
-Stack methods
-*/
-#define push(sp, n) (*((sp)++) = (n))
-#define pop(sp) (*--(sp))
 
 %}
 
@@ -240,6 +231,22 @@ void addTypeToVariable(node_t *head, char *type){
   }else{
     lastInserted->type = FloatType;
   }
+}
+
+/*
+@param root   syntax tree
+@param type   tree type
+@param left   left side of expr
+@param right  right side of expr
+
+Returns pointer to tree node with the expresion build
+*/
+tree_t* createBinaryNode(tree_t *root, enum TerminalTypes type, tree_t *left, tree_t *right){
+  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
+  newNode->type = type;
+  newNode->nextInstruction = NULL;
+  newNode->child[0] = left;
+  newNode->child[1] = right;
 }
 
 /*
@@ -411,11 +418,6 @@ int main(int argc, char **argv) {
   yyin = fopen(argv[1], "r+"); 
   setTable();
   setTree();
-  stack = st;
-  /*
-  push(stack, syntax);
-  tree_t* test = pop(stack);
-  */
   yyparse();
   printf("Tabla de símbolos:\n");
   printList(symbol->next);
