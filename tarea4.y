@@ -167,12 +167,15 @@ expresion : expr MENOR expr {addInstructionToTree(syntax, LessType);}
 
 %%
 /*
+ ! Puede que este método no sea necesario, ya no se necesita un registro de la posición
+
 @param parent new instruction's parent 
 @param instr  instruction to add to the parent
 
 Inserts the action of the instruction, usually to a semicolon
 */
 void addInstructionToParent(tree_t *parent, enum TerminalTypes type){
+  /*
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = type;
   newNode->nextInstruction = NULL;
@@ -180,6 +183,7 @@ void addInstructionToParent(tree_t *parent, enum TerminalTypes type){
   parent->child[parent->pos] = newNode;
   parent->pos = parent->pos + 1;
   lastChild = newNode;
+  */
 }
 
 /*
@@ -192,7 +196,6 @@ when it ends with a semicolon
 void addInstructionToTree(tree_t *root, enum TerminalTypes type){
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = type;
-  newNode->pos = 0;
   newNode->nextInstruction = NULL;
   lastInstruction->nextInstruction = newNode;
 }
