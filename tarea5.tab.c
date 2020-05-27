@@ -62,7 +62,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 6 "tarea5.y" /* yacc.c:339  */
+#line 1 "tarea5.y" /* yacc.c:339  */
 
 
 /*
@@ -95,16 +95,16 @@ typedef struct Node{
     int i;
     float f;
   } u_val;
-  struct Node *next;
+  struct Node * next;
 } node_t;
 
 typedef struct Tree{
   enum TerminalTypes type;
-  struct Tree* child[5];
-  struct Node* symbol;
-  int i;
+  struct Tree * child[5]; 
+  struct Node * symbol; // in case that the type is an id
+  int i;  // the i and f are for when there is an integer or float type (keeps the value)
   float f;
-  struct Tree *nextInstruction;
+  struct Tree *nextInstruction; // every semcilomn there will be a new isntruction
 } tree_t;
 
 enum Types heap = NULLType;
@@ -211,7 +211,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 80 "tarea5.y" /* yacc.c:355  */
+#line 75 "tarea5.y" /* yacc.c:355  */
 
   char* stringValue;
   char* terminal;
@@ -536,12 +536,12 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,   100,   100,   103,   104,   107,   108,   111,   111,   114,
-     115,   118,   119,   120,   121,   124,   124,   124,   125,   125,
-     126,   126,   129,   129,   130,   130,   133,   133,   134,   134,
-     134,   134,   134,   137,   138,   141,   142,   145,   146,   147,
-     150,   151,   152,   155,   155,   156,   157,   158,   161,   162,
-     163,   164,   165
+       0,    95,    95,    98,    99,   102,   103,   106,   106,   109,
+     110,   113,   114,   115,   116,   119,   119,   119,   120,   120,
+     121,   121,   124,   124,   125,   125,   128,   128,   129,   129,
+     129,   129,   129,   132,   133,   136,   137,   140,   141,   142,
+     145,   146,   147,   150,   150,   151,   152,   153,   156,   157,
+     158,   159,   160
 };
 #endif
 
@@ -1379,157 +1379,157 @@ yyreduce:
   switch (yyn)
     {
         case 7:
-#line 111 "tarea5.y" /* yacc.c:1646  */
+#line 106 "tarea5.y" /* yacc.c:1646  */
     {declareVariable(symbol, yylval.stringValue);}
 #line 1385 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 114 "tarea5.y" /* yacc.c:1646  */
+#line 109 "tarea5.y" /* yacc.c:1646  */
     {addTypeToVariable(symbol, yylval.type);}
 #line 1391 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 115 "tarea5.y" /* yacc.c:1646  */
+#line 110 "tarea5.y" /* yacc.c:1646  */
     {addTypeToVariable(symbol, yylval.type);}
 #line 1397 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 124 "tarea5.y" /* yacc.c:1646  */
+#line 119 "tarea5.y" /* yacc.c:1646  */
     {verifyID(symbol, yylval.stringValue);}
 #line 1403 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 124 "tarea5.y" /* yacc.c:1646  */
+#line 119 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
 #line 1409 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 124 "tarea5.y" /* yacc.c:1646  */
+#line 119 "tarea5.y" /* yacc.c:1646  */
     {addInstructionToTree(syntax, ColonType);}
 #line 1415 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 125 "tarea5.y" /* yacc.c:1646  */
+#line 120 "tarea5.y" /* yacc.c:1646  */
     {verifyID(symbol, yylval.stringValue);}
 #line 1421 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 125 "tarea5.y" /* yacc.c:1646  */
+#line 120 "tarea5.y" /* yacc.c:1646  */
     {addInstructionToTree(syntax, ColonType);}
 #line 1427 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 126 "tarea5.y" /* yacc.c:1646  */
+#line 121 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
 #line 1433 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 126 "tarea5.y" /* yacc.c:1646  */
+#line 121 "tarea5.y" /* yacc.c:1646  */
     {addInstructionToTree(syntax, ColonType);}
 #line 1439 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 129 "tarea5.y" /* yacc.c:1646  */
+#line 124 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
 #line 1445 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 130 "tarea5.y" /* yacc.c:1646  */
+#line 125 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
 #line 1451 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 133 "tarea5.y" /* yacc.c:1646  */
+#line 128 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
 #line 1457 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 134 "tarea5.y" /* yacc.c:1646  */
+#line 129 "tarea5.y" /* yacc.c:1646  */
     {verifyID(symbol, yylval.stringValue);}
 #line 1463 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 134 "tarea5.y" /* yacc.c:1646  */
+#line 129 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
 #line 1469 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 134 "tarea5.y" /* yacc.c:1646  */
+#line 129 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
 #line 1475 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 134 "tarea5.y" /* yacc.c:1646  */
+#line 129 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
 #line 1481 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 155 "tarea5.y" /* yacc.c:1646  */
+#line 150 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
 #line 1487 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 156 "tarea5.y" /* yacc.c:1646  */
+#line 151 "tarea5.y" /* yacc.c:1646  */
     {addToExpr(symbol, yylval.stringValue);}
 #line 1493 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 157 "tarea5.y" /* yacc.c:1646  */
+#line 152 "tarea5.y" /* yacc.c:1646  */
     {intToHeap();}
 #line 1499 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 158 "tarea5.y" /* yacc.c:1646  */
+#line 153 "tarea5.y" /* yacc.c:1646  */
     {floatToHeap();}
 #line 1505 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 161 "tarea5.y" /* yacc.c:1646  */
+#line 156 "tarea5.y" /* yacc.c:1646  */
     {addInstructionToTree(syntax, LessType);}
 #line 1511 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 162 "tarea5.y" /* yacc.c:1646  */
+#line 157 "tarea5.y" /* yacc.c:1646  */
     {addInstructionToTree(syntax, GreatType);}
 #line 1517 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 163 "tarea5.y" /* yacc.c:1646  */
+#line 158 "tarea5.y" /* yacc.c:1646  */
     {addInstructionToTree(syntax, EqualType);}
 #line 1523 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 164 "tarea5.y" /* yacc.c:1646  */
+#line 159 "tarea5.y" /* yacc.c:1646  */
     {addInstructionToTree(syntax, LessequalType);}
 #line 1529 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 165 "tarea5.y" /* yacc.c:1646  */
+#line 160 "tarea5.y" /* yacc.c:1646  */
     {addInstructionToTree(syntax, GreatequalType);}
 #line 1535 "tarea5.tab.c" /* yacc.c:1646  */
     break;
@@ -1763,7 +1763,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 168 "tarea5.y" /* yacc.c:1906  */
+#line 163 "tarea5.y" /* yacc.c:1906  */
 
 /*
  ! Puede que este método no sea necesario, ya no se necesita un registro de la posición
@@ -2016,8 +2016,27 @@ int yyerror(char const * s) {
   fprintf(stderr, "%s\n", s);
 }
 
-int main(int argc, char **argv) {
-  yyin = fopen(argv[1], "r+"); 
+int main(int argc, char *argv[]) {
+  // Checking if there is an argument
+  printf("Bison, syntatic parser:\n");
+  if (argc < 2 || argc > 2)  
+  { 
+    printf("enter 1 argument only eg.\"filename!\"\n"); 
+    return 0; 
+  } 
+
+  char * file_name = argv[1];  
+  FILE * fp  = fopen(file_name, "r"); // read only 
+
+	// check if file exists
+	if (fp == NULL) 
+	{   
+		printf("Error! Could not open file\n"); 
+		return 0;
+	} 
+
+  yyin = fp; 
+
   setTable();
   setTree();
   yyparse();

@@ -1,7 +1,7 @@
 program uno
 {
    var x : int;
-   var y : float
+   var y : int
 }
 {
    set x 1;

@@ -1,8 +1,3 @@
-/* 
-  Tarea 4
-  Implementación de tabla de símbolos y revision de tipo de datos correspondiente
-*/
-
 %{
 
 /*
@@ -35,16 +30,16 @@ typedef struct Node{
     int i;
     float f;
   } u_val;
-  struct Node *next;
+  struct Node * next;
 } node_t;
 
 typedef struct Tree{
   enum TerminalTypes type;
-  struct Tree* child[5];
-  struct Node* symbol;
-  int i;
+  struct Tree * child[5]; 
+  struct Node * symbol; // in case that the type is an id
+  int i;  // the i and f are for when there is an integer or float type (keeps the value)
   float f;
-  struct Tree *nextInstruction;
+  struct Tree *nextInstruction; // every semcilomn there will be a new isntruction
 } tree_t;
 
 enum Types heap = NULLType;
@@ -417,8 +412,27 @@ int yyerror(char const * s) {
   fprintf(stderr, "%s\n", s);
 }
 
-int main(int argc, char **argv) {
-  yyin = fopen(argv[1], "r+"); 
+int main(int argc, char *argv[]) {
+  // Checking if there is an argument
+  printf("Bison, syntatic parser:\n");
+  if (argc < 2 || argc > 2)  
+  { 
+    printf("enter 1 argument only eg.\"filename!\"\n"); 
+    return 0; 
+  } 
+
+  char * file_name = argv[1];  
+  FILE * fp  = fopen(file_name, "r"); // read only 
+
+	// check if file exists
+	if (fp == NULL) 
+	{   
+		printf("Error! Could not open file\n"); 
+		return 0;
+	} 
+
+  yyin = fp; 
+
   setTable();
   setTree();
   yyparse();
