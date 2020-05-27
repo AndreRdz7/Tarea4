@@ -2,6 +2,10 @@
 
 Compile instructions:
 
+`flex tarea5.flex && bison -d tarea5.y && gcc lex.yy.c tarea5.tab.c -lfl -lm`
+
+or:
+
 `flex tarea5.flex`
 
 `bison -d tarea5.y`
