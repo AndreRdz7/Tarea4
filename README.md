@@ -1,16 +1,16 @@
-# Tarea 4
+# Tarea 5
 
 Compile instructions:
 
-`flex tarea4.lex`
+`flex tarea5.lex`
 
-`bison -d tarea4.y`
+`bison -d tarea5.y`
 
-`gcc lex.yy.c tarea4.tab.c -lfl -lm`
+`gcc lex.yy.c tarea5.tab.c -lfl -lm`
 
 And for testing purposes, 8 files are provided:
 
-`./a.out prueba1.txt`
+`./a.out tests/prueba5.txt`
 
 Output:
 
