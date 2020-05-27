@@ -3,7 +3,7 @@
 #include<math.h>
   /* Se incluye el archivo generado por bison para tener las definiciones
      de los tokens */
-#include "tarea4.tab.h"
+#include "tarea5.tab.h"
 %}
 
 LETRA [A-Za-z]

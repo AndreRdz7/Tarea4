@@ -2,7 +2,7 @@
 
 Compile instructions:
 
-`flex tarea5.lex`
+`flex tarea5.flex`
 
 `bison -d tarea5.y`
 
