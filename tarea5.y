@@ -49,15 +49,12 @@ enum Types heap = NULLType;
 // TREE functions:
 // creates the tree
 void setTree();
-// not used rn
-void addInstructionToParent(tree_t*, enum TreeNodeTypes);
 // add instruction node
-void addInstructionToTree();
+void addInstructionToTree(enum TreeNodeTypes nodeType);
 // create a node that has wo childs (expr, term, expresion)
 void pushStackLastInstruccion();
 void popStackLastInstruccion();
 tree_t* createBinaryNode(enum TreeNodeTypes, tree_t*, tree_t*);
-tree_t* addTreeNode(enum TreeNodeTypes);
 tree_t* addTreeIdNode(enum TreeNodeTypes, node_t**);
 tree_t* addTreeIntNode(enum TreeNodeTypes, int);
 tree_t* addTreeFloatNode(enum TreeNodeTypes, float);
@@ -105,11 +102,12 @@ node_t* symbol; // start of the symbol linked list
 node_t* lastInserted; // last element inserted in the linked list
 
 tree_t* syntax; //start of the syntax tree
-tree_t* lastTreeNode; //last node in the tree that was added
+
 
 int heighStack = -1;
 tree_t * stack_lastInstruccion[100]; // last instruction of the tree
 node_t ** pointerToMemoryOfID;
+
 %}
 
 %union{
@@ -153,7 +151,7 @@ tipo : INT {addTypeToVariable(symbol, yylval.type);}
      | FLOAT {addTypeToVariable(symbol, yylval.type);}
 ;
 
-stmt : {addInstructionToTree();} assig_stmt {$$ = $2;}
+stmt : {addInstructionToTree(InstruccionNode);} assig_stmt {$$ = $2;}
      | if_stmt {$$ = $1;}
      | iter_stmt {$$ = $1;}
      | cmp_stmt {$$ = $1;}
@@ -209,6 +207,8 @@ char* getTypeOfTree(enum TreeNodeTypes type)
 {
       switch (type) 
       {
+            case InstruccionNode: return "instruccion";
+            case INIT: return "init";
             case IdNode: return "id";
             case ExprNode: return "expr";
             case ReadNode: return "read";
@@ -232,6 +232,7 @@ char* getTypeOfTree(enum TreeNodeTypes type)
             case MayorINode: return "mayor igual";
             case MayorNode: return "mayor";
             case IgualNode: return "igual";
+            default: return "there was an error";
       }
 }
 
@@ -356,7 +357,10 @@ tree_t* createOnaryNode(enum TreeNodeTypes type, tree_t *child){
 
 void pushStackLastInstruccion(){
   printf("Creo nueva lista de instrucciones\n");
-  heighStack++;
+
+  if(stack_lastInstruccion[heighStack]->type != INIT){
+    heighStack++;
+  }
 }
 
 void popStackLastInstruccion(){
@@ -365,16 +369,6 @@ void popStackLastInstruccion(){
   heighStack--;
 }
 
-tree_t* addTreeNode(enum TreeNodeTypes actualNodeToAddType){
-  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
-
-  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
-  newNode->numberOfChilds = -1;
-  newNode->type = actualNodeToAddType;
-  lastTreeNode->numberOfChilds++;
-  lastTreeNode->child[lastTreeNode->numberOfChilds] = newNode;
-  return newNode;
-}
 
 tree_t* addTreeIdNode(enum TreeNodeTypes actualNodeToAddType, node_t ** pointerId){
   printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
@@ -383,8 +377,8 @@ tree_t* addTreeIdNode(enum TreeNodeTypes actualNodeToAddType, node_t ** pointerI
   newNode->numberOfChilds = -1;
   newNode->type = actualNodeToAddType;
   newNode->symbol = pointerId;
-  lastTreeNode->numberOfChilds++;
-  lastTreeNode->child[lastTreeNode->numberOfChilds] = newNode;
+  stack_lastInstruccion[heighStack]->numberOfChilds++;
+  stack_lastInstruccion[heighStack]->child[stack_lastInstruccion[heighStack]->numberOfChilds] = newNode;
   return newNode;
 }
 
@@ -395,9 +389,8 @@ tree_t* addTreeIntNode(enum TreeNodeTypes actualNodeToAddType, int value){
   newNode->numberOfChilds = -1;
   newNode->type = actualNodeToAddType;
   newNode->i = value;
-  lastTreeNode->numberOfChilds++;
-  lastTreeNode->child[lastTreeNode->numberOfChilds] = newNode;
-
+  stack_lastInstruccion[heighStack]->numberOfChilds++;
+  stack_lastInstruccion[heighStack]->child[stack_lastInstruccion[heighStack]->numberOfChilds] = newNode;
   return newNode;
 }
 
@@ -408,9 +401,8 @@ tree_t* addTreeFloatNode(enum TreeNodeTypes actualNodeToAddType, float value){
   newNode->numberOfChilds = -1;
   newNode->type = actualNodeToAddType;
   newNode->f = value;
-  lastTreeNode->numberOfChilds++;
-  lastTreeNode->child[lastTreeNode->numberOfChilds] = newNode;
-
+  stack_lastInstruccion[heighStack]->numberOfChilds++;
+  stack_lastInstruccion[heighStack]->child[stack_lastInstruccion[heighStack]->numberOfChilds] = newNode;
   return newNode;
 }
 
@@ -422,15 +414,19 @@ Inserts a new instruction to the tree, usually
 when it ends with a semicolon
 */
 // solo agrego instrucciones en el mismo nivel
-void addInstructionToTree(){
+void addInstructionToTree(enum TreeNodeTypes nodeType){
   printf("Agrego Instruccion\n");
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
-  newNode->numberOfChilds = -1;
-  enum TreeNodeTypes actualInstruccion = InstruccionNode;
-  newNode->type = actualInstruccion;
+  newNode->type = nodeType;
   newNode->nextInstruction = NULL;
+
+  if(stack_lastInstruccion[heighStack] != NULL){
+    stack_lastInstruccion[heighStack]->nextInstruction = newNode;
+  }
+
+  //connect with last instruction
   stack_lastInstruccion[heighStack] = newNode;
-  lastTreeNode = newNode;
+
 }
 
 /*
@@ -616,6 +612,9 @@ void setTree(){
   syntax = (tree_t*)malloc(sizeof(tree_t));
   syntax->type = INIT;
   syntax->nextInstruction = NULL;
+  syntax->numberOfChilds = -1;
+  heighStack++;
+  stack_lastInstruccion[heighStack] = syntax;
 }
 
 /*
@@ -641,6 +640,14 @@ node_t ** verifyID(node_t *head, char *name){
 
 int yyerror(char const * s) {
   fprintf(stderr, "%s\n", s);
+}
+
+void execute(tree_t* actualInstruction){
+  printf("type:%s\n", getTypeOfTree(actualInstruction->type));
+  
+  if(actualInstruction->nextInstruction != NULL){
+    execute( (actualInstruction->nextInstruction) );
+  }
 }
 
 int main(int argc, char *argv[]) {
@@ -669,4 +676,6 @@ int main(int argc, char *argv[]) {
   yyparse();
   printf("Tabla de símbolos:\n");
   printList(symbol->next);
+  printf("Ejecutar codigo:\n");
+  execute(syntax);
 }
