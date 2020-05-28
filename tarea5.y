@@ -58,11 +58,13 @@ void pushStackLastInstruccion();
 void popStackLastInstruccion();
 tree_t* createBinaryNode(enum TreeNodeTypes, tree_t*, tree_t*);
 tree_t* addTreeNode(enum TreeNodeTypes);
-tree_t* addTreeIdNode(enum TreeNodeTypes, node_t **);
+tree_t* addTreeIdNode(enum TreeNodeTypes, node_t**);
 tree_t* addTreeIntNode(enum TreeNodeTypes, int);
 tree_t* addTreeFloatNode(enum TreeNodeTypes, float);
 char* getTypeOfTree(enum TreeNodeTypes);
 void GenerateNodeAccordingToType(enum TreeNodeTypes);
+void connectWithInstruccion(tree_t *);
+tree_t* createOnaryNode(enum TreeNodeTypes type, tree_t *);
 
 
 
@@ -105,7 +107,7 @@ tree_t* lastTreeNode; //last node in the tree that was added
 
 int heighStack = -1;
 tree_t * stack_lastInstruccion[100]; // last instruction of the tree
-
+node_t ** pointerToNewNode;
 %}
 
 %union{
@@ -154,17 +156,18 @@ stmt : {addInstructionToTree();} assig_stmt
      | cmp_stmt
 ;
 
-assig_stmt : SET {addTreeNode(SetNode);} ID {addTreeIdNode(IdNode, verifyID(symbol, yylval.stringValue));} expr {resetHeap();} SEMICOLON 
-           | READ {addTreeNode(ReadNode);} ID {addTreeIdNode(IdNode, verifyID(symbol, yylval.stringValue));} SEMICOLON 
-           | PRINT expr {resetHeap();} SEMICOLON 
+
+assig_stmt : SET ID {pointerToNewNode = verifyID(symbol, yylval.stringValue);} expr {resetHeap();} SEMICOLON {connectWithInstruccion(createBinaryNode(SetNode, addTreeIdNode(IdNode, pointerToNewNode), $4));}
+           | READ ID {verifyID(symbol, yylval.stringValue);} SEMICOLON 
+           | PRINT expr {resetHeap();} SEMICOLON {connectWithInstruccion(createOnaryNode(PrintNode, $2));}
 ;
 
-if_stmt : IF {addTreeNode(IfNode);} PARENI expresion {resetHeap();} PAREND stmt 
-        | IFELSE {addTreeNode(IfelseNode);} PARENI expresion {resetHeap();} PAREND stmt stmt 
+if_stmt : IF PARENI expresion {resetHeap();} PAREND stmt
+        | IFELSE PARENI expresion {resetHeap();} PAREND stmt stmt
 ;
 
 iter_stmt : WHILE {addTreeNode(WhileNode);} PARENI expresion {resetHeap();} PAREND stmt 
-          | FOR {addTreeNode(ForNode);} SET {addTreeNode(SetNode);} ID {addTreeIdNode(IdNode, verifyID(symbol, yylval.stringValue));} expr {resetHeap();} TO expr {resetHeap();} STEP expr {resetHeap();} DO stmt 
+          | FOR SET ID expr {resetHeap();} TO expr {resetHeap();} STEP expr {resetHeap();} DO stmt 
 ;
 
 cmp_stmt : LLAVEI LLAVED
@@ -284,7 +287,12 @@ void GenerateNodeAccordingToType(enum TreeNodeTypes type)
       }
 }
 
-
+void connectWithInstruccion(tree_t * subtree){
+  printf("Connecto, subgrafo a la instruccion actual, el tipo del subgrafo es: %s\n",getTypeOfTree(subtree->type));
+  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
+  (stack_lastInstruccion[heighStack])->numberOfChilds++;
+  (stack_lastInstruccion[heighStack])->child[(stack_lastInstruccion[heighStack])->numberOfChilds] = subtree;
+}
 
 tree_t* createBinaryNode(enum TreeNodeTypes type, tree_t *left, tree_t *right){
   printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
@@ -296,6 +304,17 @@ tree_t* createBinaryNode(enum TreeNodeTypes type, tree_t *left, tree_t *right){
   newNode->child[newNode->numberOfChilds] = left;
   newNode->numberOfChilds++;
   newNode->child[newNode->numberOfChilds] = right;
+  return newNode;
+}
+
+tree_t* createOnaryNode(enum TreeNodeTypes type, tree_t *child){
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
+  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
+  newNode->type = type;
+  newNode->nextInstruction = NULL;
+  newNode->numberOfChilds = -1;
+  newNode->numberOfChilds++;
+  newNode->child[newNode->numberOfChilds] = child;
   return newNode;
 }
 
@@ -318,8 +337,6 @@ tree_t* addTreeNode(enum TreeNodeTypes actualNodeToAddType){
   newNode->type = actualNodeToAddType;
   lastTreeNode->numberOfChilds++;
   lastTreeNode->child[lastTreeNode->numberOfChilds] = newNode;
-  //esto solo ocurre aqui, no en binary node o en nodos leaft:
-  lastTreeNode = newNode;
   return newNode;
 }
 
@@ -572,6 +589,7 @@ void setTree(){
 Checks if variable exists, raises error if not found
 */
 node_t ** verifyID(node_t *head, char *name){
+  printf("Verifico %s\n", name);
   node_t ** current = &head;
 
   while((*current)->next != NULL){
