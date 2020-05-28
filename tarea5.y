@@ -63,8 +63,10 @@ tree_t* addTreeIntNode(enum TreeNodeTypes, int);
 tree_t* addTreeFloatNode(enum TreeNodeTypes, float);
 char* getTypeOfTree(enum TreeNodeTypes);
 void GenerateNodeAccordingToType(enum TreeNodeTypes);
-void connectWithInstruccion(tree_t *);
+tree_t* connectWithInstruccion(tree_t *);
 tree_t* createOnaryNode(enum TreeNodeTypes type, tree_t *);
+tree_t* createTrinaryNode(enum TreeNodeTypes type, tree_t *, tree_t *, tree_t *);
+tree_t* createFournaryNode(enum TreeNodeTypes type, tree_t *, tree_t *, tree_t *, tree_t*);
 
 
 
@@ -107,7 +109,7 @@ tree_t* lastTreeNode; //last node in the tree that was added
 
 int heighStack = -1;
 tree_t * stack_lastInstruccion[100]; // last instruction of the tree
-node_t ** pointerToNewNode;
+node_t ** pointerToMemoryOfID;
 %}
 
 %union{
@@ -119,7 +121,8 @@ node_t ** pointerToNewNode;
   struct Tree *tree_t;
 }
 
-%type <tree_t> expr term factor expresion;
+%type <tree_t> stmt expr term factor expresion if_stmt iter_stmt cmp_stmt assig_stmt stmt_lst;
+
 %token <type> INT FLOAT;
 %token <stringValue> ID;
 %token  PROGRAM VAR NUMI NUMF SET READ PRINT IF IFELSE
@@ -150,32 +153,32 @@ tipo : INT {addTypeToVariable(symbol, yylval.type);}
      | FLOAT {addTypeToVariable(symbol, yylval.type);}
 ;
 
-stmt : {addInstructionToTree();} assig_stmt
-     | if_stmt
-     | iter_stmt
-     | cmp_stmt
+stmt : {addInstructionToTree();} assig_stmt {$$ = $2;}
+     | if_stmt {$$ = $1;}
+     | iter_stmt {$$ = $1;}
+     | cmp_stmt {$$ = $1;}
 ;
 
 
-assig_stmt : SET ID {pointerToNewNode = verifyID(symbol, yylval.stringValue);} expr {resetHeap();} SEMICOLON {connectWithInstruccion(createBinaryNode(SetNode, addTreeIdNode(IdNode, pointerToNewNode), $4));}
-           | READ ID {verifyID(symbol, yylval.stringValue);} SEMICOLON 
-           | PRINT expr {resetHeap();} SEMICOLON {connectWithInstruccion(createOnaryNode(PrintNode, $2));}
+assig_stmt : SET ID {pointerToMemoryOfID = verifyID(symbol, yylval.stringValue);} expr {resetHeap();} SEMICOLON {$$ = connectWithInstruccion(createBinaryNode(SetNode, addTreeIdNode(IdNode, pointerToMemoryOfID), $4));}
+           | READ ID {pointerToMemoryOfID = verifyID(symbol, yylval.stringValue);} SEMICOLON {$$ = connectWithInstruccion(createOnaryNode(ReadNode, addTreeIdNode(IdNode, pointerToMemoryOfID)));}
+           | PRINT expr {resetHeap();} SEMICOLON {$$ = connectWithInstruccion(createOnaryNode(PrintNode, $2));}
 ;
 
-if_stmt : IF PARENI expresion {resetHeap();} PAREND stmt
-        | IFELSE PARENI expresion {resetHeap();} PAREND stmt stmt
+if_stmt : IF PARENI expresion {resetHeap();} PAREND stmt {$$ = connectWithInstruccion(createBinaryNode(IfNode,$3, $6));}
+        | IFELSE PARENI expresion {resetHeap();} PAREND stmt stmt {$$ = connectWithInstruccion(createTrinaryNode(IfelseNode, $3, $6, $7));}
 ;
 
-iter_stmt : WHILE {addTreeNode(WhileNode);} PARENI expresion {resetHeap();} PAREND stmt 
-          | FOR SET ID expr {resetHeap();} TO expr {resetHeap();} STEP expr {resetHeap();} DO stmt 
+iter_stmt : WHILE PARENI expresion {resetHeap();} PAREND stmt {$$ = connectWithInstruccion(createBinaryNode(WhileNode, $3, $6));}
+          | FOR SET ID {pointerToMemoryOfID = verifyID(symbol, yylval.stringValue);} expr {resetHeap();} TO expr {resetHeap();} STEP expr {resetHeap();} DO stmt {$$ = connectWithInstruccion(createFournaryNode(ForNode, createBinaryNode(SetNode, addTreeIdNode(IdNode, pointerToMemoryOfID), $5), $8, $11, $14));}
 ;
 
-cmp_stmt : LLAVEI LLAVED
-         | LLAVEI {pushStackLastInstruccion();} stmt_lst {popStackLastInstruccion();} LLAVED
+cmp_stmt : LLAVEI LLAVED {$$ = NULL;}
+         | LLAVEI {pushStackLastInstruccion();} stmt_lst {popStackLastInstruccion();} LLAVED {$$ = $3;}
 ;
 
-stmt_lst : stmt
-         | stmt_lst stmt
+stmt_lst : stmt {$$ = $1;}
+         | stmt_lst stmt {$$ = $2;}
 ;
 
 expr : expr SUMA term {$$ = createBinaryNode(SumaNode, $1, $3);}
@@ -287,11 +290,44 @@ void GenerateNodeAccordingToType(enum TreeNodeTypes type)
       }
 }
 
-void connectWithInstruccion(tree_t * subtree){
+tree_t* connectWithInstruccion(tree_t * subtree){
   printf("Connecto, subgrafo a la instruccion actual, el tipo del subgrafo es: %s\n",getTypeOfTree(subtree->type));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   (stack_lastInstruccion[heighStack])->numberOfChilds++;
   (stack_lastInstruccion[heighStack])->child[(stack_lastInstruccion[heighStack])->numberOfChilds] = subtree;
+  return newNode;
+}
+
+tree_t* createFournaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, tree_t * three, tree_t* four){
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
+  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
+  newNode->type = type;
+  newNode->nextInstruction = NULL;
+  newNode->numberOfChilds = -1;
+  newNode->numberOfChilds++;
+  newNode->child[newNode->numberOfChilds] = one;
+  newNode->numberOfChilds++;
+  newNode->child[newNode->numberOfChilds] = two;
+  newNode->numberOfChilds++;
+  newNode->child[newNode->numberOfChilds] = three;
+    newNode->numberOfChilds++;
+  newNode->child[newNode->numberOfChilds] = four;
+  return newNode;
+}
+
+tree_t* createTrinaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, tree_t * three){
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
+  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
+  newNode->type = type;
+  newNode->nextInstruction = NULL;
+  newNode->numberOfChilds = -1;
+  newNode->numberOfChilds++;
+  newNode->child[newNode->numberOfChilds] = one;
+  newNode->numberOfChilds++;
+  newNode->child[newNode->numberOfChilds] = two;
+  newNode->numberOfChilds++;
+  newNode->child[newNode->numberOfChilds] = three;
+  return newNode;
 }
 
 tree_t* createBinaryNode(enum TreeNodeTypes type, tree_t *left, tree_t *right){
