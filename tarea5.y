@@ -20,9 +20,10 @@ extern int yylex();
 extern FILE *yyin;
 int yyerror(char const * s);
 
-enum Types {IntType, FloatType, NULLType};
-enum TerminalTypes {INIT, ProgramType, VarType, SetType, ReadType, PrintType, IfType, IfelseType, WhileType, ForType, ToType, StepType, DoType, PlusType, MinusType, MultType, DivType, ColonType, SemicolonType, LessType, GreatType,EqualType, LessequalType, GreatequalType};
 
+
+enum Types {IntType, FloatType, NULLType};
+enum TreeNodeTypes{INIT, MayorNode, MenorNode, IgualNode, MenorINode, MayorINode, InstruccionNode, IdNode, ExprNode, ReadNode, PrintNode, IfNode, ExpresionNode, IfelseNode, WhileNode, ForNode, SetNode, ComparandumNode, RestaNode, SumaNode, MultNode, DivideNode, TermNode, IntNode, FloatNode};
 typedef struct Node{
   char name[256];
   enum Types type;
@@ -34,9 +35,10 @@ typedef struct Node{
 } node_t;
 
 typedef struct Tree{
-  enum TerminalTypes type;
+  enum TreeNodeTypes type;
+  int numberOfChilds;
   struct Tree * child[5]; 
-  struct Node * symbol; // in case that the type is an id
+  struct Node ** symbol; // in case that the type is an id (es doble pointer ya que si quiero editarlo la copia no me servira)
   int i;  // the i and f are for when there is an integer or float type (keeps the value)
   float f;
   struct Tree *nextInstruction; // every semcilomn there will be a new isntruction
@@ -44,31 +46,65 @@ typedef struct Tree{
 
 enum Types heap = NULLType;
 
-void addInstructionToParent(tree_t*, enum TerminalTypes);
-void addInstructionToTree(tree_t*, enum TerminalTypes);
+// TREE functions:
+// creates the tree
+void setTree();
+// not used rn
+void addInstructionToParent(tree_t*, enum TreeNodeTypes);
+// add instruction node
+void addInstructionToTree();
+// create a node that has wo childs (expr, term, expresion)
+void pushStackLastInstruccion();
+void popStackLastInstruccion();
+tree_t* createBinaryNode(enum TreeNodeTypes, tree_t*, tree_t*);
+tree_t* addTreeNode(enum TreeNodeTypes);
+tree_t* addTreeIdNode(enum TreeNodeTypes, node_t **);
+tree_t* addTreeIntNode(enum TreeNodeTypes, int);
+tree_t* addTreeFloatNode(enum TreeNodeTypes, float);
+char* getTypeOfTree(enum TreeNodeTypes);
+void GenerateNodeAccordingToType(enum TreeNodeTypes);
+
+
+
+
+// LIST functions
+// creates the list
+void setTable();
+//check if ID exists
+node_t ** verifyID(node_t*, char*);
+//check if value exists and if the type is the same (taht we are keeping in the heap)
 void addToExpr(node_t*, char*);
+// int or float type selection
 void addTypeToVariable(node_t*, char*);
-tree_t* createBinaryNode(tree_t*, enum TerminalTypes, tree_t*, tree_t*);
+// add element to the list if irt already existsed call an error
 void declareVariable(node_t*, char*);
+// checdk if last element in the heap was a float
 void floatToHeap();
-const char* getType(enum Types);
+// checdk if last element in the heap was a int
 void intToHeap();
+// print tyoe according to the enum (int and float)
+const char* getType(enum Types);
+// print the list
 void printList(node_t*);
+// reset the heap value
+void resetHeap();
+
+//ERRORS
 void raiseDuplicateVar(char* name);
 void raiseInvalidType(char* name);
 void raiseInvalidCompatibleTypes();
 void raiseNoExistingVar(char* name);
-void resetHeap();
-void setTable();
-void setTree();
-void verifyID(node_t*, char*);
 
 
-node_t* symbol;
-node_t* lastInserted;
-tree_t* syntax;
-tree_t* lastInstruction;
-tree_t* lastChild;
+
+node_t* symbol; // start of the symbol linked list
+node_t* lastInserted; // last element inserted in the linked list
+
+tree_t* syntax; //start of the syntax tree
+tree_t* lastTreeNode; //last node in the tree that was added
+
+int heighStack = -1;
+tree_t * stack_lastInstruccion[100]; // last instruction of the tree
 
 %}
 
@@ -78,17 +114,19 @@ tree_t* lastChild;
   char* type;
   float f;
   int i;
+  struct Tree *tree_t;
 }
 
-%token <type> INT FLOAT 
-%token <stringValue> ID 
+%type <tree_t> expr term factor expresion;
+%token <type> INT FLOAT;
+%token <stringValue> ID;
 %token  PROGRAM VAR NUMI NUMF SET READ PRINT IF IFELSE
 WHILE FOR TO STEP DO SUMA RESTA DIVIDE MULTI PAREND PARENI 
-LLAVED LLAVEI COLON SEMICOLON MENOR MAYOR IGUAL MENORI MAYORI
+LLAVED LLAVEI COLON SEMICOLON MENOR MAYOR IGUAL MENORI MAYORI;
 
 
 
-%start prog
+%start prog;
 
 %%
 
@@ -110,75 +148,217 @@ tipo : INT {addTypeToVariable(symbol, yylval.type);}
      | FLOAT {addTypeToVariable(symbol, yylval.type);}
 ;
 
-stmt : assig_stmt
+stmt : {addInstructionToTree();} assig_stmt
      | if_stmt
      | iter_stmt
      | cmp_stmt
 ;
 
-assig_stmt : SET ID {verifyID(symbol, yylval.stringValue);} expr {resetHeap();} SEMICOLON {addInstructionToTree(syntax, ColonType);}
-           | READ ID {verifyID(symbol, yylval.stringValue);} SEMICOLON {addInstructionToTree(syntax, ColonType);} 
-           | PRINT expr {resetHeap();} SEMICOLON {addInstructionToTree(syntax, ColonType);}
+assig_stmt : SET {addTreeNode(SetNode);} ID {addTreeIdNode(IdNode, verifyID(symbol, yylval.stringValue));} expr {resetHeap();} SEMICOLON 
+           | READ {addTreeNode(ReadNode);} ID {addTreeIdNode(IdNode, verifyID(symbol, yylval.stringValue));} SEMICOLON 
+           | PRINT expr {resetHeap();} SEMICOLON 
 ;
 
-if_stmt : IF PARENI expresion {resetHeap();} PAREND stmt 
-        | IFELSE PARENI expresion {resetHeap();} PAREND stmt stmt 
+if_stmt : IF {addTreeNode(IfNode);} PARENI expresion {resetHeap();} PAREND stmt 
+        | IFELSE {addTreeNode(IfelseNode);} PARENI expresion {resetHeap();} PAREND stmt stmt 
 ;
 
-iter_stmt : WHILE PARENI expresion {resetHeap();} PAREND stmt 
-          | FOR SET ID {verifyID(symbol, yylval.stringValue);} expr {resetHeap();} TO expr {resetHeap();} STEP expr {resetHeap();} DO stmt 
+iter_stmt : WHILE {addTreeNode(WhileNode);} PARENI expresion {resetHeap();} PAREND stmt 
+          | FOR {addTreeNode(ForNode);} SET {addTreeNode(SetNode);} ID {addTreeIdNode(IdNode, verifyID(symbol, yylval.stringValue));} expr {resetHeap();} TO expr {resetHeap();} STEP expr {resetHeap();} DO stmt 
 ;
 
 cmp_stmt : LLAVEI LLAVED
-         | LLAVEI stmt_lst LLAVED
+         | LLAVEI {pushStackLastInstruccion();} stmt_lst {popStackLastInstruccion();} LLAVED
 ;
 
 stmt_lst : stmt
          | stmt_lst stmt
 ;
 
-expr : expr SUMA term 
-     | expr RESTA term
-     | term
+expr : expr SUMA term {$$ = createBinaryNode(SumaNode, $1, $3);}
+     | expr RESTA term {$$ = createBinaryNode(RestaNode, $1, $3);}
+     | term {$$ = $1;}
 ;
 
-term : term MULTI factor 
-     | term DIVIDE factor
-     | factor
+term : term MULTI factor {$$ = createBinaryNode(MultNode, $1, $3);}
+     | term DIVIDE factor {$$ = createBinaryNode(DivideNode, $1, $3);}
+     | factor {$$ = $1;}
+
+factor : PARENI expr PAREND {$$ = $2;}
+       | ID {addToExpr(symbol, yylval.stringValue); $$ = addTreeIdNode(IdNode, verifyID(symbol, yylval.stringValue));}
+       | NUMI {intToHeap(); $$ = addTreeIntNode(IntNode, yylval.i);}
+       | NUMF {floatToHeap(); $$ = addTreeFloatNode(FloatNode, yylval.f);} 
 ;
 
-factor : PARENI expr {resetHeap();} PAREND 
-       | ID {addToExpr(symbol, yylval.stringValue);}
-       | NUMI {intToHeap();}
-       | NUMF {floatToHeap();}
-;
-
-expresion : expr MENOR expr {addInstructionToTree(syntax, LessType);}
-          | expr MAYOR expr {addInstructionToTree(syntax, GreatType);}
-          | expr IGUAL expr {addInstructionToTree(syntax, EqualType);}
-          | expr MENORI expr {addInstructionToTree(syntax, LessequalType);}
-          | expr MAYORI expr {addInstructionToTree(syntax, GreatequalType);}
+expresion : expr MENOR expr {$$ = createBinaryNode(MenorNode, $1, $3);}
+          | expr MAYOR expr {$$ = createBinaryNode(MayorNode, $1, $3);}
+          | expr IGUAL expr {$$ = createBinaryNode(IgualNode, $1, $3);}
+          | expr MENORI expr {$$ = createBinaryNode(MenorINode, $1, $3);}
+          | expr MAYORI expr {$$ = createBinaryNode(MayorINode, $1, $3);}
 ;
 
 %%
-/*
- ! Puede que este método no sea necesario, ya no se necesita un registro de la posición
 
-@param parent new instruction's parent 
-@param instr  instruction to add to the parent
+char* getTypeOfTree(enum TreeNodeTypes type) 
+{
+      switch (type) 
+      {
+            case IdNode: return "id";
+            case ExprNode: return "expr";
+            case ReadNode: return "read";
+            case PrintNode: return "print";
+            case IfNode: return "if";
+            case ExpresionNode: return "expression";
+            case IfelseNode: return "ifelse";
+            case WhileNode: return "while";
+            case ForNode: return "for";
+            case SetNode: return "set";
+            case ComparandumNode: return "comparandum";
+            case TermNode: return "term";
+            case SumaNode: return "suma";
+            case RestaNode: return "resta";
+            case DivideNode: return "divisi";
+            case MultNode: return "mult";
+            case IntNode: return "int";
+            case FloatNode: return "float";
+            case MenorNode: return "menor";
+            case MenorINode: return "menor igual";
+            case MayorINode: return "mayor igual";
+            case MayorNode: return "mayor";
+            case IgualNode: return "igual";
+      }
+}
 
-Inserts the action of the instruction, usually to a semicolon
-*/
-void addInstructionToParent(tree_t *parent, enum TerminalTypes type){
-  /*
+void GenerateNodeAccordingToType(enum TreeNodeTypes type) 
+{
+      switch (type) 
+      {     // ultimo nodo, aqui se guarda int
+            case IntType:
+
+            break;
+            // ultimo nodo, aqui guardo float
+            case FloatType:
+
+            break;
+            // ultimo nodo, aqui se guarda el puntero al id
+            case IdNode:
+
+            break;
+            // de aqui puede haber expr-term o term, el valor, en teoria guardamos el signo
+            case ExprNode:
+
+            break;
+            // read node, de aqui abajo solo hay un id
+            case ReadNode:
+
+            break;
+            // de aqui hay una exr
+            case PrintNode:
+
+            break;
+            // de aqui hay una expr y otra cosa
+            case IfNode:
+
+            break;
+            case ExpresionNode:
+
+            break;
+            case IfelseNode:
+
+            break;
+            case WhileNode:
+
+            break;
+            case ForNode:
+
+            break;
+            case SetNode:
+
+            break;
+            case ComparandumNode:
+
+            break;
+            case TermNode:
+
+            break;
+      }
+}
+
+
+
+tree_t* createBinaryNode(enum TreeNodeTypes type, tree_t *left, tree_t *right){
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = type;
   newNode->nextInstruction = NULL;
-  newNode->pos = 0;
-  parent->child[parent->pos] = newNode;
-  parent->pos = parent->pos + 1;
-  lastChild = newNode;
-  */
+  newNode->numberOfChilds = -1;
+  newNode->numberOfChilds++;
+  newNode->child[newNode->numberOfChilds] = left;
+  newNode->numberOfChilds++;
+  newNode->child[newNode->numberOfChilds] = right;
+  return newNode;
+}
+
+void pushStackLastInstruccion(){
+  printf("Creo nueva lista de instrucciones\n");
+  heighStack++;
+}
+
+void popStackLastInstruccion(){
+  printf("Termino lista de instrucciones y regreso a la pasada\n");
+  stack_lastInstruccion[heighStack] = NULL;
+  heighStack--;
+}
+
+tree_t* addTreeNode(enum TreeNodeTypes actualNodeToAddType){
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
+
+  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
+  newNode->numberOfChilds = -1;
+  newNode->type = actualNodeToAddType;
+  lastTreeNode->numberOfChilds++;
+  lastTreeNode->child[lastTreeNode->numberOfChilds] = newNode;
+  //esto solo ocurre aqui, no en binary node o en nodos leaft:
+  lastTreeNode = newNode;
+  return newNode;
+}
+
+tree_t* addTreeIdNode(enum TreeNodeTypes actualNodeToAddType, node_t ** pointerId){
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
+
+  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
+  newNode->numberOfChilds = -1;
+  newNode->type = actualNodeToAddType;
+  newNode->symbol = pointerId;
+  lastTreeNode->numberOfChilds++;
+  lastTreeNode->child[lastTreeNode->numberOfChilds] = newNode;
+  return newNode;
+}
+
+tree_t* addTreeIntNode(enum TreeNodeTypes actualNodeToAddType, int value){
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
+
+  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
+  newNode->numberOfChilds = -1;
+  newNode->type = actualNodeToAddType;
+  newNode->i = value;
+  lastTreeNode->numberOfChilds++;
+  lastTreeNode->child[lastTreeNode->numberOfChilds] = newNode;
+
+  return newNode;
+}
+
+tree_t* addTreeFloatNode(enum TreeNodeTypes actualNodeToAddType, float value){
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
+
+  tree_t* newNode = (tree_t*)malloc(sizeof(tree_t));
+  newNode->numberOfChilds = -1;
+  newNode->type = actualNodeToAddType;
+  newNode->f = value;
+  lastTreeNode->numberOfChilds++;
+  lastTreeNode->child[lastTreeNode->numberOfChilds] = newNode;
+
+  return newNode;
 }
 
 /*
@@ -188,11 +368,16 @@ void addInstructionToParent(tree_t *parent, enum TerminalTypes type){
 Inserts a new instruction to the tree, usually
 when it ends with a semicolon
 */
-void addInstructionToTree(tree_t *root, enum TerminalTypes type){
+// solo agrego instrucciones en el mismo nivel
+void addInstructionToTree(){
+  printf("Agrego Instruccion\n");
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
-  newNode->type = type;
+  newNode->numberOfChilds = -1;
+  enum TreeNodeTypes actualInstruccion = InstruccionNode;
+  newNode->type = actualInstruccion;
   newNode->nextInstruction = NULL;
-  lastInstruction->nextInstruction = newNode;
+  stack_lastInstruccion[heighStack] = newNode;
+  lastTreeNode = newNode;
 }
 
 /*
@@ -223,29 +408,17 @@ void addToExpr(node_t *head, char *name){
 
 Adds the type to the last inserted symbol
 */
+
 void addTypeToVariable(node_t *head, char *type){
   if (strcmp(type, "int") == 0){
     lastInserted->type = IntType;
+    lastInserted->u_val.i = 0;
   }else{
     lastInserted->type = FloatType;
+    lastInserted->u_val.f = 0.0;
   }
 }
 
-/*
-@param root   syntax tree
-@param type   tree type
-@param left   left side of expr
-@param right  right side of expr
-
-Returns pointer to tree node with the expresion build
-*/
-tree_t* createBinaryNode(tree_t *root, enum TerminalTypes type, tree_t *left, tree_t *right){
-  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
-  newNode->type = type;
-  newNode->nextInstruction = NULL;
-  newNode->child[0] = left;
-  newNode->child[1] = right;
-}
 
 /*
 @param head   symbol's table head
@@ -313,7 +486,12 @@ Prints symbol's table when the program finishes
 */
 void printList(node_t *head){
   if(head != NULL){
-    printf("%s : %s\n", head->name, getType(head->type));
+    if(head->type == IntType){
+      printf("%s - %s : %d\n", head->name, getType(head->type), (head->u_val).i);
+
+    }else{
+      printf("%s - %s : %f\n", head->name, getType(head->type), (head->u_val).f);
+    } 
     printList(head->next);
   }
 }
@@ -385,7 +563,6 @@ void setTree(){
   syntax = (tree_t*)malloc(sizeof(tree_t));
   syntax->type = INIT;
   syntax->nextInstruction = NULL;
-  lastInstruction = syntax;
 }
 
 /*
@@ -394,18 +571,18 @@ void setTree(){
 
 Checks if variable exists, raises error if not found
 */
-void verifyID(node_t *head, char *name){
-  node_t * current = head;
-  bool exists = false;
-  while(current->next != NULL){
-    current = current->next;
-    if (strcmp(current->name, name) == 0){
-      exists = true;
+node_t ** verifyID(node_t *head, char *name){
+  node_t ** current = &head;
+
+  while((*current)->next != NULL){
+    current = &((*current)->next);
+    if (strcmp((*current)->name, name) == 0){
+      return current;
     }
   }
-  if(exists == false){
-    raiseNoExistingVar(name);
-  }
+
+  raiseNoExistingVar(name);
+  
 }
 
 int yyerror(char const * s) {

@@ -85,15 +85,16 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 75 "tarea5.y" /* yacc.c:1909  */
+#line 111 "tarea5.y" /* yacc.c:1909  */
 
   char* stringValue;
   char* terminal;
   char* type;
   float f;
   int i;
+  struct Tree *tree_t;
 
-#line 97 "tarea5.tab.h" /* yacc.c:1909  */
+#line 98 "tarea5.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
