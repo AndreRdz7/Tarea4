@@ -76,7 +76,6 @@ bool checkCompatibleStructTypes(expr_t first, expr_t second);
 void treeEvaluateRead(tree_t*);
 expr_t evaluateExpr(tree_t*);
 bool evaluateExpression(tree_t*);
-
 void treeEvaluatePrint(tree_t*);
 void treeEvaluateSet(tree_t*);
 
@@ -358,6 +357,32 @@ bool checkCompatibleStructTypes(expr_t first, expr_t second){
   }
 }
 
+void treeEvaluatePrint(tree_t *node){
+  expr_t stmt = evaluateExpr(node->child[0]);
+  if(stmt.type == IntType){
+    printf("%d\n", stmt.i);
+  }else{
+    printf("%f\n", stmt.f);
+  }
+}
+
+void treeEvaluateSet(tree_t *node){
+  /*
+  child 0 es el tree_t con el id de la tabla de simbolos
+  chils 1 es la expresión a asignar
+  */
+  expr_t id = evaluateExpr(node->child[0]);
+  expr_t stmt = evaluateExpr(node->child[1]);
+  if(checkCompatibleStructTypes(id, stmt)){
+    node_t* sym = *node->symbol;
+    if(stmt.type = IntType){
+      sym->u_val.i = stmt.i;
+    }else{
+      sym->u_val.f = stmt.f;
+    }
+  }
+}
+
 bool evaluateExpression(tree_t *node){
   expr_t left = evaluateExpr(node->child[0]);
   expr_t right = evaluateExpr(node->child[1]);
@@ -524,7 +549,7 @@ expr_t evaluateExpr(tree_t *node){
       return res;
       break;
     case FloatNode:;
-    res.type = FloatType;
+      res.type = FloatType;
       res.i = node->f;
       return res;
       break;
@@ -532,9 +557,11 @@ expr_t evaluateExpr(tree_t *node){
       node_t* sym = *node->symbol;
       if(sym->type == IntType){
         res.i = sym->u_val.i;
+        res.type = IntType;
         return res;
       }else{
         res.f = sym->u_val.f;
+        res.type = FloatType;
         return res;
       }
       break;
