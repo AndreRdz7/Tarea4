@@ -85,11 +85,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-<<<<<<< HEAD
 #line 128 "tarea5.y" /* yacc.c:1909  */
-=======
-#line 116 "tarea5.y" /* yacc.c:1909  */
->>>>>>> 45f3256ca0953b34a9f885304aab7a4ac679c48e
 
   char* stringValue;
   char* terminal;
