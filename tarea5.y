@@ -24,6 +24,13 @@ int yyerror(char const * s);
 
 enum Types {IntType, FloatType, NULLType};
 enum TreeNodeTypes{INIT, MayorNode, MenorNode, IgualNode, MenorINode, MayorINode, InstruccionNode, IdNode, ExprNode, ReadNode, PrintNode, IfNode, ExpresionNode, IfelseNode, WhileNode, ForNode, SetNode, ComparandumNode, RestaNode, SumaNode, MultNode, DivideNode, TermNode, IntNode, FloatNode};
+
+typedef struct expr{
+  enum Types type;
+  int i;
+  float f;
+} expr_t;
+
 typedef struct Node{
   char name[256];
   enum Types type;
@@ -65,9 +72,14 @@ tree_t* createOnaryNode(enum TreeNodeTypes type, tree_t *);
 tree_t* createTrinaryNode(enum TreeNodeTypes type, tree_t *, tree_t *, tree_t *);
 tree_t* createFournaryNode(enum TreeNodeTypes type, tree_t *, tree_t *, tree_t *, tree_t*);
 // tree evaluation functions
+bool checkCompatibleStructTypes(expr_t first, expr_t second);
+void treeEvaluateRead(tree_t*);
+expr_t evaluateExpr(tree_t*);
+bool evaluateExpression(tree_t*);
+
 void treeEvaluatePrint(tree_t*);
 void treeEvaluateSet(tree_t*);
-void treeEvaluateRead(tree_t*);
+
 
 
 
@@ -306,26 +318,220 @@ tree_t* connectWithInstruccion(tree_t * subtree){
 void treeEvaluateRead(tree_t *node){
   // user input
   char input[256];
-  char decimal[] = "."
+  char decimal[] = ".";
   scanf("%s", input);
   bool isInt;
   // get type by finding a decimall point
   char *ptr = strstr(input, decimal);
   // si es NULL, no encontro punto decimal, por lo tanto es entero
+  int i_val;
+  float f_val;
   if(ptr != NULL){ //float
-    float f_val = atof(input);
+    f_val = atof(input);
     isInt = false;
   }else{ // int
-    int i_val = atoi(input);
+    i_val = atoi(input);
     isInt = true;
   }
   // insert value in symbol
-  if(node->symbol->type == IntType && isInt){
-    node->symbol->u_val.i = i_val;
-  }else if(node->symbol->type == FloatType && !isInt){
-    node->symbol->u_val.f = f_val;
+  node_t* sym = *node->symbol;
+  if(sym->type == IntType && isInt){
+    sym->u_val.i = i_val;
+  }else if(sym->type == FloatType && !isInt){
+    sym->u_val.f = f_val;
   }else{
     raiseInvalidCompatibleTypes();
+  }
+}
+
+bool checkCompatibleStructTypes(expr_t first, expr_t second){
+  if(first.type == second.type){
+    return true;
+  }else{
+    raiseInvalidCompatibleTypes();
+  }
+}
+
+bool evaluateExpression(tree_t *node){
+  expr_t left = evaluateExpr(node->child[0]);
+  expr_t right = evaluateExpr(node->child[1]);
+  switch(node->type){
+    case MenorNode:;
+      if(checkCompatibleStructTypes(left, right)){
+        if(left.type == IntType){
+          if(left.i < right.i){
+            return true;
+          }else{
+            return false;
+          }
+        }else{
+          if(left.f < right.f){
+            return true;
+          }else{
+            return false;
+          }
+        }
+      }
+      break;
+    case MayorNode:;
+      if(checkCompatibleStructTypes(left, right)){
+        if(left.type == IntType){
+          if(left.i > right.i){
+            return true;
+          }else{
+            return false;
+          }
+        }else{
+          if(left.f > right.f){
+            return true;
+          }else{
+            return false;
+          }
+        }
+      }
+      break;
+    case IgualNode:;
+      if(checkCompatibleStructTypes(left, right)){
+        if(left.type == IntType){
+          if(left.i == right.i){
+            return true;
+          }else{
+            return false;
+          }
+        }else{
+          if(left.f == right.f){
+            return true;
+          }else{
+            return false;
+          }
+        }
+      }
+      break;
+    case MenorINode:;
+      if(checkCompatibleStructTypes(left, right)){
+        if(left.type == IntType){
+          if(left.i <= right.i){
+            return true;
+          }else{
+            return false;
+          }
+        }else{
+          if(left.f <= right.f){
+            return true;
+          }else{
+            return false;
+          }
+        }
+      }
+      break;
+    case MayorINode:;
+      if(checkCompatibleStructTypes(left, right)){
+        if(left.type == IntType){
+          if(left.i >= right.i){
+            return true;
+          }else{
+            return false;
+          }
+        }else{
+          if(left.f >= right.f){
+            return true;
+          }else{
+            return false;
+          }
+        }
+      }
+      break;
+  }
+}
+
+expr_t evaluateExpr(tree_t *node){
+  expr_t left;
+  expr_t right;
+  expr_t res;
+  switch(node->type){
+    case SumaNode:;
+      left = evaluateExpr(node->child[0]);
+      right = evaluateExpr(node->child[1]);
+      if(checkCompatibleStructTypes){
+        if(left.type == IntType){
+          res.type = IntType;
+          res.i = left.i + right.i;
+          return res;
+        }else{
+          res.type = FloatType;
+          res.f = left.f + right.f;
+          return res;
+        }
+      }
+      break;
+    case RestaNode:;
+      left = evaluateExpr(node->child[0]);
+      right = evaluateExpr(node->child[1]);
+      if(checkCompatibleStructTypes){
+        res;
+        if(left.type == IntType){
+          res.type = IntType;
+          res.i = left.i - right.i;
+          return res;
+        }else{
+          res.type = FloatType;
+          res.f = left.f - right.f;
+          return res;
+        }
+      }
+      break;
+    case MultNode:;
+      left = evaluateExpr(node->child[0]);
+      right = evaluateExpr(node->child[1]);
+      if(checkCompatibleStructTypes){
+        res;
+        if(left.type == IntType){
+          res.type = IntType;
+          res.i = left.i * right.i;
+          return res;
+        }else{
+          res.type = FloatType;
+          res.f = left.f * right.f;
+          return res;
+        }
+      }
+      break;
+    case DivideNode:;
+      left = evaluateExpr(node->child[0]);
+      right = evaluateExpr(node->child[1]);
+      if(checkCompatibleStructTypes){
+        res;
+        if(left.type == IntType){
+          res.type = IntType;
+          res.i = left.i / right.i;
+          return res;
+        }else{
+          res.type = FloatType;
+          res.f = left.f / right.f;
+          return res;
+        }
+      }
+      break;
+    case IntNode:;
+      res.type = IntType;
+      res.i = node->i;
+      return res;
+      break;
+    case FloatNode:;
+    res.type = FloatType;
+      res.i = node->f;
+      return res;
+      break;
+    case IdNode:;
+      node_t* sym = *node->symbol;
+      if(sym->type == IntType){
+        res.i = sym->u_val.i;
+        return res;
+      }else{
+        res.f = sym->u_val.f;
+        return res;
+      }
+      break;
   }
 }
 
