@@ -2021,10 +2021,16 @@ void GenerateNodeAccordingToType(enum TreeNodeTypes type)
 
 tree_t* connectWithInstruccion(tree_t * subtree){
   printf("Connecto, subgrafo a la instruccion actual, el tipo del subgrafo es: %s\n",getTypeOfTree(subtree->type));
-  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
-  (stack_lastInstruccion[heighStack])->numberOfChilds++;
+
+
+
+  (stack_lastInstruccion[heighStack])->numberOfChilds = (stack_lastInstruccion[heighStack])->numberOfChilds + 1;
+
+
   (stack_lastInstruccion[heighStack])->child[(stack_lastInstruccion[heighStack])->numberOfChilds] = subtree;
-  return newNode;
+
+
+  return (stack_lastInstruccion[heighStack]);
 }
 
 tree_t* createFournaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, tree_t * three, tree_t* four){
@@ -2039,7 +2045,7 @@ tree_t* createFournaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, 
   newNode->child[newNode->numberOfChilds] = two;
   newNode->numberOfChilds++;
   newNode->child[newNode->numberOfChilds] = three;
-    newNode->numberOfChilds++;
+  newNode->numberOfChilds++;
   newNode->child[newNode->numberOfChilds] = four;
   return newNode;
 }
@@ -2060,11 +2066,16 @@ tree_t* createTrinaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, t
 }
 
 tree_t* createBinaryNode(enum TreeNodeTypes type, tree_t *left, tree_t *right){
+  printf("Creando Binary\n");
   printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
+  printf("Left: %s\n", getTypeOfTree(left->type));
+  printf("Right: %s\n", getTypeOfTree(right->type));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = type;
+
   newNode->nextInstruction = NULL;
   newNode->numberOfChilds = -1;
+
   newNode->numberOfChilds++;
   newNode->child[newNode->numberOfChilds] = left;
   newNode->numberOfChilds++;
@@ -2105,8 +2116,6 @@ tree_t* addTreeIdNode(enum TreeNodeTypes actualNodeToAddType, node_t ** pointerI
   newNode->numberOfChilds = -1;
   newNode->type = actualNodeToAddType;
   newNode->symbol = pointerId;
-  stack_lastInstruccion[heighStack]->numberOfChilds++;
-  stack_lastInstruccion[heighStack]->child[stack_lastInstruccion[heighStack]->numberOfChilds] = newNode;
   return newNode;
 }
 
@@ -2117,8 +2126,6 @@ tree_t* addTreeIntNode(enum TreeNodeTypes actualNodeToAddType, int value){
   newNode->numberOfChilds = -1;
   newNode->type = actualNodeToAddType;
   newNode->i = value;
-  stack_lastInstruccion[heighStack]->numberOfChilds++;
-  stack_lastInstruccion[heighStack]->child[stack_lastInstruccion[heighStack]->numberOfChilds] = newNode;
   return newNode;
 }
 
@@ -2129,8 +2136,6 @@ tree_t* addTreeFloatNode(enum TreeNodeTypes actualNodeToAddType, float value){
   newNode->numberOfChilds = -1;
   newNode->type = actualNodeToAddType;
   newNode->f = value;
-  stack_lastInstruccion[heighStack]->numberOfChilds++;
-  stack_lastInstruccion[heighStack]->child[stack_lastInstruccion[heighStack]->numberOfChilds] = newNode;
   return newNode;
 }
 
@@ -2147,6 +2152,7 @@ void addInstructionToTree(enum TreeNodeTypes nodeType){
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = nodeType;
   newNode->nextInstruction = NULL;
+  newNode->numberOfChilds = -1;
 
   if(stack_lastInstruccion[heighStack] != NULL){
     stack_lastInstruccion[heighStack]->nextInstruction = newNode;
@@ -2372,11 +2378,23 @@ int yyerror(char const * s) {
 
 void execute(tree_t* actualInstruction){
   printf("type:%s\n", getTypeOfTree(actualInstruction->type));
+
+  // has childrens
+  if(actualInstruction->numberOfChilds >= 0){
+
+    printf("Tiene hijos: %d\n", actualInstruction->numberOfChilds+1);
+
+    for(int i = 0; i <= actualInstruction->numberOfChilds; i++){
+      execute(actualInstruction->child[i]);
+    }
+
+  }
   
   if(actualInstruction->nextInstruction != NULL){
     execute( (actualInstruction->nextInstruction) );
   }
 }
+
 
 int main(int argc, char *argv[]) {
   // Checking if there is an argument

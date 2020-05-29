@@ -1,12 +1,7 @@
 program cero
 {
-   var a : int;
-   var x : int;
-   var y : int
+   var a : int
 }
 {
    set a 1;
-   set x 1+a;
-   set y 2;
-   print x / y;
 } 
