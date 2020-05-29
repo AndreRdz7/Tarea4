@@ -64,7 +64,10 @@ tree_t* connectWithInstruccion(tree_t *);
 tree_t* createOnaryNode(enum TreeNodeTypes type, tree_t *);
 tree_t* createTrinaryNode(enum TreeNodeTypes type, tree_t *, tree_t *, tree_t *);
 tree_t* createFournaryNode(enum TreeNodeTypes type, tree_t *, tree_t *, tree_t *, tree_t*);
-
+// tree evaluation functions
+void treeEvaluatePrint(tree_t*);
+void treeEvaluateSet(tree_t*);
+void treeEvaluateRead(tree_t*);
 
 
 
@@ -297,6 +300,33 @@ tree_t* connectWithInstruccion(tree_t * subtree){
   (stack_lastInstruccion[heighStack])->numberOfChilds++;
   (stack_lastInstruccion[heighStack])->child[(stack_lastInstruccion[heighStack])->numberOfChilds] = subtree;
   return newNode;
+}
+
+
+void treeEvaluateRead(tree_t *node){
+  // user input
+  char input[256];
+  char decimal[] = "."
+  scanf("%s", input);
+  bool isInt;
+  // get type by finding a decimall point
+  char *ptr = strstr(input, decimal);
+  // si es NULL, no encontro punto decimal, por lo tanto es entero
+  if(ptr != NULL){ //float
+    float f_val = atof(input);
+    isInt = false;
+  }else{ // int
+    int i_val = atoi(input);
+    isInt = true;
+  }
+  // insert value in symbol
+  if(node->symbol->type == IntType && isInt){
+    node->symbol->u_val.i = i_val;
+  }else if(node->symbol->type == FloatType && !isInt){
+    node->symbol->u_val.f = f_val;
+  }else{
+    raiseInvalidCompatibleTypes();
+  }
 }
 
 tree_t* createFournaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, tree_t * three, tree_t* four){
