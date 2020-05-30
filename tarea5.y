@@ -147,8 +147,6 @@ node_t ** pointerToMemoryOfID;
 WHILE FOR TO STEP DO SUMA RESTA DIVIDE MULTI PAREND PARENI 
 LLAVED LLAVEI COLON SEMICOLON MENOR MAYOR IGUAL MENORI MAYORI;
 
-
-
 %start prog;
 
 %%
@@ -313,15 +311,8 @@ void GenerateNodeAccordingToType(enum TreeNodeTypes type)
 
 tree_t* connectWithInstruccion(tree_t * subtree){
   printf("Connecto, subgrafo a la instruccion actual, el tipo del subgrafo es: %s\n",getTypeOfTree(subtree->type));
-
-
-
   (stack_lastInstruccion[heighStack])->numberOfChilds = (stack_lastInstruccion[heighStack])->numberOfChilds + 1;
-
-
   (stack_lastInstruccion[heighStack])->child[(stack_lastInstruccion[heighStack])->numberOfChilds] = subtree;
-
-
   return (stack_lastInstruccion[heighStack]);
 }
 
@@ -394,9 +385,35 @@ void treeEvaluateIf(tree_t *node){
   child 0 expression
   child 1 stmt
   */
+  tree_t *stmt = node->child[1];
   if(evaluateExpression(node->child[0])){
-    // ejecutar stmt
-
+    // execute stmt list
+    while(stmt != NULL){
+      switch(stmt->type){
+        case SetNode:
+          treeEvaluateSet(stmt);
+          break;
+        case ReadNode:
+          treeEvaluateRead(stmt);
+          break;
+        case PrintNode:
+          treeEvaluatePrint(stmt);
+          break;
+        case IfNode:
+          treeEvaluateIf(stmt);
+          break;
+        case IfelseNode:
+          treeEvaluateIfElse(stmt);
+          break;
+        case WhileNode:
+          treeEvaluateWhile(stmt);
+          break;
+        case ForNode:
+          treeEvaluateFor(stmt);
+          break;
+      }
+      stmt = stmt->nextInstruction;
+    }
   }else{
     return;
   }
@@ -408,10 +425,62 @@ void treeEvaluateIfElse(tree_t *node){
   child 1 stmt if true
   child 2 stmt if false
   */
+  tree_t * stmtTrue = node->child[1];
+  tree_t * stmtFalse = node->child[2];
   if(evaluateExpression(node->child[0])){
-    // ejecutar stmt 1
+    while(stmtTrue != NULL){
+      switch(stmtTrue->type){
+        case SetNode:
+          treeEvaluateSet(stmtTrue);
+          break;
+        case ReadNode:
+          treeEvaluateRead(stmtTrue);
+          break;
+        case PrintNode:
+          treeEvaluatePrint(stmtTrue);
+          break;
+        case IfNode:
+          treeEvaluateIf(stmtTrue);
+          break;
+        case IfelseNode:
+          treeEvaluateIfElse(stmtTrue);
+          break;
+        case WhileNode:
+          treeEvaluateWhile(stmtTrue);
+          break;
+        case ForNode:
+          treeEvaluateFor(stmtTrue);
+          break;
+      }
+      stmtTrue = stmtTrue->nextInstruction;
+    }
   }else{
-    // ejecutar stmt 2
+    while(stmtFalse != NULL){
+      switch(stmtFalse->type){
+        case SetNode:
+          treeEvaluateSet(stmtFalse);
+          break;
+        case ReadNode:
+          treeEvaluateRead(stmtFalse);
+          break;
+        case PrintNode:
+          treeEvaluatePrint(stmtFalse);
+          break;
+        case IfNode:
+          treeEvaluateIf(stmtFalse);
+          break;
+        case IfelseNode:
+          treeEvaluateIfElse(stmtFalse);
+          break;
+        case WhileNode:
+          treeEvaluateWhile(stmtFalse);
+          break;
+        case ForNode:
+          treeEvaluateFor(stmtFalse);
+          break;
+      }
+      stmtFalse = stmtFalse->nextInstruction;
+    }
   }
 }
 
@@ -420,9 +489,35 @@ void treeEvaluateWhile(tree_t *node){
   child 0 condition
   child 1 stmt
   */
+  tree_t *stmt = node->child[1];
   bool condition = evaluateExpression(node->child[0]);
   while(condition){
-    // ejecutar stmt
+    while(stmt != NULL){
+      switch(stmt->type){
+        case SetNode:
+          treeEvaluateSet(stmt);
+          break;
+        case ReadNode:
+          treeEvaluateRead(stmt);
+          break;
+        case PrintNode:
+          treeEvaluatePrint(stmt);
+          break;
+        case IfNode:
+          treeEvaluateIf(stmt);
+          break;
+        case IfelseNode:
+          treeEvaluateIfElse(stmt);
+          break;
+        case WhileNode:
+          treeEvaluateWhile(stmt);
+          break;
+        case ForNode:
+          treeEvaluateFor(stmt);
+          break;
+      }
+      stmt = stmt->nextInstruction;
+    }
     condition = evaluateExpression(node->child[0]);
   }
 }
@@ -437,24 +532,69 @@ void treeEvaluateFor(tree_t *node){
   expr_t init = evaluateExpr(node->child[0]);
   expr_t to = evaluateExpr(node->child[1]);
   expr_t step = evaluateExpr(node->child[2]);
+  tree_t * stmt = node->child[3];
   if(checkCompatibleStructTypes(init, to)){
     if(checkCompatibleStructTypes(to, step)){
       // si todos son del mismo tipo, se ejecuta el for
       if(init.type == IntType){
         // todos son enteros
         for(init.i; to.i;){
-          // ejecutar los stmt
-
+          while(stmt != NULL){
+            switch(stmt->type){
+              case SetNode:
+                treeEvaluateSet(stmt);
+                break;
+              case ReadNode:
+                treeEvaluateRead(stmt);
+                break;
+              case PrintNode:
+                treeEvaluatePrint(stmt);
+                break;
+              case IfNode:
+                treeEvaluateIf(stmt);
+                break;
+              case IfelseNode:
+                treeEvaluateIfElse(stmt);
+                break;
+              case WhileNode:
+                treeEvaluateWhile(stmt);
+                break;
+              case ForNode:
+                treeEvaluateFor(stmt);
+                break;
+            }
+            stmt = stmt->nextInstruction;
+          } 
           init.i += step.i;
         }
       }else{
-        /*
-        todos son floats
-        ! no es bueno hacer bucles con floats
-        */
         for(init.f; to.f;){
-          // ejecutar los stmt
-
+          while(stmt != NULL){
+            switch(stmt->type){
+              case SetNode:
+                treeEvaluateSet(stmt);
+                break;
+              case ReadNode:
+                treeEvaluateRead(stmt);
+                break;
+              case PrintNode:
+                treeEvaluatePrint(stmt);
+                break;
+              case IfNode:
+                treeEvaluateIf(stmt);
+                break;
+              case IfelseNode:
+                treeEvaluateIfElse(stmt);
+                break;
+              case WhileNode:
+                treeEvaluateWhile(stmt);
+                break;
+              case ForNode:
+                treeEvaluateFor(stmt);
+                break;
+            }
+            stmt = stmt->nextInstruction;
+          }
           init.f += step.f;
         }
       }
