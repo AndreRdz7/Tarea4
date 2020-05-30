@@ -78,6 +78,12 @@ expr_t evaluateExpr(tree_t*);
 bool evaluateExpression(tree_t*);
 void treeEvaluatePrint(tree_t*);
 void treeEvaluateSet(tree_t*);
+void treeEvaluateIf(tree_t*);
+void treeEvaluateIfElse(tree_t*);
+void treeEvaluateWhile(tree_t*);
+void treeEvaluateFor(tree_t*);
+
+
 
 
 
@@ -380,6 +386,83 @@ void treeEvaluateSet(tree_t *node){
     }else{
       sym->u_val.f = stmt.f;
     }
+  }
+}
+
+void treeEvaluateIf(tree_t *node){
+  /*
+  child 0 expression
+  child 1 stmt
+  */
+  if(evaluateExpression(node->child[0])){
+    // ejecutar stmt
+
+  }else{
+    return;
+  }
+}
+
+void treeEvaluateIfElse(tree_t *node){
+  /*
+  child 0 expression
+  child 1 stmt if true
+  child 2 stmt if false
+  */
+  if(evaluateExpression(node->child[0])){
+    // ejecutar stmt 1
+  }else{
+    // ejecutar stmt 2
+  }
+}
+
+void treeEvaluateWhile(tree_t *node){
+  /*
+  child 0 condition
+  child 1 stmt
+  */
+  bool condition = evaluateExpression(node->child[0]);
+  while(condition){
+    // ejecutar stmt
+    condition = evaluateExpression(node->child[0]);
+  }
+}
+
+void treeEvaluateFor(tree_t *node){
+  /*
+  child 0 init
+  child 1 to
+  child 2 step
+  child 3 expr
+  */
+  expr_t init = evaluateExpr(node->child[0]);
+  expr_t to = evaluateExpr(node->child[1]);
+  expr_t step = evaluateExpr(node->child[2]);
+  if(checkCompatibleStructTypes(init, to)){
+    if(checkCompatibleStructTypes(to, step)){
+      // si todos son del mismo tipo, se ejecuta el for
+      if(init.type == IntType){
+        // todos son enteros
+        for(init.i; to.i;){
+          // ejecutar los stmt
+
+          init.i += step.i;
+        }
+      }else{
+        /*
+        todos son floats
+        ! no es bueno hacer bucles con floats
+        */
+        for(init.f; to.f;){
+          // ejecutar los stmt
+
+          init.f += step.f;
+        }
+      }
+    }else{
+      raiseInvalidCompatibleTypes();
+    }
+  }else{
+    raiseInvalidCompatibleTypes();
   }
 }
 
