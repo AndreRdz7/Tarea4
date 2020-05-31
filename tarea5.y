@@ -336,7 +336,7 @@ void treeEvaluateRead(tree_t *node){
     isInt = true;
   }
   // insert value in symbol
-  node_t* sym = *node->symbol;
+  node_t* sym = *node->child[0]->symbol;
   if(sym->type == IntType && isInt){
     sym->u_val.i = i_val;
   }else if(sym->type == FloatType && !isInt){
@@ -370,9 +370,9 @@ void treeEvaluateSet(tree_t *node){
   */
   expr_t id = evaluateExpr(node->child[0]);
   expr_t stmt = evaluateExpr(node->child[1]);
+  node_t* sym = *node->child[0]->symbol;
   if(checkCompatibleStructTypes(id, stmt)){
-    node_t* sym = *node->symbol;
-    if(stmt.type = IntType){
+    if(strcmp(getType(id.type), "int") == 0){
       sym->u_val.i = stmt.i;
     }else{
       sym->u_val.f = stmt.f;
@@ -385,8 +385,10 @@ void treeEvaluateIf(tree_t *node){
   child 0 expression
   child 1 stmt
   */
-  tree_t *stmt = node->child[1];
+  tree_t *stmt = node->child[1]->child[0];
+  printf("supuesto stmt %s",getTypeOfTree(stmt->type));
   if(evaluateExpression(node->child[0])){
+    printf("evaluo la expresión caon\n");
     // execute stmt list
     while(stmt != NULL){
       switch(stmt->type){
@@ -425,8 +427,8 @@ void treeEvaluateIfElse(tree_t *node){
   child 1 stmt if true
   child 2 stmt if false
   */
-  tree_t * stmtTrue = node->child[1];
-  tree_t * stmtFalse = node->child[2];
+  tree_t * stmtTrue = node->child[1]->child[0];
+  tree_t * stmtFalse = node->child[2]->child[0];
   if(evaluateExpression(node->child[0])){
     while(stmtTrue != NULL){
       switch(stmtTrue->type){
@@ -489,7 +491,7 @@ void treeEvaluateWhile(tree_t *node){
   child 0 condition
   child 1 stmt
   */
-  tree_t *stmt = node->child[1];
+  tree_t *stmt = node->child[1]->child[0];
   bool condition = evaluateExpression(node->child[0]);
   while(condition){
     while(stmt != NULL){
@@ -532,7 +534,7 @@ void treeEvaluateFor(tree_t *node){
   expr_t init = evaluateExpr(node->child[0]);
   expr_t to = evaluateExpr(node->child[1]);
   expr_t step = evaluateExpr(node->child[2]);
-  tree_t * stmt = node->child[3];
+  tree_t * stmt = node->child[3]->child[0];
   if(checkCompatibleStructTypes(init, to)){
     if(checkCompatibleStructTypes(to, step)){
       // si todos son del mismo tipo, se ejecuta el for
@@ -699,6 +701,7 @@ bool evaluateExpression(tree_t *node){
 }
 
 expr_t evaluateExpr(tree_t *node){
+  printf("-*-*-*-*-*--*-***entra evaluate expr\n");
   expr_t left;
   expr_t right;
   expr_t res;
@@ -722,7 +725,6 @@ expr_t evaluateExpr(tree_t *node){
       left = evaluateExpr(node->child[0]);
       right = evaluateExpr(node->child[1]);
       if(checkCompatibleStructTypes){
-        res;
         if(left.type == IntType){
           res.type = IntType;
           res.i = left.i - right.i;
@@ -738,7 +740,6 @@ expr_t evaluateExpr(tree_t *node){
       left = evaluateExpr(node->child[0]);
       right = evaluateExpr(node->child[1]);
       if(checkCompatibleStructTypes){
-        res;
         if(left.type == IntType){
           res.type = IntType;
           res.i = left.i * right.i;
@@ -777,6 +778,7 @@ expr_t evaluateExpr(tree_t *node){
       return res;
       break;
     case IdNode:;
+      printf("/*-/-*/-*/-*/-*/tipo id node\n");
       node_t* sym = *node->symbol;
       if(sym->type == IntType){
         res.i = sym->u_val.i;
@@ -1029,7 +1031,6 @@ void printList(node_t *head){
   if(head != NULL){
     if(head->type == IntType){
       printf("%s - %s : %d\n", head->name, getType(head->type), (head->u_val).i);
-
     }else{
       printf("%s - %s : %f\n", head->name, getType(head->type), (head->u_val).f);
     } 
@@ -1136,16 +1137,44 @@ int yyerror(char const * s) {
 
 void execute(tree_t* actualInstruction){
   printf("type:%s\n", getTypeOfTree(actualInstruction->type));
-
+  switch(actualInstruction->type){
+    case SetNode:;
+      treeEvaluateSet(actualInstruction);
+      return;
+      break;
+    case ReadNode:;
+      treeEvaluateRead(actualInstruction);
+      return;
+      break;
+    case PrintNode:;
+      treeEvaluatePrint(actualInstruction);
+      return;
+      break;
+    case IfNode:;
+      treeEvaluateIf(actualInstruction);
+      return;
+      break;
+    case IfelseNode:;
+      treeEvaluateIfElse(actualInstruction);
+      return;
+      break;
+    case ForNode:;
+      treeEvaluateFor(actualInstruction);
+      return;
+      break;
+    case WhileNode:;
+      treeEvaluateWhile(actualInstruction);
+      return;
+      break;
+  }
   // has childrens
+  
   if(actualInstruction->numberOfChilds >= 0){
-
     printf("Tiene hijos: %d\n", actualInstruction->numberOfChilds+1);
-
     for(int i = 0; i <= actualInstruction->numberOfChilds; i++){
+      printf("El hijo #%d de %s es:\n", i, getTypeOfTree(actualInstruction->child[i]->type));
       execute(actualInstruction->child[i]);
     }
-
   }
   
   if(actualInstruction->nextInstruction != NULL){
@@ -1157,8 +1186,7 @@ void execute(tree_t* actualInstruction){
 int main(int argc, char *argv[]) {
   // Checking if there is an argument
   printf("Bison, syntatic parser:\n");
-  if (argc < 2 || argc > 2)  
-  { 
+  if (argc < 2 || argc > 2){ 
     printf("enter 1 argument only eg.\"filename!\"\n"); 
     return 0; 
   } 
@@ -1167,8 +1195,7 @@ int main(int argc, char *argv[]) {
   FILE * fp  = fopen(file_name, "r"); // read only 
 
 	// check if file exists
-	if (fp == NULL) 
-	{   
+	if (fp == NULL) {   
 		printf("Error! Could not open file\n"); 
 		return 0;
 	} 
@@ -1177,9 +1204,9 @@ int main(int argc, char *argv[]) {
 
   setTable();
   setTree();
-  yyparse();
-  printf("Tabla de símbolos:\n");
-  printList(symbol->next);
+  yyparse();  
   printf("Ejecutar codigo:\n");
   execute(syntax);
+  printf("Tabla de símbolos:\n");
+  printList(symbol->next);
 }

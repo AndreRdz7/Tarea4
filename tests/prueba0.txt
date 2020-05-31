@@ -3,5 +3,5 @@ program cero
    var a : int
 }
 {
-   set a 1;
+   set a 1000;
 } 
