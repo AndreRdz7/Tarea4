@@ -10,12 +10,15 @@ LETRA [A-Za-z]
 DIGITO [0-9]
 ENTERO ("-"|"")({DIGITO})({DIGITO})*
 DECIMAL ("-"|"")({DIGITO})({DIGITO})*(".")({DIGITO})({DIGITO})*
-ID [a-zA-Z]*[0-9]*
+ID   ({LETRA}|("_"|"$"){LETRA})({LETRA}|{DIGITO}|"_"|"$")*
 
 %%
 
 {ENTERO}  {yylval.i = atoi(yytext); return NUMI;}
 {DECIMAL} {yylval.f = atof(yytext); return NUMF;}
+","       {yylval.terminal = yytext; return COMMA;}
+"fun"     {yylval.terminal = yytext; return FUN;}
+"return"     {yylval.terminal = yytext; return RETURN;}
 "program" {yylval.terminal = yytext; return PROGRAM;}
 "var"     {yylval.terminal = yytext; return VAR;}
 "int"     {yylval.type = yytext; return INT;}

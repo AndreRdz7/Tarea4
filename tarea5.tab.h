@@ -76,7 +76,10 @@ extern int yydebug;
     MAYOR = 286,
     IGUAL = 287,
     MENORI = 288,
-    MAYORI = 289
+    MAYORI = 289,
+    COMMA = 290,
+    RETURN = 291,
+    FUN = 292
   };
 #endif
 
@@ -85,7 +88,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 133 "tarea5.y" /* yacc.c:1909  */
+#line 142 "tarea5.y" /* yacc.c:1909  */
 
   char* stringValue;
   char* terminal;
@@ -94,7 +97,7 @@ union YYSTYPE
   int i;
   struct Tree *tree_t;
 
-#line 98 "tarea5.tab.h" /* yacc.c:1909  */
+#line 101 "tarea5.tab.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

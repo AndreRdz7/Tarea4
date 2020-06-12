@@ -1,0 +1,8 @@
+program zero{
+    var x: int;
+    var y: int;
+    var z: int
+
+    fun suma_i (var num1 : int, var num2 : int): int;
+}
+{ }
