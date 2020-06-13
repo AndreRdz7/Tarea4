@@ -56,6 +56,7 @@ typedef struct Func{
   enum Types returnType;
   int i;
   float f;
+  struct Func * next;
   struct Tree * treeRoot;
   struct Node * exprRoot;
 } func_t;
@@ -120,6 +121,13 @@ void printList(node_t*);
 // reset the heap value
 void resetHeap();
 
+
+// functions of creating functions
+void setFuncionsTable();
+void declareFunction(func_t*, char*);
+func_t ** verifyFunctionID(func_t*, char*);
+void printFunctionList(func_t*);
+
 //ERRORS
 void raiseDuplicateVar(char* name);
 void raiseInvalidType(char* name);
@@ -130,6 +138,9 @@ void raiseNoExistingVar(char* name);
 
 node_t* symbol; // start of the symbol linked list
 node_t* lastInserted; // last element inserted in the linked list
+
+func_t * fsymbol; // start of the linked list of functions
+func_t * lastFuncionInserted; // last function declared
 
 tree_t* syntax; //start of the syntax tree
 
@@ -187,8 +198,8 @@ fun_decls : fun_decls fun_dec
           | fun_dec
 ;
 
-fun_dec : FUN ID PARENI oparams PAREND COLON tipo LLAVEI opt_decls LLAVED stmt
-        | FUN ID PARENI oparams PAREND COLON tipo SEMICOLON
+fun_dec : FUN ID {declareFunction(fsymbol, yylval.stringValue)} PARENI oparams PAREND COLON tipo LLAVEI opt_decls LLAVED stmt
+        | FUN ID {declareFunction(fsymbol, yylval.stringValue)} PARENI oparams PAREND COLON tipo SEMICOLON
 ;
 
 oparams : params 
@@ -244,7 +255,7 @@ factor : PARENI expr PAREND {$$ = $2;}
        | ID {addToExpr(symbol, yylval.stringValue); $$ = addTreeIdNode(IdNode, verifyID(symbol, yylval.stringValue));}
        | NUMI {intToHeap(); $$ = addTreeIntNode(IntNode, yylval.i);}
        | NUMF {floatToHeap(); $$ = addTreeFloatNode(FloatNode, yylval.f);}
-       | ID {addToExpr(symbol, yylval.stringValue); pointerToMemoryOfID = verifyID(symbol, yylval.stringValue);} PAREND opt_exprs PARENI {$$ = addTreeIdNode(IdNode, pointerToMemoryOfID);}
+       | ID {addToExpr(symbol, yylval.stringValue); verifyFunctionID(fsymbol, yylval.stringValue);} PAREND opt_exprs PARENI
 ;
 
 opt_exprs : expr_lst
@@ -993,6 +1004,19 @@ void declareVariable(node_t *head, char *name){
   lastInserted = newNode;
 }
 
+void declareFunction(func_t * head, char * name){
+  func_t *current = head;
+  while(current->next != NULL){
+    current = current->next;
+    if (strcmp(current->name, name) == 0){
+      raiseDuplicateVar(name);
+    }
+  }
+  func_t * newNode = (func_t*)malloc(sizeof(func_t));
+  current->next = newNode;
+  strcpy(newNode->name, name);
+  lastInserted = newNode;
+}
 /*
 Validates if float was the last value in heap
 */
@@ -1046,6 +1070,15 @@ void printList(node_t *head){
     printList(head->next);
   }
 }
+
+void printFunctionList(func_t* head){
+  if(head != NULL){
+    printf("%s\n", head->name);
+  }
+  printFunctionList(head->next);
+  
+}
+
 
 /*
 @param name   duplicated var name
@@ -1107,6 +1140,12 @@ void setTable(){
   lastInserted = symbol;
 }
 
+void setFuncionsTable(){
+  fsymbol = (func_t*)malloc(sizeof(func_t));
+  strcpy(fsymbol->name, "__init__");
+  fsymbol->next = NULL;
+  lastFuncionInserted = fsymbol;
+}
 /*
 Initializes the syntax tree
 */
@@ -1135,6 +1174,20 @@ node_t ** verifyID(node_t *head, char *name){
   }
   raiseNoExistingVar(name);
 }
+
+
+func_t ** verifyFunctionID(func_t* head, char* name){
+  func_t ** current = &head;
+  while((*current)->next != NULL){
+    current = &((*current)->next);
+    if (strcmp((*current)->name, name) == 0){
+      return current;
+    }
+  }
+  raiseNoExistingVar(name);
+}
+
+
 
 int yyerror(char const * s) {
   fprintf(stderr, "%s\n", s);
@@ -1198,6 +1251,7 @@ void execute(tree_t* actualInstruction){
 }
 
 
+
 int main(int argc, char *argv[]) {
   // Checking if there is an argument
   printf("Bison, syntatic parser:\n");
@@ -1218,6 +1272,7 @@ int main(int argc, char *argv[]) {
   yyin = fp; 
 
   setTable();
+  setFuncionsTable();
   //setTree();
   yyparse();  
   printf("Code execution:\n");

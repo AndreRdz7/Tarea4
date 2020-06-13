@@ -2,6 +2,8 @@ program zero{
     var x: int;
     var y: int;
     var z: int
+
+    
 }
 { 
     set x 6;
