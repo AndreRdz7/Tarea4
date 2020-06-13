@@ -1512,13 +1512,13 @@ yyreduce:
 
   case 15:
 #line 201 "tarea5.y" /* yacc.c:1646  */
-    {declareFunction(fsymbol, yylval.stringValue)}
+    {declareFunction(fsymbol, yylval.stringValue);}
 #line 1517 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
 #line 202 "tarea5.y" /* yacc.c:1646  */
-    {declareFunction(fsymbol, yylval.stringValue)}
+    {declareFunction(fsymbol, yylval.stringValue);}
 #line 1523 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
@@ -2056,10 +2056,10 @@ char* getTypeOfTree(enum TreeNodeTypes type) {
 }
 
 tree_t* connectWithInstruccion(tree_t * subtree){
-  // printf("Connecto, subgrafo a la instruccion actual, el tipo del subgrafo es: %s\n",getTypeOfTree(subtree->type));
-  // printf("Actual heigh of tsack: %d\n", heighStack);
+  printf("Connecto, subgrafo a la instruccion actual, el tipo del subgrafo es: %s\n",getTypeOfTree(subtree->type));
+  printf("Actual heigh of tsack: %d\n", heighStack);
   tree_t * lastNodeInList = returnLastInstrucc(stack_lastInstruccion[heighStack]);
-  // printf("Es: %s\n",getTypeOfTree(lastNodeInList->type));
+  printf("Es: %s\n",getTypeOfTree(lastNodeInList->type));
   lastNodeInList->numberOfChilds = lastNodeInList->numberOfChilds + 1;
   lastNodeInList->child[lastNodeInList->numberOfChilds] = subtree;
   return (stack_lastInstruccion[heighStack]);
@@ -2543,7 +2543,7 @@ expr_t evaluateExpr(tree_t *node){
 }
 
 tree_t* createQuaternaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, tree_t * three, tree_t* four){
-  // printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = type;
   newNode->nextInstruction = NULL;
@@ -2560,7 +2560,7 @@ tree_t* createQuaternaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two
 }
 
 tree_t* createTernaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, tree_t * three){
-  // printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = type;
   newNode->nextInstruction = NULL;
@@ -2575,22 +2575,13 @@ tree_t* createTernaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, t
 }
 
 tree_t* createBinaryNode(enum TreeNodeTypes type, tree_t *left, tree_t *right){
-  // printf("Creando Binary\n");
-  // printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
-  // printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
-  // printf("Left: %s\n", getTypeOfTree(left->type));
-  // printf("hijos de left: %d\n", left->numberOfChilds+1);
-  // printf("Right: %s\n", getTypeOfTree(right->type));
-  // printf("hijos de right: %d\n", right->numberOfChilds+1);
+  printf("Creando Binary\n");
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
+  printf("Left: %s\n", getTypeOfTree(left->type));
+  printf("hijos de left: %d\n", left->numberOfChilds+1);
+  printf("Right: %s\n", getTypeOfTree(right->type));
+  printf("hijos de right: %d\n", right->numberOfChilds+1);
 
-  if(right->nextInstruction != NULL){
-    // printf("Next instruction: %s\n", getTypeOfTree(right->nextInstruction->type));
-  }else{
-    // printf("No ahy next instr\n");
-  }
-  if(right->numberOfChilds > -1){
-    // printf("Mmm: %s\n", getTypeOfTree(right->child[0]->type));
-  }
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = type;
   newNode->nextInstruction = NULL;
@@ -2603,8 +2594,8 @@ tree_t* createBinaryNode(enum TreeNodeTypes type, tree_t *left, tree_t *right){
 }
 
 tree_t* createUnaryNode(enum TreeNodeTypes type, tree_t *child){
-  // printf("Creando Unary\n");
-  // printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
+  printf("Creando Unary\n");
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = type;
   newNode->nextInstruction = NULL;
@@ -2615,7 +2606,7 @@ tree_t* createUnaryNode(enum TreeNodeTypes type, tree_t *child){
 }
 
 void pushStackLastInstruccion(){
-  // printf("Creo nueva lista de instrucciones\n");
+  printf("Creo nueva lista de instrucciones\n");
   heighStack++;
   tree_t * init_node = (tree_t*)malloc(sizeof(tree_t));
   init_node->type = INIT;
@@ -2631,7 +2622,7 @@ void pushStackLastInstruccion(){
 }
 
 void popStackLastInstruccion(){
-  // printf("Termino lista de instrucciones y regreso a la pasada\n");
+  printf("Termino lista de instrucciones y regreso a la pasada\n");
   stack_lastInstruccion[heighStack] = NULL;
   heighStack--;
 }
@@ -2646,7 +2637,7 @@ tree_t * returnLastInstrucc(tree_t * root){
 
 
 tree_t* addTreeIdNode(enum TreeNodeTypes actualNodeToAddType, node_t ** pointerId){
-  // printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->numberOfChilds = -1;
   newNode->type = actualNodeToAddType;
@@ -2655,7 +2646,7 @@ tree_t* addTreeIdNode(enum TreeNodeTypes actualNodeToAddType, node_t ** pointerI
 }
 
 tree_t* addTreeIntNode(enum TreeNodeTypes actualNodeToAddType, int value){
-  // printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->numberOfChilds = -1;
   newNode->type = actualNodeToAddType;
@@ -2664,7 +2655,7 @@ tree_t* addTreeIntNode(enum TreeNodeTypes actualNodeToAddType, int value){
 }
 
 tree_t* addTreeFloatNode(enum TreeNodeTypes actualNodeToAddType, float value){
-  // printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
+  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
   tree_t* newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->numberOfChilds = -1;
   newNode->type = actualNodeToAddType;
@@ -2681,14 +2672,14 @@ when it ends with a semicolon
 */
 // solo agrego instrucciones en el mismo nivel
 void addInstructionToTree(enum TreeNodeTypes nodeType){
-  // printf("Agrego Instruccion\n");
+  printf("Agrego Instruccion\n");
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = nodeType;
   newNode->nextInstruction = NULL;
   newNode->numberOfChilds = -1;
   if(stack_lastInstruccion[heighStack] != NULL){
     returnLastInstrucc(stack_lastInstruccion[heighStack])->nextInstruction = newNode;
-    // printf("Instruccion agregada\n");
+    printf("Instruccion agregada\n");
   }
   //connect with last instruction
   //stack_lastInstruccion[heighStack] = newNode;
@@ -2764,10 +2755,10 @@ void declareFunction(func_t * head, char * name){
       raiseDuplicateVar(name);
     }
   }
-  func_t * newNode = (func_t*)malloc(sizeof(func_t));
-  current->next = newNode;
-  strcpy(newNode->name, name);
-  lastInserted = newNode;
+  func_t * newFunc = (func_t*)malloc(sizeof(func_t));
+  current->next = newFunc;
+  strcpy(newFunc->name, name);
+  lastFuncionInserted = newFunc;
 }
 /*
 Validates if float was the last value in heap

@@ -198,8 +198,8 @@ fun_decls : fun_decls fun_dec
           | fun_dec
 ;
 
-fun_dec : FUN ID {declareFunction(fsymbol, yylval.stringValue)} PARENI oparams PAREND COLON tipo LLAVEI opt_decls LLAVED stmt
-        | FUN ID {declareFunction(fsymbol, yylval.stringValue)} PARENI oparams PAREND COLON tipo SEMICOLON
+fun_dec : FUN ID {declareFunction(fsymbol, yylval.stringValue);} PARENI oparams PAREND COLON tipo LLAVEI opt_decls LLAVED stmt
+        | FUN ID {declareFunction(fsymbol, yylval.stringValue);} PARENI oparams PAREND COLON tipo SEMICOLON
 ;
 
 oparams : params 
@@ -1006,10 +1006,10 @@ void declareFunction(func_t * head, char * name){
       raiseDuplicateVar(name);
     }
   }
-  func_t * newNode = (func_t*)malloc(sizeof(func_t));
-  current->next = newNode;
-  strcpy(newNode->name, name);
-  lastInserted = newNode;
+  func_t * newFunc = (func_t*)malloc(sizeof(func_t));
+  current->next = newFunc;
+  strcpy(newFunc->name, name);
+  lastFuncionInserted = newFunc;
 }
 /*
 Validates if float was the last value in heap
