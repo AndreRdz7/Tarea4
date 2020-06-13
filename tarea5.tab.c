@@ -2058,11 +2058,18 @@ char* getTypeOfTree(enum TreeNodeTypes type) {
 tree_t* connectWithInstruccion(tree_t * subtree){
   printf("Connecto, subgrafo a la instruccion actual, el tipo del subgrafo es: %s\n",getTypeOfTree(subtree->type));
   printf("Actual heigh of tsack: %d\n", heighStack);
-  tree_t * lastNodeInList = returnLastInstrucc(stack_lastInstruccion[heighStack]);
-  printf("Es: %s\n",getTypeOfTree(lastNodeInList->type));
-  lastNodeInList->numberOfChilds = lastNodeInList->numberOfChilds + 1;
-  lastNodeInList->child[lastNodeInList->numberOfChilds] = subtree;
-  return (stack_lastInstruccion[heighStack]);
+
+  if(heighStack > -1){
+    tree_t * lastNodeInList = returnLastInstrucc(stack_lastInstruccion[heighStack]);
+    printf("Es: %s\n",getTypeOfTree(lastNodeInList->type));
+    lastNodeInList->numberOfChilds = lastNodeInList->numberOfChilds + 1;
+    lastNodeInList->child[lastNodeInList->numberOfChilds] = subtree;
+    return (stack_lastInstruccion[heighStack]);
+  }else{
+    syntax = subtree;
+    return syntax;
+  }
+
 }
 
 
