@@ -40,8 +40,8 @@ ID   ({LETRA}|("_"|"$"){LETRA})({LETRA}|{DIGITO}|"_"|"$")*
 "/"       {printf("Division\n"); yylval.terminal = yytext; return DIVIDE;}
 "("       {yylval.terminal = yytext; return PARENI;}
 ")"       {yylval.terminal = yytext; return PAREND;}
-"{"       {yylval.terminal = yytext; return LLAVEI;}
-"}"       {yylval.terminal = yytext; return LLAVED;}
+"{"       {printf("Abro llave\n");yylval.terminal = yytext; return LLAVEI;}
+"}"       {printf("Cierro llave\n");yylval.terminal = yytext; return LLAVED;}
 ":"       {yylval.terminal = yytext; return COLON;}
 ";"       {printf("Punto y Coma\n"); yylval.terminal = yytext; return SEMICOLON;}
 "<"       {yylval.terminal = yytext; return MENOR;}

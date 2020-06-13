@@ -909,12 +909,12 @@ YY_RULE_SETUP
 case 27:
 YY_RULE_SETUP
 #line 43 "tarea5.flex"
-{yylval.terminal = yytext; return LLAVEI;}
+{printf("Abro llave\n");yylval.terminal = yytext; return LLAVEI;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 44 "tarea5.flex"
-{yylval.terminal = yytext; return LLAVED;}
+{printf("Cierro llave\n");yylval.terminal = yytext; return LLAVED;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP

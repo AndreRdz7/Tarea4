@@ -2100,7 +2100,7 @@ bool checkCompatibleStructTypes(expr_t first, expr_t second){
 }
 
 void treeEvaluatePrint(tree_t *node){
-  printf("printing... ");
+  //printf("printing... ");
   expr_t stmt = evaluateExpr(node->child[0]);
   if(stmt.type == IntType){
     printf("%d\n", stmt.i);
@@ -3018,8 +3018,14 @@ int main(int argc, char *argv[]) {
   setFuncionsTable();
   //setTree();
   yyparse();  
-  printf("Code execution:\n");
-  execute(syntax);
-  printf("Symbol's table:\n");
-  printList(symbol->next);
+  if(syntax){
+    printf("Code execution:\n");
+    execute(syntax);
+  }
+
+  if(symbol->next){
+    printf("Symbol's table:\n");
+    printList(symbol->next);
+  }
+    
 }
