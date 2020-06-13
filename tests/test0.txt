@@ -2,7 +2,18 @@ program zero{
     var x: int;
     var y: int;
     var z: int
-
-    fun suma_i (var num1 : int, var num2 : int): int;
 }
-{ }
+{ 
+    set x 6;
+    set y 18/x;
+    print x / y;
+
+    if(1 < 2)
+    {
+        print x;
+        print y;
+        print z;
+    }
+
+
+}

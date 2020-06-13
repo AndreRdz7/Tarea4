@@ -834,7 +834,7 @@ YY_RULE_SETUP
 case 12:
 YY_RULE_SETUP
 #line 28 "tarea5.flex"
-{yylval.terminal = yytext; return PRINT;}
+{printf("Print\n");yylval.terminal = yytext; return PRINT;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
@@ -874,7 +874,7 @@ YY_RULE_SETUP
 case 20:
 YY_RULE_SETUP
 #line 36 "tarea5.flex"
-{yylval.stringValue = yytext; return ID;}
+{printf("ID: %s\n", yytext);yylval.stringValue = yytext; return ID;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
@@ -894,7 +894,7 @@ YY_RULE_SETUP
 case 24:
 YY_RULE_SETUP
 #line 40 "tarea5.flex"
-{yylval.terminal = yytext; return DIVIDE;}
+{printf("Division\n"); yylval.terminal = yytext; return DIVIDE;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
@@ -924,7 +924,7 @@ YY_RULE_SETUP
 case 30:
 YY_RULE_SETUP
 #line 46 "tarea5.flex"
-{yylval.terminal = yytext; return SEMICOLON;}
+{printf("Punto y Coma\n"); yylval.terminal = yytext; return SEMICOLON;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
