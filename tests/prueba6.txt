@@ -3,4 +3,4 @@ program seis
   var x : int
 }
 
-   read x
+   read x;

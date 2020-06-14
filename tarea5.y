@@ -23,7 +23,7 @@ int yyerror(char const * s);
 
 
 enum Types {IntType, FloatType, NULLType};
-enum TreeNodeTypes{INIT, MayorNode, MenorNode, IgualNode, MenorINode, MayorINode, InstruccionNode, IdNode, ExprNode, ReadNode, PrintNode, IfNode, ExpresionNode, IfelseNode, WhileNode, ForNode, SetNode, ComparandumNode, RestaNode, SumaNode, MultNode, DivideNode, TermNode, IntNode, FloatNode};
+enum TreeNodeTypes{INIT, FuncionNode , MayorNode, MenorNode, IgualNode, MenorINode, MayorINode, InstruccionNode, IdNode, ExprNode, ReadNode, PrintNode, IfNode, ExpresionNode, IfelseNode, WhileNode, ForNode, SetNode, ComparandumNode, RestaNode, SumaNode, MultNode, DivideNode, TermNode, IntNode, FloatNode};
 
 typedef struct expr{
   enum Types type;
@@ -49,6 +49,7 @@ typedef struct Tree{
   int i;  // the i and f are for when there is an integer or float type (keeps the value)
   float f;
   struct Tree *nextInstruction; // every semcilomn there will be a new isntruction
+  struct Func * funcNode;
 } tree_t;
 
 typedef struct Func{
@@ -57,11 +58,17 @@ typedef struct Func{
   int i;
   float f;
   struct Func * next;
-  struct Tree * treeRoot;
-  struct Node * exprRoot;
+
+  bool firstInstruction;
+  struct Tree * syntaxRoot;
+  struct Node * symbolRoot;
+  node_t* lastInserted;
+  int heighInstructionStack;
+  tree_t * stack_lastInstruccion[100];
 } func_t;
 
-
+int heighFuncStack = -1;
+func_t * stackFunctions[1000];
 
 enum Types heap = NULLType;
 
@@ -69,17 +76,17 @@ enum Types heap = NULLType;
 // creates the tree
 void setTree();
 // add instruction node
-void addInstructionToTree(enum TreeNodeTypes nodeType);
+void addInstructionToTree(enum TreeNodeTypes nodeType, func_t*);
 // create a node that has wo childs (expr, term, expresion)
-void pushStackLastInstruccion();
-void popStackLastInstruccion();
+void pushStackLastInstruccion(func_t * );
+void popStackLastInstruccion(func_t *);
 tree_t* createBinaryNode(enum TreeNodeTypes, tree_t*, tree_t*);
 tree_t* addTreeIdNode(enum TreeNodeTypes, node_t**);
 tree_t* addTreeIntNode(enum TreeNodeTypes, int);
 tree_t* addTreeFloatNode(enum TreeNodeTypes, float);
 char* getTypeOfTree(enum TreeNodeTypes);
 void GenerateNodeAccordingToType(enum TreeNodeTypes);
-tree_t* connectWithInstruccion(tree_t *);
+tree_t* connectWithInstruccion(tree_t *, func_t *);
 tree_t* createUnaryNode(enum TreeNodeTypes type, tree_t *);
 tree_t* createTernaryNode(enum TreeNodeTypes type, tree_t *, tree_t *, tree_t *);
 tree_t* createQuaternaryNode(enum TreeNodeTypes type, tree_t *, tree_t *, tree_t *, tree_t*);
@@ -97,19 +104,17 @@ void treeEvaluateFor(tree_t*);
 tree_t * returnLastInstrucc(tree_t*);
 
 
-int firstInstruction = true;
-
 // LIST functions
 // creates the list
-void setTable();
+node_t * setTable();
 //check if ID exists
 node_t ** verifyID(node_t*, char*);
 //check if value exists and if the type is the same (taht we are keeping in the heap)
 void addToExpr(node_t*, char*);
 // int or float type selection
-void addTypeToVariable(node_t*, char*);
+void addTypeToVariable(node_t*, char*, func_t*);
 // add element to the list if irt already existsed call an error
-void declareVariable(node_t*, char*);
+void declareVariable(node_t*, char*, func_t*);
 // checdk if last element in the heap was a float
 void floatToHeap();
 // checdk if last element in the heap was a int
@@ -123,10 +128,13 @@ void resetHeap();
 
 
 // functions of creating functions
-void setFuncionsTable();
 void declareFunction(func_t*, char*);
 func_t ** verifyFunctionID(func_t*, char*);
 void printFunctionList(func_t*);
+
+
+void setGlobals(char *);
+func_t * createFunc(char *, enum Types);
 
 //ERRORS
 void raiseDuplicateVar(char* name);
@@ -135,18 +143,16 @@ void raiseInvalidCompatibleTypes();
 void raiseNoExistingVar(char* name);
 
 
+// symbol, last Inserted , syntax, stack function height and the stack of main function
+// by every func created a new symbol, lastInserted, syntax, heigh and stack will be declared
+// and stored in the node of function
+func_t * globalFunc;
 
-node_t* symbol; // start of the symbol linked list
-node_t* lastInserted; // last element inserted in the linked list
 
 func_t * fsymbol; // start of the linked list of functions
 func_t * lastFuncionInserted; // last function declared
 
-tree_t* syntax; //start of the syntax tree
 
-
-int heighStack = -1;
-tree_t * stack_lastInstruccion[100]; // last instruction of the tree
 node_t ** pointerToMemoryOfID;
 
 %}
@@ -172,7 +178,7 @@ LLAVED LLAVEI COLON SEMICOLON MENOR MAYOR IGUAL MENORI MAYORI COMMA RETURN FUN;
 
 %%
 
-prog : PROGRAM ID LLAVEI opt_decls opt_fun_decls LLAVED stmt 
+prog : PROGRAM ID {setGlobals(yylval.stringValue);} LLAVEI opt_decls opt_fun_decls LLAVED stmt 
 ;
 
 opt_decls : decls 
@@ -183,11 +189,11 @@ decls : dec SEMICOLON decls
       | dec
 ;
 
-dec : VAR ID {declareVariable(symbol, yylval.stringValue);} COLON tipo 
+dec : VAR ID {declareVariable(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue, stackFunctions[heighFuncStack]);} COLON tipo 
 ;
 
-tipo : INT {addTypeToVariable(symbol, yylval.type);}
-     | FLOAT {addTypeToVariable(symbol, yylval.type);}
+tipo : INT {addTypeToVariable(stackFunctions[heighFuncStack]->symbolRoot, yylval.type, stackFunctions[heighFuncStack]);}
+     | FLOAT {addTypeToVariable(stackFunctions[heighFuncStack]->symbolRoot, yylval.type, stackFunctions[heighFuncStack]);}
 ;
 
 opt_fun_decls : fun_decls 
@@ -213,29 +219,29 @@ params : param COMMA params
 param : VAR ID COLON tipo
 ;
 
-stmt : {addInstructionToTree(InstruccionNode);} assig_stmt {$$ = $2;}
+stmt : {addInstructionToTree(InstruccionNode, stackFunctions[heighFuncStack]);} assig_stmt {$$ = $2;}
      | if_stmt {$$ = $1;}
      | iter_stmt {$$ = $1;}
      | cmp_stmt {$$ = $1;}
 ;
 
 
-assig_stmt : SET ID {pointerToMemoryOfID = verifyID(symbol, yylval.stringValue);} expr {resetHeap();} SEMICOLON {$$ = connectWithInstruccion(createBinaryNode(SetNode, addTreeIdNode(IdNode, pointerToMemoryOfID), $4));}
-           | READ ID {pointerToMemoryOfID = verifyID(symbol, yylval.stringValue);} SEMICOLON {$$ = connectWithInstruccion(createUnaryNode(ReadNode, addTreeIdNode(IdNode, pointerToMemoryOfID)));}
-           | PRINT expr {resetHeap();} SEMICOLON {$$ = connectWithInstruccion(createUnaryNode(PrintNode, $2));}
+assig_stmt : SET ID {pointerToMemoryOfID = verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);} expr {resetHeap();} SEMICOLON {$$ = connectWithInstruccion(createBinaryNode(SetNode, addTreeIdNode(IdNode, pointerToMemoryOfID), $4), stackFunctions[heighFuncStack]);}
+           | READ ID {pointerToMemoryOfID = verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);} SEMICOLON {$$ = connectWithInstruccion(createUnaryNode(ReadNode, addTreeIdNode(IdNode, pointerToMemoryOfID)), stackFunctions[heighFuncStack]);}
+           | PRINT expr {resetHeap();} SEMICOLON {$$ = connectWithInstruccion(createUnaryNode(PrintNode, $2), stackFunctions[heighFuncStack]);}
            | RETURN expr;
 ;
 
-if_stmt : IF PARENI expresion {resetHeap();} PAREND stmt {$$ = connectWithInstruccion(createBinaryNode(IfNode,$3, $6));}
-        | IFELSE PARENI expresion {resetHeap();} PAREND stmt stmt {$$ = connectWithInstruccion(createTernaryNode(IfelseNode, $3, $6, $7));}
+if_stmt : IF PARENI expresion {resetHeap();} PAREND stmt {$$ = connectWithInstruccion(createBinaryNode(IfNode,$3, $6), stackFunctions[heighFuncStack]);}
+        | IFELSE PARENI expresion {resetHeap();} PAREND stmt stmt {$$ = connectWithInstruccion(createTernaryNode(IfelseNode, $3, $6, $7), stackFunctions[heighFuncStack]);}
 ;
 
-iter_stmt : WHILE PARENI expresion {resetHeap();} PAREND stmt {$$ = connectWithInstruccion(createBinaryNode(WhileNode, $3, $6));}
-          | FOR SET ID {pointerToMemoryOfID = verifyID(symbol, yylval.stringValue);} expr {resetHeap();} TO expr {resetHeap();} STEP expr {resetHeap();} DO stmt {$$ = connectWithInstruccion(createQuaternaryNode(ForNode, createBinaryNode(SetNode, addTreeIdNode(IdNode, pointerToMemoryOfID), $5), $8, $11, $14));}
+iter_stmt : WHILE PARENI expresion {resetHeap();} PAREND stmt {$$ = connectWithInstruccion(createBinaryNode(WhileNode, $3, $6), stackFunctions[heighFuncStack]);}
+          | FOR SET ID {pointerToMemoryOfID = verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);} expr {resetHeap();} TO expr {resetHeap();} STEP expr {resetHeap();} DO stmt {$$ = connectWithInstruccion(createQuaternaryNode(ForNode, createBinaryNode(SetNode, addTreeIdNode(IdNode, pointerToMemoryOfID), $5), $8, $11, $14), stackFunctions[heighFuncStack]);}
 ;
 
 cmp_stmt : LLAVEI LLAVED {$$ = NULL;}
-         | LLAVEI {pushStackLastInstruccion();} stmt_lst {popStackLastInstruccion();} LLAVED {$$ = $3;}
+         | LLAVEI {pushStackLastInstruccion(stackFunctions[heighFuncStack]);} stmt_lst {popStackLastInstruccion(stackFunctions[heighFuncStack]);} LLAVED {$$ = $3;}
 ;
 
 stmt_lst : stmt {$$ = $1;}
@@ -252,10 +258,10 @@ term : term MULTI factor {$$ = createBinaryNode(MultNode, $1, $3);}
      | factor {$$ = $1;}
 
 factor : PARENI expr PAREND {$$ = $2;}
-       | ID {addToExpr(symbol, yylval.stringValue); $$ = addTreeIdNode(IdNode, verifyID(symbol, yylval.stringValue));}
+       | ID {addToExpr(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue); $$ = addTreeIdNode(IdNode, verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue));}
        | NUMI {intToHeap(); $$ = addTreeIntNode(IntNode, yylval.i);}
        | NUMF {floatToHeap(); $$ = addTreeFloatNode(FloatNode, yylval.f);}
-       | ID {addToExpr(symbol, yylval.stringValue); verifyFunctionID(fsymbol, yylval.stringValue);} PAREND opt_exprs PARENI
+       | ID {addToExpr(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue); verifyFunctionID(fsymbol, yylval.stringValue);} PAREND opt_exprs PARENI
 ;
 
 opt_exprs : expr_lst
@@ -277,6 +283,7 @@ expresion : expr MENOR expr {$$ = createBinaryNode(MenorNode, $1, $3);}
 
 char* getTypeOfTree(enum TreeNodeTypes type) {
   switch (type) {
+    case FuncionNode: return "funcion";
     case InstruccionNode: return "instruccion";
     case INIT: return "init";
     case IdNode: return "id";
@@ -306,19 +313,20 @@ char* getTypeOfTree(enum TreeNodeTypes type) {
   }
 }
 
-tree_t* connectWithInstruccion(tree_t * subtree){
+// refactored
+tree_t* connectWithInstruccion(tree_t * subtree, func_t * actualScope){
   printf("Connecto, subgrafo a la instruccion actual, el tipo del subgrafo es: %s\n",getTypeOfTree(subtree->type));
-  printf("Actual heigh of tsack: %d\n", heighStack);
+  printf("Actual heigh of stack: %d\n", actualScope->heighInstructionStack);
 
-  if(heighStack > -1){
-    tree_t * lastNodeInList = returnLastInstrucc(stack_lastInstruccion[heighStack]);
+  if(actualScope->heighInstructionStack > -1){
+    tree_t * lastNodeInList = returnLastInstrucc(actualScope->stack_lastInstruccion[actualScope->heighInstructionStack]);
     printf("Es: %s\n",getTypeOfTree(lastNodeInList->type));
     lastNodeInList->numberOfChilds = lastNodeInList->numberOfChilds + 1;
     lastNodeInList->child[lastNodeInList->numberOfChilds] = subtree;
-    return (stack_lastInstruccion[heighStack]);
+    return (actualScope->stack_lastInstruccion[actualScope->heighInstructionStack]);
   }else{
-    syntax = subtree;
-    return syntax;
+    actualScope->syntaxRoot = subtree;
+    return actualScope->syntaxRoot;
   }
 
 }
@@ -863,26 +871,29 @@ tree_t* createUnaryNode(enum TreeNodeTypes type, tree_t *child){
   return newNode;
 }
 
-void pushStackLastInstruccion(){
+//refactored
+void pushStackLastInstruccion(func_t * scope){
   printf("Creo nueva lista de instrucciones\n");
-  heighStack++;
+
+  scope->heighInstructionStack++;
   tree_t * init_node = (tree_t*)malloc(sizeof(tree_t));
   init_node->type = INIT;
   init_node->nextInstruction = NULL;
   init_node->numberOfChilds = -1;
-  stack_lastInstruccion[heighStack] = init_node;
+  scope->stack_lastInstruccion[scope->heighInstructionStack] = init_node;
 
   
-  if(firstInstruction){
-    syntax = init_node;
-    firstInstruction = false;
+  if(scope->firstInstruction){
+    scope->syntaxRoot = init_node;
+    scope->firstInstruction = false;
   }
 }
 
-void popStackLastInstruccion(){
+// rfeactored
+void popStackLastInstruccion(func_t * scope){
   printf("Termino lista de instrucciones y regreso a la pasada\n");
-  stack_lastInstruccion[heighStack] = NULL;
-  heighStack--;
+  scope->stack_lastInstruccion[scope->heighInstructionStack] = NULL;
+  scope->heighInstructionStack--;
 }
 
 tree_t * returnLastInstrucc(tree_t * root){
@@ -929,18 +940,27 @@ Inserts a new instruction to the tree, usually
 when it ends with a semicolon
 */
 // solo agrego instrucciones en el mismo nivel
-void addInstructionToTree(enum TreeNodeTypes nodeType){
+// refactoring
+void addInstructionToTree(enum TreeNodeTypes nodeType, func_t * scope){
   printf("Agrego Instruccion\n");
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = nodeType;
   newNode->nextInstruction = NULL;
   newNode->numberOfChilds = -1;
-  if(stack_lastInstruccion[heighStack] != NULL){
-    returnLastInstrucc(stack_lastInstruccion[heighStack])->nextInstruction = newNode;
-    printf("Instruccion agregada\n");
+  printf("size: %d\n", scope->heighInstructionStack);
+  if(scope->heighInstructionStack > -1){
+
+      if(scope->stack_lastInstruccion[scope->heighInstructionStack] != NULL){
+        returnLastInstrucc(scope->stack_lastInstruccion[scope->heighInstructionStack])->nextInstruction = newNode;
+        printf("Instruccion agregada\n");
+      }
+
+  }else{
+      scope->syntaxRoot = newNode;
   }
+
   //connect with last instruction
-  //stack_lastInstruccion[heighStack] = newNode;
+  //stack_lastInstruccion[heighInstructionStack] = newNode;
 
 }
 
@@ -972,14 +992,14 @@ void addToExpr(node_t *head, char *name){
 
 Adds the type to the last inserted symbol
 */
-
-void addTypeToVariable(node_t *head, char *type){
+// refactored
+void addTypeToVariable(node_t *head, char *type, func_t* scope){
   if (strcmp(type, "int") == 0){
-    lastInserted->type = IntType;
-    lastInserted->u_val.i = 0;
+    scope->lastInserted->type = IntType;
+    scope->lastInserted->u_val.i = 0;
   }else{
-    lastInserted->type = FloatType;
-    lastInserted->u_val.f = 0.0;
+    scope->lastInserted->type = FloatType;
+    scope->lastInserted->u_val.f = 0.0;
   }
 }
 
@@ -991,7 +1011,7 @@ void addTypeToVariable(node_t *head, char *type){
 Adds the variable to the symbol table, raises error 
 if found previously
 */
-void declareVariable(node_t *head, char *name){
+void declareVariable(node_t *head, char *name, func_t * scope){
   node_t *current = head;
   while(current->next != NULL){
     current = current->next;
@@ -1002,11 +1022,12 @@ void declareVariable(node_t *head, char *name){
   node_t * newNode = (node_t*)malloc(sizeof(node_t));
   current->next = newNode;
   strcpy(newNode->name, name);
-  lastInserted = newNode;
+  scope->lastInserted = newNode;
 }
 
 void declareFunction(func_t * head, char * name){
   func_t *current = head;
+  // checo que no haya sido ya declarada
   while(current->next != NULL){
     current = current->next;
     if (strcmp(current->name, name) == 0){
@@ -1075,8 +1096,8 @@ void printList(node_t *head){
 void printFunctionList(func_t* head){
   if(head != NULL){
     printf("%s\n", head->name);
+    printFunctionList(head->next);
   }
-  printFunctionList(head->next);
   
 }
 
@@ -1134,28 +1155,22 @@ void resetHeap(){
 /*
 Initializes the table
 */
-void setTable(){
-  symbol = (node_t*)malloc(sizeof(node_t));
+node_t * setTable(){
+  node_t * symbol = (node_t*)malloc(sizeof(node_t));
   strcpy(symbol->name, "__init__");
   symbol->next = NULL;
-  lastInserted = symbol;
+  return symbol;
 }
 
-void setFuncionsTable(){
-  fsymbol = (func_t*)malloc(sizeof(func_t));
-  strcpy(fsymbol->name, "__init__");
-  fsymbol->next = NULL;
-  lastFuncionInserted = fsymbol;
-}
 /*
 Initializes the syntax tree
 */
 void setTree(){
-  syntax = (tree_t*)malloc(sizeof(tree_t));
+/*   tree_t * syntax = (tree_t*)malloc(sizeof(tree_t));
   syntax->type = INIT;
   syntax->nextInstruction = NULL;
   syntax->numberOfChilds = -1;
-  stack_lastInstruccion[heighStack] = syntax;
+  stack_lastInstruccion[heighInstructionStack] = syntax; */
 }
 
 /*
@@ -1251,6 +1266,39 @@ void execute(tree_t* actualInstruction){
   }
 }
 
+void setGlobals(char * name){
+  globalFunc = (func_t*)malloc(sizeof(func_t));
+
+  strcpy(globalFunc->name , name);
+  globalFunc->symbolRoot = setTable();
+  globalFunc->returnType = IntType;
+  globalFunc->i = 0;
+  globalFunc->heighInstructionStack = -1;
+  globalFunc->next = NULL;
+  globalFunc->firstInstruction = true;
+  // the global func is always the first one
+  lastFuncionInserted = globalFunc;
+  fsymbol = globalFunc;
+
+  // because when this functiosn its created you will always execute it, add it to the stack
+  heighFuncStack++;
+  stackFunctions[heighFuncStack] = globalFunc;
+}
+
+func_t * createFunc(char * name, enum Types actualreturnType){
+  
+  func_t * func = (func_t*)malloc(sizeof(func_t));
+  strcpy(func->name, name);
+  func->symbolRoot = setTable();
+  func->returnType = actualreturnType;
+  func->heighInstructionStack = -1;
+  func->i = 0;
+  func->f = 0.0;
+  func->next = NULL;
+  func->firstInstruction = true;
+  return func;
+}
+
 
 
 int main(int argc, char *argv[]) {
@@ -1272,18 +1320,21 @@ int main(int argc, char *argv[]) {
 
   yyin = fp; 
 
-  setTable();
-  setFuncionsTable();
-  //setTree();
   yyparse();  
-  if(syntax){
+
+  if(globalFunc->syntaxRoot){
     printf("Code execution:\n");
-    execute(syntax);
+    execute(globalFunc->syntaxRoot);
   }
 
-  if(symbol->next){
+  if(globalFunc->symbolRoot->next){
     printf("Symbol's table:\n");
-    printList(symbol->next);
+    printList(globalFunc->symbolRoot->next);
+  }
+
+  if(globalFunc){
+    printf("Function's table:\n");
+    printFunctionList(globalFunc);
   }
     
 }
