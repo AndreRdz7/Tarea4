@@ -131,6 +131,9 @@ void printList(node_t*);
 // reset the heap value
 void resetHeap();
 
+// EXEC Functions Functions ._.XD
+bool evaluatePameters(func_t* func){}
+
 
 
 
@@ -153,6 +156,8 @@ void raiseDuplicateVar(char* name);
 void raiseInvalidType(char* name);
 void raiseInvalidCompatibleTypes();
 void raiseNoExistingVar(char* name);
+void raiseInvalidParameterType(char* name);
+void raiseInvalidAmountOfParameters();
 
 
 // symbol, last Inserted , syntax, stack function height and the stack of main function
@@ -844,6 +849,7 @@ tree_t* createQuaternaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two
   newNode->child[newNode->numberOfChilds] = three;
   newNode->numberOfChilds++;
   newNode->child[newNode->numberOfChilds] = four;
+  newNode->child[4] = NULL;
   return newNode;
 }
 
@@ -859,6 +865,8 @@ tree_t* createTernaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, t
   newNode->child[newNode->numberOfChilds] = two;
   newNode->numberOfChilds++;
   newNode->child[newNode->numberOfChilds] = three;
+  newNode->child[3] = NULL;
+  newNode->child[4] = NULL;
   return newNode;
 }
 
@@ -878,6 +886,9 @@ tree_t* createBinaryNode(enum TreeNodeTypes type, tree_t *left, tree_t *right){
   newNode->child[newNode->numberOfChilds] = left;
   newNode->numberOfChilds++;
   newNode->child[newNode->numberOfChilds] = right;
+  newNode->child[2] = NULL;
+  newNode->child[3] = NULL;
+  newNode->child[4] = NULL;
   return newNode;
 }
 
@@ -890,6 +901,10 @@ tree_t* createUnaryNode(enum TreeNodeTypes type, tree_t *child){
   newNode->numberOfChilds = -1;
   newNode->numberOfChilds++;
   newNode->child[newNode->numberOfChilds] = child;
+  newNode->child[1] = NULL;
+  newNode->child[2] = NULL;
+  newNode->child[3] = NULL;
+  newNode->child[4] = NULL;
   return newNode;
 }
 
@@ -1208,6 +1223,15 @@ trying to be accessed without been declared
 */
 void raiseNoExistingVar(char *name){
   printf("La variable %s no ha sido declarada\n",name);
+  exit(0);
+}
+
+void raiseInvalidParameterType(char *name){
+  printf("La variable %s esperaba otro tipo de dato en la función\n", name);
+  exit(0);
+}
+void raiseInvalidAmountOfParameters(){
+  printf("El número de parámetros es incorrecto\n");
   exit(0);
 }
 
