@@ -58,7 +58,7 @@ typedef struct Func{
   int i;
   float f;
   struct Func * next;
-
+  int numParams;
   bool firstInstruction;
   struct Tree * syntaxRoot;
   struct Node * symbolRoot;
@@ -114,6 +114,7 @@ node_t ** verifyID(node_t*, char*);
 //check if value exists and if the type is the same (taht we are keeping in the heap)
 void addToExpr(node_t*, char*);
 // int or float type selection
+void removeFromExpr(node_t *, char *);
 void addTypeToVariable(char*, func_t*);
 
 
@@ -164,7 +165,7 @@ func_t * globalFunc;
 func_t * fsymbol; // start of the linked list of functions
 func_t * lastFuncionInserted; // last function declared
 
-
+char * idName;
 node_t ** pointerToMemoryOfID;
 
 %}
@@ -178,7 +179,7 @@ node_t ** pointerToMemoryOfID;
   struct Tree *tree_t;
 }
 
-%type <tree_t> fun_op fun_dec stmt expr term factor expresion if_stmt iter_stmt cmp_stmt assig_stmt stmt_lst;
+%type <tree_t> factor_id opt_exprs expr_lst fun_op fun_dec stmt expr term factor expresion if_stmt iter_stmt cmp_stmt assig_stmt stmt_lst;
 
 %token <type> INT FLOAT;
 %token <stringValue> ID;
@@ -244,7 +245,7 @@ stmt : {addInstructionToTree(InstruccionNode, stackFunctions[heighFuncStack]);} 
 assig_stmt : SET ID {pointerToMemoryOfID = verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);} expr {resetHeap();} SEMICOLON {$$ = connectWithInstruccion(createBinaryNode(SetNode, addTreeIdNode(IdNode, pointerToMemoryOfID), $4), stackFunctions[heighFuncStack]);}
            | READ ID {pointerToMemoryOfID = verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);} SEMICOLON {$$ = connectWithInstruccion(createUnaryNode(ReadNode, addTreeIdNode(IdNode, pointerToMemoryOfID)), stackFunctions[heighFuncStack]);}
            | PRINT expr {resetHeap();} SEMICOLON {$$ = connectWithInstruccion(createUnaryNode(PrintNode, $2), stackFunctions[heighFuncStack]);}
-           | RETURN expr {resetHeap();} SEMICOLON {$$ = connectWithInstruccion(createUnaryNode(ReturnNode, $2), stackFunctions[heighFuncStack]);}
+           | RETURN expr {resetHeap(); printf("Termino de leer expr de return\n");} SEMICOLON {$$ = connectWithInstruccion(createUnaryNode(ReturnNode, $2), stackFunctions[heighFuncStack]);}
 ;
 
 if_stmt : IF PARENI expresion {resetHeap();} PAREND stmt {$$ = connectWithInstruccion(createBinaryNode(IfNode,$3, $6), stackFunctions[heighFuncStack]);}
@@ -273,19 +274,22 @@ term : term MULTI factor {$$ = createBinaryNode(MultNode, $1, $3);}
      | factor {$$ = $1;}
 
 factor : PARENI expr PAREND {$$ = $2;}
-       | ID {addToExpr(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue); $$ = addTreeIdNode(IdNode, verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue));}
+       | ID {idName = $1; addToExpr(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);} factor_id
        | NUMI {intToHeap(); $$ = addTreeIntNode(IntNode, yylval.i);}
        | NUMF {floatToHeap(); $$ = addTreeFloatNode(FloatNode, yylval.f);}
-
 ;
+
+factor_id : PARENI {removeFromExpr(stackFunctions[heighFuncStack]->symbolRoot, idName);} opt_exprs PAREND
+          | %empty 
+; 
 
 
 opt_exprs : expr_lst
           | %empty
 ;
 
-expr_lst : expr_lst COMMA expr
-          | expr
+expr_lst : expr_lst COMMA expr {connectWithInstruccion($3, stackFunctions[heighFuncStack]);}
+         | expr {connectWithInstruccion($1, stackFunctions[heighFuncStack]);}
 ;
 
 expresion : expr MENOR expr {$$ = createBinaryNode(MenorNode, $1, $3);}
@@ -997,6 +1001,7 @@ Validates if current variables are the same type
 */
 void addToExpr(node_t *head, char *name){
   node_t * current = head;
+  // find ir in its symbol table
   while(current->next != NULL){
     current = current->next;
     if (strcmp(current->name, name) == 0){
@@ -1010,6 +1015,23 @@ void addToExpr(node_t *head, char *name){
     }
   }
 }
+
+void removeFromExpr(node_t *head, char *name){
+  name[strlen(name)-1] = '\0';
+  printf("Remuevo simbolo con nombre de: %s\n", name);
+
+  node_t * current = head;
+  // find ir in its symbol table
+  while(current->next != NULL){
+    printf("Estoy en: %s\n", current->name);
+    current = current->next;
+    if (strcmp(current->next->name, name) == 0){
+        current->next = NULL;
+    }
+  }
+}
+
+
 
 /*
 @param head   symbol's table head

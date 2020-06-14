@@ -8,13 +8,15 @@ program one{
         var b: int
     }
     {
-        set a 5;
+        set a 5 + 2;
         return a;
     }
 }
 {
     set x 2;
     set y 3;
+    set z suma(1, 2);
+
 
     print x;
     print y;
