@@ -4,14 +4,12 @@ program one{
     var z: int
 
     fun suma_i(var num1: int, var num2: int): int;
-    fun resta_i(var num1: int, var num2: int): int;
 }
 {
-    set x 2 + 2;
-    set y x + 2;
-    set z 2 + suma_i(x, y);
+    set x 2 + 2 ;
+    set y 3 + 2 ;
 
     print x;
     print y;
     print z;
-}
+} 

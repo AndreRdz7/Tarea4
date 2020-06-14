@@ -799,7 +799,7 @@ YY_RULE_SETUP
 case 5:
 YY_RULE_SETUP
 #line 21 "tarea5.flex"
-{yylval.terminal = yytext; return RETURN;}
+{printf("Leo return\n"); yylval.terminal = yytext; return RETURN;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
@@ -814,7 +814,7 @@ YY_RULE_SETUP
 case 8:
 YY_RULE_SETUP
 #line 24 "tarea5.flex"
-{yylval.type = yytext; return INT;}
+{printf("Leo INT\n");yylval.type = yytext; return INT;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP

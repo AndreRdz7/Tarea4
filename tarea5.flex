@@ -18,10 +18,10 @@ ID   ({LETRA}|("_"|"$"){LETRA})({LETRA}|{DIGITO}|"_"|"$")*
 {DECIMAL} {yylval.f = atof(yytext); return NUMF;}
 ","       {yylval.terminal = yytext; return COMMA;}
 "fun"     {yylval.terminal = yytext; return FUN;}
-"return"     {yylval.terminal = yytext; return RETURN;}
+"return"  {printf("Leo return\n"); yylval.terminal = yytext; return RETURN;}
 "program" {yylval.terminal = yytext; return PROGRAM;}
 "var"     {yylval.terminal = yytext; return VAR;}
-"int"     {yylval.type = yytext; return INT;}
+"int"     {printf("Leo INT\n");yylval.type = yytext; return INT;}
 "float"   {yylval.type = yytext; return FLOAT;}
 "set"     {yylval.terminal = yytext; return SET;}
 "read"    {yylval.terminal = yytext; return READ;}

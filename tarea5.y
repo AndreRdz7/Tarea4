@@ -23,7 +23,7 @@ int yyerror(char const * s);
 
 
 enum Types {IntType, FloatType, NULLType};
-enum TreeNodeTypes{INIT, FuncionNode , MayorNode, MenorNode, IgualNode, MenorINode, MayorINode, InstruccionNode, IdNode, ExprNode, ReadNode, PrintNode, IfNode, ExpresionNode, IfelseNode, WhileNode, ForNode, SetNode, ComparandumNode, RestaNode, SumaNode, MultNode, DivideNode, TermNode, IntNode, FloatNode};
+enum TreeNodeTypes{INIT, FuncionNode , MayorNode, MenorNode, IgualNode, MenorINode, MayorINode, InstruccionNode, IdNode, ExprNode, ReturnNode, ReadNode, PrintNode, IfNode, ExpresionNode, IfelseNode, WhileNode, ForNode, SetNode, ComparandumNode, RestaNode, SumaNode, MultNode, DivideNode, TermNode, IntNode, FloatNode};
 
 typedef struct expr{
   enum Types type;
@@ -70,6 +70,8 @@ typedef struct Func{
 int heighFuncStack = -1;
 func_t * stackFunctions[1000];
 
+
+
 enum Types heap = NULLType;
 
 // TREE functions:
@@ -103,7 +105,7 @@ void treeEvaluateWhile(tree_t*);
 void treeEvaluateFor(tree_t*);
 tree_t * returnLastInstrucc(tree_t*);
 
-
+void assignTreeToFunction();
 // LIST functions
 // creates the list
 node_t * setTable();
@@ -112,7 +114,10 @@ node_t ** verifyID(node_t*, char*);
 //check if value exists and if the type is the same (taht we are keeping in the heap)
 void addToExpr(node_t*, char*);
 // int or float type selection
-void addTypeToVariable(node_t*, char*, func_t*);
+void addTypeToVariable(char*, func_t*);
+
+
+void addTypeToFunction(char*);
 // add element to the list if irt already existsed call an error
 void declareVariable(node_t*, char*, func_t*);
 // checdk if last element in the heap was a float
@@ -127,11 +132,18 @@ void printList(node_t*);
 void resetHeap();
 
 
+
+
+
 // functions of creating functions
 void declareFunction(func_t*, char*);
 func_t ** verifyFunctionID(func_t*, char*);
 void printFunctionList(func_t*);
 
+
+void pushFunctionInStack(func_t * fun);
+
+void popFunctionInStack();
 
 void setGlobals(char *);
 func_t * createFunc(char *, enum Types);
@@ -166,13 +178,13 @@ node_t ** pointerToMemoryOfID;
   struct Tree *tree_t;
 }
 
-%type <tree_t> stmt expr term factor expresion if_stmt iter_stmt cmp_stmt assig_stmt stmt_lst;
+%type <tree_t> fun_op fun_dec stmt expr term factor expresion if_stmt iter_stmt cmp_stmt assig_stmt stmt_lst;
 
 %token <type> INT FLOAT;
 %token <stringValue> ID;
-%token  PROGRAM VAR NUMI NUMF SET READ PRINT IF IFELSE
+%token FUN PROGRAM VAR NUMI NUMF SET READ PRINT IF IFELSE
 WHILE FOR TO STEP DO SUMA RESTA DIVIDE MULTI PAREND PARENI 
-LLAVED LLAVEI COLON SEMICOLON MENOR MAYOR IGUAL MENORI MAYORI COMMA RETURN FUN;
+LLAVED LLAVEI COLON SEMICOLON MENOR MAYOR IGUAL MENORI MAYORI COMMA RETURN ;
 
 %start prog;
 
@@ -189,11 +201,11 @@ decls : dec SEMICOLON decls
       | dec
 ;
 
-dec : VAR ID {declareVariable(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue, stackFunctions[heighFuncStack]);} COLON tipo 
+dec : VAR ID {declareVariable(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue, stackFunctions[heighFuncStack]);} COLON tipo {addTypeToVariable(yylval.type, stackFunctions[heighFuncStack]);}
 ;
 
-tipo : INT {addTypeToVariable(stackFunctions[heighFuncStack]->symbolRoot, yylval.type, stackFunctions[heighFuncStack]);}
-     | FLOAT {addTypeToVariable(stackFunctions[heighFuncStack]->symbolRoot, yylval.type, stackFunctions[heighFuncStack]);}
+tipo : INT
+     | FLOAT
 ;
 
 opt_fun_decls : fun_decls 
@@ -204,8 +216,11 @@ fun_decls : fun_decls fun_dec
           | fun_dec
 ;
 
-fun_dec : FUN ID {declareFunction(fsymbol, yylval.stringValue);} PARENI oparams PAREND COLON tipo LLAVEI opt_decls LLAVED stmt
-        | FUN ID {declareFunction(fsymbol, yylval.stringValue);} PARENI oparams PAREND COLON tipo SEMICOLON
+fun_dec : FUN ID {declareFunction(fsymbol, yylval.stringValue);} PARENI oparams PAREND COLON tipo {addTypeToFunction(yylval.type);} fun_op {popFunctionInStack();}
+;
+
+fun_op : LLAVEI opt_decls LLAVED stmt {$$ = $4;}
+       | SEMICOLON
 ;
 
 oparams : params 
@@ -216,7 +231,7 @@ params : param COMMA params
        | param
 ;
 
-param : VAR ID COLON tipo
+param : VAR ID {declareVariable(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue, stackFunctions[heighFuncStack]);} COLON tipo {addTypeToVariable(yylval.type, stackFunctions[heighFuncStack]);}
 ;
 
 stmt : {addInstructionToTree(InstruccionNode, stackFunctions[heighFuncStack]);} assig_stmt {$$ = $2;}
@@ -229,7 +244,7 @@ stmt : {addInstructionToTree(InstruccionNode, stackFunctions[heighFuncStack]);} 
 assig_stmt : SET ID {pointerToMemoryOfID = verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);} expr {resetHeap();} SEMICOLON {$$ = connectWithInstruccion(createBinaryNode(SetNode, addTreeIdNode(IdNode, pointerToMemoryOfID), $4), stackFunctions[heighFuncStack]);}
            | READ ID {pointerToMemoryOfID = verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);} SEMICOLON {$$ = connectWithInstruccion(createUnaryNode(ReadNode, addTreeIdNode(IdNode, pointerToMemoryOfID)), stackFunctions[heighFuncStack]);}
            | PRINT expr {resetHeap();} SEMICOLON {$$ = connectWithInstruccion(createUnaryNode(PrintNode, $2), stackFunctions[heighFuncStack]);}
-           | RETURN expr;
+           | RETURN expr {resetHeap();} SEMICOLON {$$ = connectWithInstruccion(createUnaryNode(ReturnNode, $2), stackFunctions[heighFuncStack]);}
 ;
 
 if_stmt : IF PARENI expresion {resetHeap();} PAREND stmt {$$ = connectWithInstruccion(createBinaryNode(IfNode,$3, $6), stackFunctions[heighFuncStack]);}
@@ -261,8 +276,9 @@ factor : PARENI expr PAREND {$$ = $2;}
        | ID {addToExpr(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue); $$ = addTreeIdNode(IdNode, verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue));}
        | NUMI {intToHeap(); $$ = addTreeIntNode(IntNode, yylval.i);}
        | NUMF {floatToHeap(); $$ = addTreeFloatNode(FloatNode, yylval.f);}
-       | ID {addToExpr(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue); verifyFunctionID(fsymbol, yylval.stringValue);} PAREND opt_exprs PARENI
+
 ;
+
 
 opt_exprs : expr_lst
           | %empty
@@ -289,6 +305,7 @@ char* getTypeOfTree(enum TreeNodeTypes type) {
     case IdNode: return "id";
     case ExprNode: return "expr";
     case ReadNode: return "read";
+    case ReturnNode: return "return";
     case PrintNode: return "print";
     case IfNode: return "if";
     case ExpresionNode: return "expression";
@@ -432,6 +449,11 @@ void treeEvaluateIf(tree_t *node){
     return;
   }
 }
+
+/* void assignTreeToFunction(){
+  func_t actualFunc = stackFunctions[heighFuncStack];
+  pushFunctionInStack(actualFunc);
+} */
 
 void treeEvaluateIfElse(tree_t *node){
   /*
@@ -942,23 +964,26 @@ when it ends with a semicolon
 // solo agrego instrucciones en el mismo nivel
 // refactoring
 void addInstructionToTree(enum TreeNodeTypes nodeType, func_t * scope){
-  printf("Agrego Instruccion\n");
+  printf("Agrego Instruccion, de tipo: %s\n", getTypeOfTree(nodeType));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = nodeType;
   newNode->nextInstruction = NULL;
   newNode->numberOfChilds = -1;
   printf("size: %d\n", scope->heighInstructionStack);
+
   if(scope->heighInstructionStack > -1){
 
       if(scope->stack_lastInstruccion[scope->heighInstructionStack] != NULL){
-        returnLastInstrucc(scope->stack_lastInstruccion[scope->heighInstructionStack])->nextInstruction = newNode;
+        tree_t * actual =  returnLastInstrucc(scope->stack_lastInstruccion[scope->heighInstructionStack]);
+        printf("estoy en %s\n", getTypeOfTree(actual->type));
+        actual->nextInstruction = newNode;
         printf("Instruccion agregada\n");
       }
 
   }else{
       scope->syntaxRoot = newNode;
   }
-
+  printf("sigo vivo\n");
   //connect with last instruction
   //stack_lastInstruccion[heighInstructionStack] = newNode;
 
@@ -993,7 +1018,7 @@ void addToExpr(node_t *head, char *name){
 Adds the type to the last inserted symbol
 */
 // refactored
-void addTypeToVariable(node_t *head, char *type, func_t* scope){
+void addTypeToVariable(char *type, func_t* scope){
   if (strcmp(type, "int") == 0){
     scope->lastInserted->type = IntType;
     scope->lastInserted->u_val.i = 0;
@@ -1003,6 +1028,28 @@ void addTypeToVariable(node_t *head, char *type, func_t* scope){
   }
 }
 
+void addTypeToFunction(char *type){
+  printf("agrego tipo a function con name: %s\n", stackFunctions[heighFuncStack]->name);
+  if (strcmp(type, "int") == 0){
+    stackFunctions[heighFuncStack]->returnType = IntType;
+    stackFunctions[heighFuncStack]->i = 0;
+  }else{
+    stackFunctions[heighFuncStack]->returnType = FloatType;
+    stackFunctions[heighFuncStack]->f = 0.0;
+  }
+}
+
+void pushFunctionInStack(func_t * fun){
+  printf("Pusheo function\n");
+  heighFuncStack++;
+  stackFunctions[heighFuncStack] =  fun;
+}
+
+void popFunctionInStack(){
+  printf("Popeo function\n");
+  stackFunctions[heighFuncStack] =  NULL;
+  heighFuncStack--;
+}
 
 /*
 @param head   symbol's table head
@@ -1013,12 +1060,18 @@ if found previously
 */
 void declareVariable(node_t *head, char *name, func_t * scope){
   node_t *current = head;
+
+  printf("agrego variable a function con name: %s\n", stackFunctions[heighFuncStack]->name);
+
   while(current->next != NULL){
     current = current->next;
     if (strcmp(current->name, name) == 0){
       raiseDuplicateVar(name);
     }
   }
+  
+
+
   node_t * newNode = (node_t*)malloc(sizeof(node_t));
   current->next = newNode;
   strcpy(newNode->name, name);
@@ -1037,7 +1090,15 @@ void declareFunction(func_t * head, char * name){
   func_t * newFunc = (func_t*)malloc(sizeof(func_t));
   current->next = newFunc;
   strcpy(newFunc->name, name);
-  lastFuncionInserted = newFunc;
+  newFunc->symbolRoot = setTable();
+  newFunc->heighInstructionStack = -1;
+  newFunc->i = 0;
+  newFunc->f = 0.0;
+  newFunc->next = NULL;
+  newFunc->firstInstruction = true;
+
+
+  pushFunctionInStack(newFunc);
 }
 /*
 Validates if float was the last value in heap
@@ -1085,9 +1146,9 @@ Prints symbol's table when the program finishes
 void printList(node_t *head){
   if(head != NULL){
     if(head->type == IntType){
-      printf("%s - %s : %d\n", head->name, getType(head->type), (head->u_val).i);
+      printf("\t%s - %s : %d\n", head->name, getType(head->type), (head->u_val).i);
     }else{
-      printf("%s - %s : %f\n", head->name, getType(head->type), (head->u_val).f);
+      printf("\t%s - %s : %f\n", head->name, getType(head->type), (head->u_val).f);
     } 
     printList(head->next);
   }
@@ -1095,7 +1156,13 @@ void printList(node_t *head){
 
 void printFunctionList(func_t* head){
   if(head != NULL){
-    printf("%s\n", head->name);
+    printf("-> %s\n", head->name);
+
+    if(head){
+        printf("\tSymbol's table:\n");
+        printList(head->symbolRoot);
+    }
+
     printFunctionList(head->next);
   }
   
@@ -1325,11 +1392,6 @@ int main(int argc, char *argv[]) {
   if(globalFunc->syntaxRoot){
     printf("Code execution:\n");
     execute(globalFunc->syntaxRoot);
-  }
-
-  if(globalFunc->symbolRoot->next){
-    printf("Symbol's table:\n");
-    printList(globalFunc->symbolRoot->next);
   }
 
   if(globalFunc){

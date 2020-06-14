@@ -1,0 +1,22 @@
+program one{
+    var x: int;
+    var y: int;
+    var z: int
+
+    fun suma(var num1: int, var num2: int): int {
+        var a: int;
+        var b: int
+    }
+    {
+        set a 5;
+        return a;
+    }
+}
+{
+    set x 2;
+    set y 3;
+
+    print x;
+    print y;
+    print z;
+} 
