@@ -132,7 +132,7 @@ void printList(node_t*);
 void resetHeap();
 
 // EXEC Functions Functions ._.XD
-bool evaluatePameters(func_t* func){}
+bool evaluatePameters(tree_t* node){}
 
 
 
@@ -832,6 +832,14 @@ expr_t evaluateExpr(tree_t *node){
         return res;
       }
       break;
+  }
+}
+
+bool evaluatePameters(tree_t *node){
+  /*int no_params = node->funcNode->no_params*/
+  int no_params = 1;
+  if(no_params != node->numberOfChilds){
+    raiseInvalidAmountOfParameters();
   }
 }
 
