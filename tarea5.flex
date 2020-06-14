@@ -33,13 +33,13 @@ ID   ({LETRA}|("_"|"$"){LETRA})({LETRA}|{DIGITO}|"_"|"$")*
 "to"      {yylval.terminal = yytext; return TO;}
 "step"    {yylval.terminal = yytext; return STEP;}
 "do"      {yylval.terminal = yytext; return DO;}
-{ID}      {printf("ID: %s\n", yytext);yylval.stringValue = yytext; return ID;}
+{ID}      {printf("ID: %s\n", yytext); yylval.stringValue = yytext; return ID;}
 "+"       {yylval.terminal = yytext; return SUMA;}
 "-"       {yylval.terminal = yytext; return RESTA;}
 "*"       {yylval.terminal = yytext; return MULTI;}
 "/"       {printf("Division\n"); yylval.terminal = yytext; return DIVIDE;}
-"("       {yylval.terminal = yytext; return PARENI;}
-")"       {yylval.terminal = yytext; return PAREND;}
+"("       {printf("Abro parentesis\n"); yylval.terminal = yytext; return PARENI;}
+")"       {printf("Cierro parentesis\n"); yylval.terminal = yytext; return PAREND;}
 "{"       {printf("Abro llave\n");yylval.terminal = yytext; return LLAVEI;}
 "}"       {printf("Cierro llave\n");yylval.terminal = yytext; return LLAVED;}
 ":"       {yylval.terminal = yytext; return COLON;}

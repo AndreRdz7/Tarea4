@@ -874,7 +874,7 @@ YY_RULE_SETUP
 case 20:
 YY_RULE_SETUP
 #line 36 "tarea5.flex"
-{printf("ID: %s\n", yytext);yylval.stringValue = yytext; return ID;}
+{printf("ID: %s\n", yytext); yylval.stringValue = yytext; return ID;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
@@ -899,12 +899,12 @@ YY_RULE_SETUP
 case 25:
 YY_RULE_SETUP
 #line 41 "tarea5.flex"
-{yylval.terminal = yytext; return PARENI;}
+{printf("Abro parentesis\n"); yylval.terminal = yytext; return PARENI;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 42 "tarea5.flex"
-{yylval.terminal = yytext; return PAREND;}
+{printf("Cierro parentesis\n"); yylval.terminal = yytext; return PAREND;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
