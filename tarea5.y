@@ -138,7 +138,7 @@ void printList(node_t*);
 void resetHeap();
 
 // EXEC Functions Functions ._.XD
-bool evaluatePameters(tree_t* node){}
+bool evaluatePameters(tree_t* node);
 
 
 
@@ -164,6 +164,7 @@ void raiseInvalidCompatibleTypes();
 void raiseNoExistingVar(char* name);
 void raiseInvalidParameterType(char* name);
 void raiseInvalidAmountOfParameters();
+void raiseWrongReturnType(char* name);
 
 
 // symbol, last Inserted , syntax, stack function height and the stack of main function
@@ -397,7 +398,7 @@ bool checkCompatibleStructTypes(expr_t first, expr_t second){
 }
 
 void treeEvaluatePrint(tree_t *node){
-  //printf("printing... ");
+  printf("printing... ");
   expr_t stmt = evaluateExpr(node->child[0]);
   if(stmt.type == IntType){
     printf("%d\n", stmt.i);
@@ -850,11 +851,11 @@ expr_t evaluateExpr(tree_t *node){
 }
 
 bool evaluatePameters(tree_t *node){
-  /*int no_params = node->funcNode->no_params*/
-  int no_params = 1;
-  if(no_params != node->numberOfChilds){
+  int numParams = node->funcNode->numParams;
+  if(numParams != node->numberOfChilds){
     raiseInvalidAmountOfParameters();
   }
+
 }
 
 tree_t* createQuaternaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, tree_t * three, tree_t* four){
@@ -1265,6 +1266,10 @@ void raiseInvalidParameterType(char *name){
 }
 void raiseInvalidAmountOfParameters(){
   printf("El número de parámetros es incorrecto\n");
+  exit(0);
+}
+void raiseWrongReturnType(char *name){
+  printf("El valor de retorno para la funcion %s es inválido\n");
   exit(0);
 }
 
