@@ -1,11 +1,10 @@
 program one{
-    var x: int;
-    var y: int;
-    var z: int
+    var x: int
+
+    fun suma_i(var num1: int): int ;
 
     fun suma(var num1: int, var num2: int): int {
-        var a: int;
-        var b: int
+        var a: int
     }
     {
         set a 5 + 2;
@@ -13,12 +12,6 @@ program one{
     }
 }
 {
-    set x 2;
-    set y 3;
-    set z suma(1, 2);
-
-
+    set x suma(1, 2);
     print x;
-    print y;
-    print z;
 } 
