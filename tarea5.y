@@ -74,6 +74,8 @@ int counterP = 0;
 
 enum Types heap = NULLType;
 
+
+tree_t  * actualFuncNode;
 // TREE functions:
 // creates the tree
 void setTree();
@@ -138,7 +140,9 @@ void printList(node_t*);
 void resetHeap();
 
 
+tree_t * createFunctionNode(func_t*);
 
+tree_t * connectWithFunction(tree_t *);
 
 
 // functions of creating functions
@@ -284,7 +288,7 @@ factor : PARENI expr PAREND {$$ = $2;}
        | NUMF {floatToHeap(); $$ = addTreeFloatNode(FloatNode, yylval.f);}
 ;
 
-factor_id : PARENI  opt_exprs PAREND
+factor_id : PARENI {actualFuncNode = createFunctionNode(stackFunctions[heighFuncStack]);} opt_exprs PAREND {$$ = actualFuncNode;}
           | %empty {$$ = addTreeIdNode(IdNode, verifyFID(stackFunctions[heighFuncStack]->symbolRoot, idName ));}
 ; 
 
@@ -293,8 +297,8 @@ opt_exprs : expr_lst
           | %empty
 ;
 
-expr_lst : expr_lst COMMA expr {connectWithInstruccion($3, stackFunctions[heighFuncStack]);}
-         | expr {connectWithInstruccion($1, stackFunctions[heighFuncStack]);}
+expr_lst : expr_lst COMMA expr {connectWithFunction($3);}
+         | expr {connectWithFunction($1);}
 ;
 
 expresion : expr MENOR expr {$$ = createBinaryNode(MenorNode, $1, $3);}
@@ -950,6 +954,24 @@ tree_t* addTreeIdNode(enum TreeNodeTypes actualNodeToAddType, node_t ** pointerI
   return newNode;
 }
 
+
+tree_t * createFunctionNode(func_t * func){
+  printf("Agrego Funcion nodo, de tipo: %s\n", getTypeOfTree(FuncionNode));
+  tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
+  newNode->numberOfChilds = -1;
+  newNode->type = FuncionNode;
+  newNode->funcNode = func;
+  return newNode;
+}
+
+tree_t * connectWithFunction(tree_t * child){
+  printf("Le agrego un param al nodo funcion llamado: %s\n", actualFuncNode->funcNode->name);
+  printf("Agrego el param de tipo: %s\n", getTypeOfTree(child->type));
+  actualFuncNode->numberOfChilds++;
+  actualFuncNode->child[actualFuncNode->numberOfChilds] = child;
+  return actualFuncNode;
+}
+
 tree_t* addTreeIntNode(enum TreeNodeTypes actualNodeToAddType, int value){
   printf("Agrego INT nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
@@ -1323,6 +1345,8 @@ void execute(tree_t* actualInstruction){
   switch(actualInstruction->type){
     case SetNode:
       printf("ejecuto set, num de hijos: %d\n", actualInstruction->numberOfChilds+1);
+      //printf("Hijo derecha: %s\n", getTypeOfTree(actualInstruction->child[1]->type));
+      //printf("Hijo de func: %s\n", getTypeOfTree(actualInstruction->child[1]->child[0]->type));
       treeEvaluateSet(actualInstruction);
       return;
       break;
