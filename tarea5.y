@@ -186,6 +186,8 @@ func_t * lastFuncionInserted; // last function declared
 char * idName;
 node_t ** pointerToMemoryOfID;
 
+expr_t lastReturnValue;
+
 %}
 
 %union{
@@ -415,10 +417,6 @@ void treeEvaluatePrint(tree_t *node){
 }
 
 void treeEvaluateSet(tree_t *node){
-  /*
-  child 0 es el tree_t con el id de la tabla de simbolos
-  chils 1 es la expresión a asignar
-  */
   expr_t id = evaluateExpr(node->child[0]);
   expr_t stmt = evaluateExpr(node->child[1]);
   node_t* sym = *node->child[0]->symbol;
@@ -767,6 +765,7 @@ bool evaluateExpression(tree_t *node){
 }
 
 expr_t evaluateExpr(tree_t *node){
+  printf("entro a evaluate expr a evaluar: %s\n",getTypeOfTree(node->type));
   expr_t left;
   expr_t right;
   expr_t res;
@@ -854,11 +853,18 @@ expr_t evaluateExpr(tree_t *node){
         return res;
       }
       break;
+    case FuncionNode:
+      res = treeEvaluateFunction(node);
+      return res;
   }
 }
 
 bool evaluateAmountOfParams(tree_t *node){
   int numParams = node->funcNode->numParams;
+  int numChilds = node->numberOfChilds;
+  printf("numero de parametros: %d\n", numParams);
+  printf("numero de hijos: %d\n", numChilds);
+  printf("y ps estoy evaluando para la funcion: %s\n", node->funcNode->name);
   if(numParams != node->numberOfChilds){
     raiseInvalidAmountOfParameters();
   }
@@ -897,6 +903,9 @@ expr_t treeEvaluateReturn(tree_t *node){
 }
 
 expr_t treeEvaluateFunction(tree_t *node){
+  printf("entra a evaluate function\n");
+  printf("putisimo tipo del node para evaluar funcion: %s\n", getTypeOfTree(node->type));
+  
   if(evaluateAmountOfParams(node)){
     expr_t returnValue;
     if(node->funcNode->syntaxRoot == NULL){
@@ -941,10 +950,10 @@ expr_t treeEvaluateFunction(tree_t *node){
             break;
           case ReturnNode:
             returnValue = treeEvaluateReturn(stmt->child[0]);
-            if(returnValue.type == nodenode->funcNode->returnType){
+            if(returnValue.type == node->funcNode->returnType){
               flag = true;
             }else{
-              raiseWrongReturnType();
+              raiseWrongReturnType(node->funcNode->name);
             }
             break;
           default:
@@ -1499,6 +1508,16 @@ void execute(tree_t* actualInstruction){
     case PrintNode:
       printf("ejecuto print, num de hijos: %d\n", actualInstruction->numberOfChilds+1);
       treeEvaluatePrint(actualInstruction);
+      return;
+      break;
+    case FuncionNode:
+      printf("ejecuto func, num de hijos: %d\n", actualInstruction->numberOfChilds+1);
+      treeEvaluateFunction(actualInstruction);
+      return;
+      break;
+    case ReturnNode:
+      printf("ejecuto return, num de hijos: %d\n", actualInstruction->numberOfChilds+1);
+      treeEvaluateReturn(actualInstruction);
       return;
       break;
     case IfNode:

@@ -251,8 +251,10 @@ func_t * lastFuncionInserted; // last function declared
 char * idName;
 node_t ** pointerToMemoryOfID;
 
+expr_t lastReturnValue;
 
-#line 256 "tarea5.tab.c" /* yacc.c:339  */
+
+#line 258 "tarea5.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -330,7 +332,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 191 "tarea5.y" /* yacc.c:355  */
+#line 193 "tarea5.y" /* yacc.c:355  */
 
   char* stringValue;
   char* terminal;
@@ -339,7 +341,7 @@ union YYSTYPE
   int i;
   struct Tree *tree_t;
 
-#line 343 "tarea5.tab.c" /* yacc.c:355  */
+#line 345 "tarea5.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -356,7 +358,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 360 "tarea5.tab.c" /* yacc.c:358  */
+#line 362 "tarea5.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -657,15 +659,15 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   212,   212,   212,   215,   216,   219,   220,   223,   223,
-     226,   227,   230,   231,   234,   235,   238,   238,   238,   238,
-     238,   241,   242,   245,   246,   249,   249,   250,   253,   253,
-     256,   256,   257,   258,   259,   263,   263,   263,   264,   264,
-     265,   265,   266,   266,   269,   269,   270,   270,   273,   273,
-     274,   274,   274,   274,   274,   277,   278,   278,   278,   281,
-     282,   285,   286,   287,   290,   291,   292,   294,   295,   295,
-     296,   297,   300,   300,   301,   305,   306,   309,   310,   313,
-     314,   315,   316,   317
+       0,   214,   214,   214,   217,   218,   221,   222,   225,   225,
+     228,   229,   232,   233,   236,   237,   240,   240,   240,   240,
+     240,   243,   244,   247,   248,   251,   251,   252,   255,   255,
+     258,   258,   259,   260,   261,   265,   265,   265,   266,   266,
+     267,   267,   268,   268,   271,   271,   272,   272,   275,   275,
+     276,   276,   276,   276,   276,   279,   280,   280,   280,   283,
+     284,   287,   288,   289,   292,   293,   294,   296,   297,   297,
+     298,   299,   302,   302,   303,   307,   308,   311,   312,   315,
+     316,   317,   318,   319
 };
 #endif
 
@@ -1537,397 +1539,397 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 212 "tarea5.y" /* yacc.c:1646  */
+#line 214 "tarea5.y" /* yacc.c:1646  */
     {setGlobals(yylval.stringValue);}
-#line 1543 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1545 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 223 "tarea5.y" /* yacc.c:1646  */
+#line 225 "tarea5.y" /* yacc.c:1646  */
     {declareVariable(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue, stackFunctions[heighFuncStack]);}
-#line 1549 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1551 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 223 "tarea5.y" /* yacc.c:1646  */
+#line 225 "tarea5.y" /* yacc.c:1646  */
     {addTypeToVariable(yylval.type, stackFunctions[heighFuncStack]);}
-#line 1555 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1557 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 238 "tarea5.y" /* yacc.c:1646  */
+#line 240 "tarea5.y" /* yacc.c:1646  */
     {declareFunction(fsymbol, yylval.stringValue);}
-#line 1561 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1563 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 238 "tarea5.y" /* yacc.c:1646  */
+#line 240 "tarea5.y" /* yacc.c:1646  */
     {counterP = 0;}
-#line 1567 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1569 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 238 "tarea5.y" /* yacc.c:1646  */
+#line 240 "tarea5.y" /* yacc.c:1646  */
     {counterParams(stackFunctions[heighFuncStack]);}
-#line 1573 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1575 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 238 "tarea5.y" /* yacc.c:1646  */
+#line 240 "tarea5.y" /* yacc.c:1646  */
     {addTypeToFunction(yylval.type);}
-#line 1579 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1581 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 238 "tarea5.y" /* yacc.c:1646  */
+#line 240 "tarea5.y" /* yacc.c:1646  */
     {popFunctionInStack();}
-#line 1585 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1587 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 241 "tarea5.y" /* yacc.c:1646  */
+#line 243 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = (yyvsp[0].tree_t);}
-#line 1591 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1593 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 249 "tarea5.y" /* yacc.c:1646  */
+#line 251 "tarea5.y" /* yacc.c:1646  */
     {counterP++;}
-#line 1597 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1599 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 250 "tarea5.y" /* yacc.c:1646  */
+#line 252 "tarea5.y" /* yacc.c:1646  */
     {counterP++;}
-#line 1603 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1605 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 253 "tarea5.y" /* yacc.c:1646  */
+#line 255 "tarea5.y" /* yacc.c:1646  */
     {declareVariable(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue, stackFunctions[heighFuncStack]);}
-#line 1609 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1611 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 253 "tarea5.y" /* yacc.c:1646  */
+#line 255 "tarea5.y" /* yacc.c:1646  */
     {addTypeToVariable(yylval.type, stackFunctions[heighFuncStack]);}
-#line 1615 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1617 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 256 "tarea5.y" /* yacc.c:1646  */
+#line 258 "tarea5.y" /* yacc.c:1646  */
     {addInstructionToTree(InstruccionNode, stackFunctions[heighFuncStack]);}
-#line 1621 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1623 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 256 "tarea5.y" /* yacc.c:1646  */
+#line 258 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = (yyvsp[0].tree_t);}
-#line 1627 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1629 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 257 "tarea5.y" /* yacc.c:1646  */
+#line 259 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = (yyvsp[0].tree_t);}
-#line 1633 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1635 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 258 "tarea5.y" /* yacc.c:1646  */
+#line 260 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = (yyvsp[0].tree_t);}
-#line 1639 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1641 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 259 "tarea5.y" /* yacc.c:1646  */
+#line 261 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = (yyvsp[0].tree_t);}
-#line 1645 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1647 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 263 "tarea5.y" /* yacc.c:1646  */
+#line 265 "tarea5.y" /* yacc.c:1646  */
     {pointerToMemoryOfID = verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);}
-#line 1651 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1653 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 263 "tarea5.y" /* yacc.c:1646  */
+#line 265 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
-#line 1657 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1659 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 263 "tarea5.y" /* yacc.c:1646  */
+#line 265 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = connectWithInstruccion(createBinaryNode(SetNode, addTreeIdNode(IdNode, pointerToMemoryOfID), (yyvsp[-2].tree_t)), stackFunctions[heighFuncStack]);}
-#line 1663 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1665 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 264 "tarea5.y" /* yacc.c:1646  */
+#line 266 "tarea5.y" /* yacc.c:1646  */
     {pointerToMemoryOfID = verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);}
-#line 1669 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1671 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 264 "tarea5.y" /* yacc.c:1646  */
+#line 266 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = connectWithInstruccion(createUnaryNode(ReadNode, addTreeIdNode(IdNode, pointerToMemoryOfID)), stackFunctions[heighFuncStack]);}
-#line 1675 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1677 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 265 "tarea5.y" /* yacc.c:1646  */
+#line 267 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
-#line 1681 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1683 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 265 "tarea5.y" /* yacc.c:1646  */
+#line 267 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = connectWithInstruccion(createUnaryNode(PrintNode, (yyvsp[-2].tree_t)), stackFunctions[heighFuncStack]);}
-#line 1687 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1689 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 266 "tarea5.y" /* yacc.c:1646  */
+#line 268 "tarea5.y" /* yacc.c:1646  */
     {resetHeap(); printf("Termino de leer expr de return\n");}
-#line 1693 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1695 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 266 "tarea5.y" /* yacc.c:1646  */
+#line 268 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = connectWithInstruccion(createUnaryNode(ReturnNode, (yyvsp[-2].tree_t)), stackFunctions[heighFuncStack]);}
-#line 1699 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1701 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 269 "tarea5.y" /* yacc.c:1646  */
+#line 271 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
-#line 1705 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1707 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 269 "tarea5.y" /* yacc.c:1646  */
+#line 271 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = connectWithInstruccion(createBinaryNode(IfNode,(yyvsp[-3].tree_t), (yyvsp[0].tree_t)), stackFunctions[heighFuncStack]);}
-#line 1711 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1713 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 270 "tarea5.y" /* yacc.c:1646  */
+#line 272 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
-#line 1717 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1719 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 270 "tarea5.y" /* yacc.c:1646  */
+#line 272 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = connectWithInstruccion(createTernaryNode(IfelseNode, (yyvsp[-4].tree_t), (yyvsp[-1].tree_t), (yyvsp[0].tree_t)), stackFunctions[heighFuncStack]);}
-#line 1723 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1725 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 273 "tarea5.y" /* yacc.c:1646  */
+#line 275 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
-#line 1729 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1731 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 273 "tarea5.y" /* yacc.c:1646  */
+#line 275 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = connectWithInstruccion(createBinaryNode(WhileNode, (yyvsp[-3].tree_t), (yyvsp[0].tree_t)), stackFunctions[heighFuncStack]);}
-#line 1735 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1737 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 274 "tarea5.y" /* yacc.c:1646  */
+#line 276 "tarea5.y" /* yacc.c:1646  */
     {pointerToMemoryOfID = verifyID(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);}
-#line 1741 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1743 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 274 "tarea5.y" /* yacc.c:1646  */
+#line 276 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
-#line 1747 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1749 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 274 "tarea5.y" /* yacc.c:1646  */
+#line 276 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
-#line 1753 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1755 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 274 "tarea5.y" /* yacc.c:1646  */
+#line 276 "tarea5.y" /* yacc.c:1646  */
     {resetHeap();}
-#line 1759 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1761 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 274 "tarea5.y" /* yacc.c:1646  */
+#line 276 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = connectWithInstruccion(createQuaternaryNode(ForNode, createBinaryNode(SetNode, addTreeIdNode(IdNode, pointerToMemoryOfID), (yyvsp[-9].tree_t)), (yyvsp[-6].tree_t), (yyvsp[-3].tree_t), (yyvsp[0].tree_t)), stackFunctions[heighFuncStack]);}
-#line 1765 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1767 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 277 "tarea5.y" /* yacc.c:1646  */
+#line 279 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = NULL;}
-#line 1771 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1773 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 278 "tarea5.y" /* yacc.c:1646  */
+#line 280 "tarea5.y" /* yacc.c:1646  */
     {pushStackLastInstruccion(stackFunctions[heighFuncStack]);}
-#line 1777 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1779 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 278 "tarea5.y" /* yacc.c:1646  */
+#line 280 "tarea5.y" /* yacc.c:1646  */
     {popStackLastInstruccion(stackFunctions[heighFuncStack]);}
-#line 1783 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1785 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 278 "tarea5.y" /* yacc.c:1646  */
+#line 280 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = (yyvsp[-2].tree_t);}
-#line 1789 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1791 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 281 "tarea5.y" /* yacc.c:1646  */
+#line 283 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = (yyvsp[0].tree_t);}
-#line 1795 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1797 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 282 "tarea5.y" /* yacc.c:1646  */
+#line 284 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = (yyvsp[0].tree_t);}
-#line 1801 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1803 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 285 "tarea5.y" /* yacc.c:1646  */
+#line 287 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = createBinaryNode(SumaNode, (yyvsp[-2].tree_t), (yyvsp[0].tree_t));}
-#line 1807 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1809 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 286 "tarea5.y" /* yacc.c:1646  */
+#line 288 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = createBinaryNode(RestaNode, (yyvsp[-2].tree_t), (yyvsp[0].tree_t));}
-#line 1813 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1815 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 287 "tarea5.y" /* yacc.c:1646  */
+#line 289 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = (yyvsp[0].tree_t);}
-#line 1819 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1821 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 290 "tarea5.y" /* yacc.c:1646  */
+#line 292 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = createBinaryNode(MultNode, (yyvsp[-2].tree_t), (yyvsp[0].tree_t));}
-#line 1825 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1827 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 291 "tarea5.y" /* yacc.c:1646  */
+#line 293 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = createBinaryNode(DivideNode, (yyvsp[-2].tree_t), (yyvsp[0].tree_t));}
-#line 1831 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1833 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 292 "tarea5.y" /* yacc.c:1646  */
+#line 294 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = (yyvsp[0].tree_t);}
-#line 1837 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1839 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 294 "tarea5.y" /* yacc.c:1646  */
+#line 296 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = (yyvsp[-1].tree_t);}
-#line 1843 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1845 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 295 "tarea5.y" /* yacc.c:1646  */
+#line 297 "tarea5.y" /* yacc.c:1646  */
     {idName = (yyvsp[0].stringValue); addToExpr(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);}
-#line 1849 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1851 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 295 "tarea5.y" /* yacc.c:1646  */
+#line 297 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = (yyvsp[0].tree_t);}
-#line 1855 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1857 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 296 "tarea5.y" /* yacc.c:1646  */
+#line 298 "tarea5.y" /* yacc.c:1646  */
     {intToHeap(); (yyval.tree_t) = addTreeIntNode(IntNode, yylval.i);}
-#line 1861 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1863 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 297 "tarea5.y" /* yacc.c:1646  */
+#line 299 "tarea5.y" /* yacc.c:1646  */
     {floatToHeap(); (yyval.tree_t) = addTreeFloatNode(FloatNode, yylval.f);}
-#line 1867 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1869 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 300 "tarea5.y" /* yacc.c:1646  */
+#line 302 "tarea5.y" /* yacc.c:1646  */
     {actualFuncNode = createFunctionNode(stackFunctions[heighFuncStack]);}
-#line 1873 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1875 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 300 "tarea5.y" /* yacc.c:1646  */
+#line 302 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = actualFuncNode;}
-#line 1879 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1881 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 301 "tarea5.y" /* yacc.c:1646  */
+#line 303 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = addTreeIdNode(IdNode, verifyFID(stackFunctions[heighFuncStack]->symbolRoot, idName ));}
-#line 1885 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1887 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 309 "tarea5.y" /* yacc.c:1646  */
+#line 311 "tarea5.y" /* yacc.c:1646  */
     {connectWithFunction((yyvsp[0].tree_t));}
-#line 1891 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1893 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 310 "tarea5.y" /* yacc.c:1646  */
+#line 312 "tarea5.y" /* yacc.c:1646  */
     {connectWithFunction((yyvsp[0].tree_t));}
-#line 1897 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1899 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 313 "tarea5.y" /* yacc.c:1646  */
+#line 315 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = createBinaryNode(MenorNode, (yyvsp[-2].tree_t), (yyvsp[0].tree_t));}
-#line 1903 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1905 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 314 "tarea5.y" /* yacc.c:1646  */
+#line 316 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = createBinaryNode(MayorNode, (yyvsp[-2].tree_t), (yyvsp[0].tree_t));}
-#line 1909 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1911 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 315 "tarea5.y" /* yacc.c:1646  */
+#line 317 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = createBinaryNode(IgualNode, (yyvsp[-2].tree_t), (yyvsp[0].tree_t));}
-#line 1915 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1917 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 316 "tarea5.y" /* yacc.c:1646  */
+#line 318 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = createBinaryNode(MenorINode, (yyvsp[-2].tree_t), (yyvsp[0].tree_t));}
-#line 1921 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1923 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 317 "tarea5.y" /* yacc.c:1646  */
+#line 319 "tarea5.y" /* yacc.c:1646  */
     {(yyval.tree_t) = createBinaryNode(MayorINode, (yyvsp[-2].tree_t), (yyvsp[0].tree_t));}
-#line 1927 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1929 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1931 "tarea5.tab.c" /* yacc.c:1646  */
+#line 1933 "tarea5.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2155,7 +2157,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 320 "tarea5.y" /* yacc.c:1906  */
+#line 322 "tarea5.y" /* yacc.c:1906  */
 
 
 char* getTypeOfTree(enum TreeNodeTypes type) {
@@ -2254,10 +2256,6 @@ void treeEvaluatePrint(tree_t *node){
 }
 
 void treeEvaluateSet(tree_t *node){
-  /*
-  child 0 es el tree_t con el id de la tabla de simbolos
-  chils 1 es la expresión a asignar
-  */
   expr_t id = evaluateExpr(node->child[0]);
   expr_t stmt = evaluateExpr(node->child[1]);
   node_t* sym = *node->child[0]->symbol;
@@ -2606,6 +2604,7 @@ bool evaluateExpression(tree_t *node){
 }
 
 expr_t evaluateExpr(tree_t *node){
+  printf("entro a evaluate expr a evaluar: %s\n",getTypeOfTree(node->type));
   expr_t left;
   expr_t right;
   expr_t res;
@@ -2693,11 +2692,18 @@ expr_t evaluateExpr(tree_t *node){
         return res;
       }
       break;
+    case FuncionNode:
+      res = treeEvaluateFunction(node);
+      return res;
   }
 }
 
 bool evaluateAmountOfParams(tree_t *node){
   int numParams = node->funcNode->numParams;
+  int numChilds = node->numberOfChilds;
+  printf("numero de parametros: %d\n", numParams);
+  printf("numero de hijos: %d\n", numChilds);
+  printf("y ps estoy evaluando para la funcion: %s\n", node->funcNode->name);
   if(numParams != node->numberOfChilds){
     raiseInvalidAmountOfParameters();
   }
@@ -2736,6 +2742,9 @@ expr_t treeEvaluateReturn(tree_t *node){
 }
 
 expr_t treeEvaluateFunction(tree_t *node){
+  printf("entra a evaluate function\n");
+  printf("putisimo tipo del node para evaluar funcion: %s\n", getTypeOfTree(node->type));
+  
   if(evaluateAmountOfParams(node)){
     expr_t returnValue;
     if(node->funcNode->syntaxRoot == NULL){
@@ -2780,7 +2789,11 @@ expr_t treeEvaluateFunction(tree_t *node){
             break;
           case ReturnNode:
             returnValue = treeEvaluateReturn(stmt->child[0]);
-            flag = true;
+            if(returnValue.type == node->funcNode->returnType){
+              flag = true;
+            }else{
+              raiseWrongReturnType(node->funcNode->name);
+            }
             break;
           default:
             break;
@@ -3265,7 +3278,8 @@ void setTree(){
 Checks if variable exists, raises error if not found
 */
 node_t ** verifyID(node_t *head, char *name){
-  //printf("Verifico %s\n", name);
+  printf("Verifico ID %s\n", name);
+  printf("Altura actual del stack de funciones: %d\n", heighFuncStack);
   node_t ** current = &head;
   while((*current)->next != NULL){
     current = &((*current)->next);
@@ -3333,6 +3347,16 @@ void execute(tree_t* actualInstruction){
     case PrintNode:
       printf("ejecuto print, num de hijos: %d\n", actualInstruction->numberOfChilds+1);
       treeEvaluatePrint(actualInstruction);
+      return;
+      break;
+    case FuncionNode:
+      printf("ejecuto func, num de hijos: %d\n", actualInstruction->numberOfChilds+1);
+      treeEvaluateFunction(actualInstruction);
+      return;
+      break;
+    case ReturnNode:
+      printf("ejecuto return, num de hijos: %d\n", actualInstruction->numberOfChilds+1);
+      treeEvaluateReturn(actualInstruction);
       return;
       break;
     case IfNode:

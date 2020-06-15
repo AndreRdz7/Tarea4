@@ -13,6 +13,8 @@ program one{
     }
 }
 {
+    set x 5;
+    print x;
     set x suma(1, 2);
     print x;
 } 
