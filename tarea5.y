@@ -23,7 +23,7 @@ int yyerror(char const * s);
 
 
 enum Types {IntType, FloatType, NULLType};
-enum TreeNodeTypes{INIT, FuncionNode , MayorNode, MenorNode, IgualNode, MenorINode, MayorINode, InstruccionNode, IdNode, ExprNode, ReturnNode, ReadNode, PrintNode, IfNode, ExpresionNode, IfelseNode, WhileNode, ForNode, SetNode, ComparandumNode, RestaNode, SumaNode, MultNode, DivideNode, TermNode, IntNode, FloatNode};
+enum TreeNodeTypes{INIT, FuncionNode , MayorNode ,MenorNode, IgualNode, MenorINode, MayorINode, InstruccionNode, IdNode, ExprNode, ReturnNode, ReadNode, PrintNode, IfNode, ExpresionNode, IfelseNode, WhileNode, ForNode, SetNode, ComparandumNode, RestaNode, SumaNode, MultNode, DivideNode, TermNode, IntNode, FloatNode};
 
 typedef struct expr{
   enum Types type;
@@ -70,7 +70,7 @@ typedef struct Func{
 int heighFuncStack = -1;
 func_t * stackFunctions[1000];
 
-
+int counterP = 0;
 
 enum Types heap = NULLType;
 
@@ -111,11 +111,16 @@ void assignTreeToFunction();
 node_t * setTable();
 //check if ID exists
 node_t ** verifyID(node_t*, char*);
+
+
+node_t ** verifyFID(node_t*, char*);
 //check if value exists and if the type is the same (taht we are keeping in the heap)
 void addToExpr(node_t*, char*);
 // int or float type selection
-void removeFromExpr(node_t *, char *);
+
 void addTypeToVariable(char*, func_t*);
+
+void counterParams(func_t*);
 
 
 void addTypeToFunction(char*);
@@ -204,7 +209,7 @@ opt_decls : decls
 ;
 
 decls : dec SEMICOLON decls 
-      | dec
+      | dec 
 ;
 
 dec : VAR ID {declareVariable(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue, stackFunctions[heighFuncStack]);} COLON tipo {addTypeToVariable(yylval.type, stackFunctions[heighFuncStack]);}
@@ -222,7 +227,7 @@ fun_decls : fun_decls fun_dec
           | fun_dec
 ;
 
-fun_dec : FUN ID {declareFunction(fsymbol, yylval.stringValue);} PARENI oparams PAREND COLON tipo {addTypeToFunction(yylval.type);} fun_op {popFunctionInStack();}
+fun_dec : FUN ID {declareFunction(fsymbol, yylval.stringValue);} PARENI {counterP = 0;} oparams {counterParams(stackFunctions[heighFuncStack]);} PAREND COLON tipo {addTypeToFunction(yylval.type);} fun_op {popFunctionInStack();}
 ;
 
 fun_op : LLAVEI opt_decls LLAVED stmt {$$ = $4;}
@@ -233,8 +238,8 @@ oparams : params
         | %empty
 ;
 
-params : param COMMA params 
-       | param
+params : param {counterP++;} COMMA params 
+       | param {counterP++;}
 ;
 
 param : VAR ID {declareVariable(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue, stackFunctions[heighFuncStack]);} COLON tipo {addTypeToVariable(yylval.type, stackFunctions[heighFuncStack]);}
@@ -279,13 +284,13 @@ term : term MULTI factor {$$ = createBinaryNode(MultNode, $1, $3);}
      | factor {$$ = $1;}
 
 factor : PARENI expr PAREND {$$ = $2;}
-       | ID {idName = $1; addToExpr(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);} factor_id
+       | ID {idName = $1; addToExpr(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);} factor_id {$$ = $3;}
        | NUMI {intToHeap(); $$ = addTreeIntNode(IntNode, yylval.i);}
        | NUMF {floatToHeap(); $$ = addTreeFloatNode(FloatNode, yylval.f);}
 ;
 
-factor_id : PARENI {removeFromExpr(stackFunctions[heighFuncStack]->symbolRoot, idName);} opt_exprs PAREND
-          | %empty 
+factor_id : PARENI  opt_exprs PAREND
+          | %empty {$$ = addTreeIdNode(IdNode, verifyFID(stackFunctions[heighFuncStack]->symbolRoot, idName ));}
 ; 
 
 
@@ -342,11 +347,11 @@ char* getTypeOfTree(enum TreeNodeTypes type) {
 // refactored
 tree_t* connectWithInstruccion(tree_t * subtree, func_t * actualScope){
   printf("Connecto, subgrafo a la instruccion actual, el tipo del subgrafo es: %s\n",getTypeOfTree(subtree->type));
-  printf("Actual heigh of stack: %d\n", actualScope->heighInstructionStack);
+  //printf("Actual heigh of stack: %d\n", actualScope->heighInstructionStack);
 
   if(actualScope->heighInstructionStack > -1){
     tree_t * lastNodeInList = returnLastInstrucc(actualScope->stack_lastInstruccion[actualScope->heighInstructionStack]);
-    printf("Es: %s\n",getTypeOfTree(lastNodeInList->type));
+    //printf("Es: %s\n",getTypeOfTree(lastNodeInList->type));
     lastNodeInList->numberOfChilds = lastNodeInList->numberOfChilds + 1;
     lastNodeInList->child[lastNodeInList->numberOfChilds] = subtree;
     return (actualScope->stack_lastInstruccion[actualScope->heighInstructionStack]);
@@ -656,6 +661,11 @@ void treeEvaluateFor(tree_t *node){
   }
 }
 
+void counterParams(func_t* fun){
+  fun->numParams = counterP;
+  counterP = 0;
+}
+
 bool evaluateExpression(tree_t *node){
   expr_t left = evaluateExpr(node->child[0]);
   expr_t right = evaluateExpr(node->child[1]);
@@ -885,10 +895,10 @@ tree_t* createTernaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, t
 tree_t* createBinaryNode(enum TreeNodeTypes type, tree_t *left, tree_t *right){
   printf("Creando Binary\n");
   printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
-  printf("Left: %s\n", getTypeOfTree(left->type));
-  printf("hijos de left: %d\n", left->numberOfChilds+1);
-  printf("Right: %s\n", getTypeOfTree(right->type));
-  printf("hijos de right: %d\n", right->numberOfChilds+1);
+  //printf("Left: %s\n", getTypeOfTree(left->type));
+  //printf("hijos de left: %d\n", left->numberOfChilds+1);
+  //printf("Right: %s\n", getTypeOfTree(right->type));
+  //printf("hijos de right: %d\n", right->numberOfChilds+1);
 
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->type = type;
@@ -955,7 +965,7 @@ tree_t * returnLastInstrucc(tree_t * root){
 
 
 tree_t* addTreeIdNode(enum TreeNodeTypes actualNodeToAddType, node_t ** pointerId){
-  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
+  printf("Agrego ID nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->numberOfChilds = -1;
   newNode->type = actualNodeToAddType;
@@ -964,7 +974,7 @@ tree_t* addTreeIdNode(enum TreeNodeTypes actualNodeToAddType, node_t ** pointerI
 }
 
 tree_t* addTreeIntNode(enum TreeNodeTypes actualNodeToAddType, int value){
-  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
+  printf("Agrego INT nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->numberOfChilds = -1;
   newNode->type = actualNodeToAddType;
@@ -973,7 +983,7 @@ tree_t* addTreeIntNode(enum TreeNodeTypes actualNodeToAddType, int value){
 }
 
 tree_t* addTreeFloatNode(enum TreeNodeTypes actualNodeToAddType, float value){
-  printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
+  printf("Agrego FLOAT nodo, de tipo: %s\n", getTypeOfTree(actualNodeToAddType));
   tree_t* newNode = (tree_t*)malloc(sizeof(tree_t));
   newNode->numberOfChilds = -1;
   newNode->type = actualNodeToAddType;
@@ -996,21 +1006,21 @@ void addInstructionToTree(enum TreeNodeTypes nodeType, func_t * scope){
   newNode->type = nodeType;
   newNode->nextInstruction = NULL;
   newNode->numberOfChilds = -1;
-  printf("size: %d\n", scope->heighInstructionStack);
+  //printf("size: %d\n", scope->heighInstructionStack);
 
   if(scope->heighInstructionStack > -1){
 
       if(scope->stack_lastInstruccion[scope->heighInstructionStack] != NULL){
         tree_t * actual =  returnLastInstrucc(scope->stack_lastInstruccion[scope->heighInstructionStack]);
-        printf("estoy en %s\n", getTypeOfTree(actual->type));
+        //printf("estoy en %s\n", getTypeOfTree(actual->type));
         actual->nextInstruction = newNode;
-        printf("Instruccion agregada\n");
+        //printf("Instruccion agregada\n");
       }
 
   }else{
       scope->syntaxRoot = newNode;
   }
-  printf("sigo vivo\n");
+  
   //connect with last instruction
   //stack_lastInstruccion[heighInstructionStack] = newNode;
 
@@ -1039,20 +1049,7 @@ void addToExpr(node_t *head, char *name){
   }
 }
 
-void removeFromExpr(node_t *head, char *name){
-  name[strlen(name)-1] = '\0';
-  printf("Remuevo simbolo con nombre de: %s\n", name);
 
-  node_t * current = head;
-  // find ir in its symbol table
-  while(current->next != NULL){
-    printf("Estoy en: %s\n", current->name);
-    current = current->next;
-    if (strcmp(current->next->name, name) == 0){
-        current->next = NULL;
-    }
-  }
-}
 
 
 
@@ -1140,6 +1137,7 @@ void declareFunction(func_t * head, char * name){
   newFunc->i = 0;
   newFunc->f = 0.0;
   newFunc->next = NULL;
+  newFunc->numParams = 0;
   newFunc->firstInstruction = true;
 
 
@@ -1202,10 +1200,15 @@ void printList(node_t *head){
 void printFunctionList(func_t* head){
   if(head != NULL){
     printf("-> %s\n", head->name);
+    printf("Num de params: %d\n", head->numParams);
 
     if(head){
         printf("\tSymbol's table:\n");
-        printList(head->symbolRoot);
+        if(head->symbolRoot->next){
+          printList(head->symbolRoot->next);
+        }else{
+          printf("No variables declared\n");
+        }
     }
 
     printFunctionList(head->next);
@@ -1313,6 +1316,20 @@ node_t ** verifyID(node_t *head, char *name){
 }
 
 
+node_t ** verifyFID(node_t *head, char *name){
+  name[strlen(name)-1] = '\0';
+  printf("Verifico %s\n", name);
+  node_t ** current = &head;
+  while((*current)->next != NULL){
+    current = &((*current)->next);
+    if (strcmp((*current)->name, name) == 0){
+      return current;
+    }
+  }
+  raiseNoExistingVar(name);
+}
+
+
 func_t ** verifyFunctionID(func_t* head, char* name){
   func_t ** current = &head;
   while((*current)->next != NULL){
@@ -1396,6 +1413,7 @@ void setGlobals(char * name){
   globalFunc->i = 0;
   globalFunc->heighInstructionStack = -1;
   globalFunc->next = NULL;
+  globalFunc->numParams = 0;
   globalFunc->firstInstruction = true;
   // the global func is always the first one
   lastFuncionInserted = globalFunc;
@@ -1413,6 +1431,7 @@ func_t * createFunc(char * name, enum Types actualreturnType){
   func->symbolRoot = setTable();
   func->returnType = actualreturnType;
   func->heighInstructionStack = -1;
+  func->numParams = 0;
   func->i = 0;
   func->f = 0.0;
   func->next = NULL;
@@ -1442,7 +1461,7 @@ int main(int argc, char *argv[]) {
   yyin = fp; 
 
   yyparse();  
-
+  printf("-------------------------------------------------------------------------------\n");
   if(globalFunc->syntaxRoot){
     printf("Code execution:\n");
     execute(globalFunc->syntaxRoot);
