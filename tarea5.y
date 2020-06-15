@@ -862,16 +862,19 @@ expr_t evaluateExpr(tree_t *node){
 bool evaluateAmountOfParams(tree_t *node){
   int numParams = node->funcNode->numParams;
   int numChilds = node->numberOfChilds;
+  numChilds++;
   printf("numero de parametros: %d\n", numParams);
   printf("numero de hijos: %d\n", numChilds);
   printf("y ps estoy evaluando para la funcion: %s\n", node->funcNode->name);
-  if(numParams != node->numberOfChilds){
+  if(numParams == numChilds){
+    return true;
+  }else{
     raiseInvalidAmountOfParameters();
   }
-  return true;
 }
 
 bool checkCompatibleParamTypes(node_t *symbol, expr_t param){
+  printf("entró a comparar tipos...\n");
   if(symbol->type == param.type){
     return true;
   }else{
@@ -880,19 +883,29 @@ bool checkCompatibleParamTypes(node_t *symbol, expr_t param){
 }
 
 void fillParams(tree_t *node){
+  printf("llenando parámetros\n");
   int numParams = node->funcNode->numParams;
   node_t *currentSymbol = node->funcNode->symbolRoot->next;
+  printf("---------currentSymbol first: %s\n", currentSymbol->name);
   for(int i = 0; i < numParams; i++){
     expr_t evaluatedParam = evaluateExpr(node->child[i]);
+    printf("evaluó el parametro...\n");
     if(checkCompatibleParamTypes(currentSymbol, evaluatedParam)){
+      printf("si son compatibles los parámetros...\n");
+      printf("+++y es de tipo: %s\n", getType(currentSymbol->type));
       switch(currentSymbol->type){
         case IntType:
+          printf("si es tipo int\n");
           currentSymbol->u_val.i = evaluatedParam.i;
+          printf("a la variable %s le metí el valor de %d\n", currentSymbol->name, evaluatedParam.i);
           break;
         case FloatType:
+          printf("si es tipo float\n");
           currentSymbol->u_val.f = evaluatedParam.f;
           break;
       }
+    }else{
+      raiseInvalidParameterType(currentSymbol->name);
     }
     currentSymbol = currentSymbol->next;
   }
@@ -904,8 +917,6 @@ expr_t treeEvaluateReturn(tree_t *node){
 
 expr_t treeEvaluateFunction(tree_t *node){
   printf("entra a evaluate function\n");
-  printf("putisimo tipo del node para evaluar funcion: %s\n", getTypeOfTree(node->type));
-  
   if(evaluateAmountOfParams(node)){
     expr_t returnValue;
     if(node->funcNode->syntaxRoot == NULL){
@@ -923,11 +934,14 @@ expr_t treeEvaluateFunction(tree_t *node){
       }
     }else{
       fillParams(node);
+      printf("params filled heehee\n");
       bool flag = false;
-      tree_t *stmt = node->funcNode->syntaxRoot->child[0]->nextInstruction;
+      tree_t *stmt = node->funcNode->syntaxRoot->nextInstruction;
+      printf("el primer stmt es %s\n", getTypeOfTree(stmt->type));
       while(stmt != NULL){
         switch(stmt->child[0]->type){
           case SetNode:
+            printf("-+-+evaluo set dentro de funcion\n");
             treeEvaluateSet(stmt->child[0]);
             break;
           case ReadNode:

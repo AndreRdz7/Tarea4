@@ -1,0 +1,18 @@
+program one{
+    var x: int
+
+    fun suma_i(var num1: int): int ;
+
+    fun suma(var num1: int, var num2: int): int {
+        var a: int
+    }
+    {
+        set a 5 + 2;
+        print a;
+        return num1 + num2;
+    }
+}
+{
+    set x suma_i(2);
+    print x;
+} 
