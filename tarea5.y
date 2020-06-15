@@ -153,7 +153,7 @@ tree_t * connectWithFunction(tree_t *);
 
 // functions of creating functions
 void declareFunction(func_t*, char*);
-func_t ** verifyFunctionID(func_t*, char*);
+func_t * verifyFunctionID(func_t*, char*);
 void printFunctionList(func_t*);
 
 
@@ -294,12 +294,12 @@ term : term MULTI factor {$$ = createBinaryNode(MultNode, $1, $3);}
      | factor {$$ = $1;}
 
 factor : PARENI expr PAREND {$$ = $2;}
-       | ID {idName = $1; addToExpr(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);} factor_id {$$ = $3;}
+       | ID {idName = $1; addToExpr(stackFunctions[heighFuncStack]->symbolRoot, yylval.stringValue);} factor_id {printf(" NAMEEEEEEEEEE : %s\n", $3->funcNode->name); $$ = $3;}
        | NUMI {intToHeap(); $$ = addTreeIntNode(IntNode, yylval.i);}
        | NUMF {floatToHeap(); $$ = addTreeFloatNode(FloatNode, yylval.f);}
 ;
 
-factor_id : PARENI {actualFuncNode = createFunctionNode(stackFunctions[heighFuncStack]);} opt_exprs PAREND {$$ = actualFuncNode;}
+factor_id : PARENI {actualFuncNode = createFunctionNode(verifyFunctionID(fsymbol, idName));} opt_exprs PAREND {$$ = actualFuncNode;}
           | %empty {$$ = addTreeIdNode(IdNode, verifyFID(stackFunctions[heighFuncStack]->symbolRoot, idName ));}
 ; 
 
@@ -1470,11 +1470,17 @@ node_t ** verifyFID(node_t *head, char *name){
 }
 
 
-func_t ** verifyFunctionID(func_t* head, char* name){
-  func_t ** current = &head;
-  while((*current)->next != NULL){
-    current = &((*current)->next);
-    if (strcmp((*current)->name, name) == 0){
+func_t * verifyFunctionID(func_t* head, char* name){
+
+  while(name[strlen(name)-1] == '/' || name[strlen(name)-1] == '+' || name[strlen(name)-1] == '-' || name[strlen(name)-1] == '*' || name[strlen(name)-1] == ';' || name[strlen(name)-1] == '(' || name[strlen(name)-1] == ' ' || name[strlen(name)-1] == '<' || name[strlen(name)-1] == '=' || name[strlen(name)-1] == '>' || name[strlen(name)-1] == ')'){
+    name[strlen(name)-1] = '\0';
+  }
+
+  printf("Verrifying the function with the name of: %s\n", name);
+  func_t * current = head;
+  while((current)->next != NULL){
+    current = ((current)->next);
+    if (strcmp((current)->name, name) == 0){
       return current;
     }
   }

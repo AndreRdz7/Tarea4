@@ -218,7 +218,7 @@ tree_t * connectWithFunction(tree_t *);
 
 // functions of creating functions
 void declareFunction(func_t*, char*);
-func_t ** verifyFunctionID(func_t*, char*);
+func_t * verifyFunctionID(func_t*, char*);
 void printFunctionList(func_t*);
 
 
@@ -1852,7 +1852,7 @@ yyreduce:
 
   case 69:
 #line 297 "tarea5.y" /* yacc.c:1646  */
-    {(yyval.tree_t) = (yyvsp[0].tree_t);}
+    {printf(" NAMEEEEEEEEEE : %s\n", (yyvsp[0].tree_t)->funcNode->name); (yyval.tree_t) = (yyvsp[0].tree_t);}
 #line 1857 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1870,7 +1870,7 @@ yyreduce:
 
   case 72:
 #line 302 "tarea5.y" /* yacc.c:1646  */
-    {actualFuncNode = createFunctionNode(stackFunctions[heighFuncStack]);}
+    {actualFuncNode = createFunctionNode(verifyFunctionID(fsymbol, idName));}
 #line 1875 "tarea5.tab.c" /* yacc.c:1646  */
     break;
 
@@ -3309,11 +3309,17 @@ node_t ** verifyFID(node_t *head, char *name){
 }
 
 
-func_t ** verifyFunctionID(func_t* head, char* name){
-  func_t ** current = &head;
-  while((*current)->next != NULL){
-    current = &((*current)->next);
-    if (strcmp((*current)->name, name) == 0){
+func_t * verifyFunctionID(func_t* head, char* name){
+
+  while(name[strlen(name)-1] == '/' || name[strlen(name)-1] == '+' || name[strlen(name)-1] == '-' || name[strlen(name)-1] == '*' || name[strlen(name)-1] == ';' || name[strlen(name)-1] == '(' || name[strlen(name)-1] == ' ' || name[strlen(name)-1] == '<' || name[strlen(name)-1] == '=' || name[strlen(name)-1] == '>' || name[strlen(name)-1] == ')'){
+    name[strlen(name)-1] = '\0';
+  }
+
+  printf("Verrifying the function with the name of: %s\n", name);
+  func_t * current = head;
+  while((current)->next != NULL){
+    current = ((current)->next);
+    if (strcmp((current)->name, name) == 0){
       return current;
     }
   }
