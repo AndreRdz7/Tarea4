@@ -941,7 +941,11 @@ expr_t treeEvaluateFunction(tree_t *node){
             break;
           case ReturnNode:
             returnValue = treeEvaluateReturn(stmt->child[0]);
-            flag = true;
+            if(returnValue.type == nodenode->funcNode->returnType){
+              flag = true;
+            }else{
+              raiseWrongReturnType();
+            }
             break;
           default:
             break;
@@ -1426,7 +1430,8 @@ void setTree(){
 Checks if variable exists, raises error if not found
 */
 node_t ** verifyID(node_t *head, char *name){
-  //printf("Verifico %s\n", name);
+  printf("Verifico ID %s\n", name);
+  printf("Altura actual del stack de funciones: %d\n", heighFuncStack);
   node_t ** current = &head;
   while((*current)->next != NULL){
     current = &((*current)->next);
@@ -1440,7 +1445,8 @@ node_t ** verifyID(node_t *head, char *name){
 
 node_t ** verifyFID(node_t *head, char *name){
   name[strlen(name)-1] = '\0';
-  printf("Verifico %s\n", name);
+  printf("Verifico FID %s\n", name);
+  printf("Altura actual del stack de funciones: %d\n", heighFuncStack);
   node_t ** current = &head;
   while((*current)->next != NULL){
     current = &((*current)->next);
