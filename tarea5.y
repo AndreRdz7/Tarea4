@@ -140,8 +140,11 @@ void printList(node_t*);
 void resetHeap();
 
 // EXEC Functions Functions ._.XD
-bool evaluatePameters(tree_t* node);
-
+bool evaluateAmountOfParams(tree_t* node);
+expr_t treeEvaluateFunction(tree_t* node);
+void fillParams(tree_t* node);
+bool checkCompatibleParamTypes(node_t *symbol, expr_t param);
+expr_t treeEvaluateReturn(tree_t*);
 
 tree_t * createFunctionNode(func_t*);
 
@@ -854,12 +857,104 @@ expr_t evaluateExpr(tree_t *node){
   }
 }
 
-bool evaluatePameters(tree_t *node){
+bool evaluateAmountOfParams(tree_t *node){
   int numParams = node->funcNode->numParams;
   if(numParams != node->numberOfChilds){
     raiseInvalidAmountOfParameters();
   }
+  return true;
+}
 
+bool checkCompatibleParamTypes(node_t *symbol, expr_t param){
+  if(symbol->type == param.type){
+    return true;
+  }else{
+    raiseInvalidParameterType(symbol->name);
+  }
+}
+
+void fillParams(tree_t *node){
+  int numParams = node->funcNode->numParams;
+  node_t *currentSymbol = node->funcNode->symbolRoot->next;
+  for(int i = 0; i < numParams; i++){
+    expr_t evaluatedParam = evaluateExpr(node->child[i]);
+    if(checkCompatibleParamTypes(currentSymbol, evaluatedParam)){
+      switch(currentSymbol->type){
+        case IntType:
+          currentSymbol->u_val.i = evaluatedParam.i;
+          break;
+        case FloatType:
+          currentSymbol->u_val.f = evaluatedParam.f;
+          break;
+      }
+    }
+    currentSymbol = currentSymbol->next;
+  }
+}
+
+expr_t treeEvaluateReturn(tree_t *node){
+  return evaluateExpr(node->child[0]);
+}
+
+expr_t treeEvaluateFunction(tree_t *node){
+  if(evaluateAmountOfParams(node)){
+    expr_t returnValue;
+    if(node->funcNode->syntaxRoot == NULL){
+      switch(node->funcNode->returnType){
+        case IntType:
+          returnValue.type = IntType;
+          returnValue.i = 0;
+          return returnValue;
+          break;
+        case FloatType:
+          returnValue.type = FloatType;
+          returnValue.f = 0.0;
+          return returnValue;
+          break;
+      }
+    }else{
+      fillParams(node);
+      bool flag = false;
+      tree_t *stmt = node->funcNode->syntaxRoot->child[0]->nextInstruction;
+      while(stmt != NULL){
+        switch(stmt->child[0]->type){
+          case SetNode:
+            treeEvaluateSet(stmt->child[0]);
+            break;
+          case ReadNode:
+            treeEvaluateRead(stmt->child[0]);
+            break;
+          case PrintNode:
+            treeEvaluatePrint(stmt->child[0]);
+            break;
+          case IfNode:
+            treeEvaluateIf(stmt->child[0]);
+            break;
+          case IfelseNode:
+            treeEvaluateIfElse(stmt->child[0]);
+            break;
+          case WhileNode:
+            treeEvaluateWhile(stmt->child[0]);
+            break;
+          case ForNode:
+            treeEvaluateFor(stmt->child[0]);
+            break;
+          case ReturnNode:
+            returnValue = treeEvaluateReturn(stmt->child[0]);
+            flag = true;
+            break;
+          default:
+            break;
+        }
+        if(!flag){
+          stmt = stmt->nextInstruction;
+        }else{
+          stmt = NULL;
+        }
+      }
+      return returnValue;
+    }
+  }
 }
 
 tree_t* createQuaternaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, tree_t * three, tree_t* four){
