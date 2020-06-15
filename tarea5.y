@@ -139,6 +139,12 @@ void printList(node_t*);
 // reset the heap value
 void resetHeap();
 
+// EXEC Functions Functions ._.XD
+bool evaluateAmountOfParams(tree_t* node);
+expr_t treeEvaluateFunction(tree_t* node);
+void fillParams(tree_t* node);
+bool checkCompatibleParamTypes(node_t *symbol, expr_t param);
+expr_t treeEvaluateReturn(tree_t*);
 
 tree_t * createFunctionNode(func_t*);
 
@@ -163,6 +169,9 @@ void raiseDuplicateVar(char* name);
 void raiseInvalidType(char* name);
 void raiseInvalidCompatibleTypes();
 void raiseNoExistingVar(char* name);
+void raiseInvalidParameterType(char* name);
+void raiseInvalidAmountOfParameters();
+void raiseWrongReturnType(char* name);
 
 
 // symbol, last Inserted , syntax, stack function height and the stack of main function
@@ -396,7 +405,7 @@ bool checkCompatibleStructTypes(expr_t first, expr_t second){
 }
 
 void treeEvaluatePrint(tree_t *node){
-  //printf("printing... ");
+  printf("printing... ");
   expr_t stmt = evaluateExpr(node->child[0]);
   if(stmt.type == IntType){
     printf("%d\n", stmt.i);
@@ -848,6 +857,106 @@ expr_t evaluateExpr(tree_t *node){
   }
 }
 
+bool evaluateAmountOfParams(tree_t *node){
+  int numParams = node->funcNode->numParams;
+  if(numParams != node->numberOfChilds){
+    raiseInvalidAmountOfParameters();
+  }
+  return true;
+}
+
+bool checkCompatibleParamTypes(node_t *symbol, expr_t param){
+  if(symbol->type == param.type){
+    return true;
+  }else{
+    raiseInvalidParameterType(symbol->name);
+  }
+}
+
+void fillParams(tree_t *node){
+  int numParams = node->funcNode->numParams;
+  node_t *currentSymbol = node->funcNode->symbolRoot->next;
+  for(int i = 0; i < numParams; i++){
+    expr_t evaluatedParam = evaluateExpr(node->child[i]);
+    if(checkCompatibleParamTypes(currentSymbol, evaluatedParam)){
+      switch(currentSymbol->type){
+        case IntType:
+          currentSymbol->u_val.i = evaluatedParam.i;
+          break;
+        case FloatType:
+          currentSymbol->u_val.f = evaluatedParam.f;
+          break;
+      }
+    }
+    currentSymbol = currentSymbol->next;
+  }
+}
+
+expr_t treeEvaluateReturn(tree_t *node){
+  return evaluateExpr(node->child[0]);
+}
+
+expr_t treeEvaluateFunction(tree_t *node){
+  if(evaluateAmountOfParams(node)){
+    expr_t returnValue;
+    if(node->funcNode->syntaxRoot == NULL){
+      switch(node->funcNode->returnType){
+        case IntType:
+          returnValue.type = IntType;
+          returnValue.i = 0;
+          return returnValue;
+          break;
+        case FloatType:
+          returnValue.type = FloatType;
+          returnValue.f = 0.0;
+          return returnValue;
+          break;
+      }
+    }else{
+      fillParams(node);
+      bool flag = false;
+      tree_t *stmt = node->funcNode->syntaxRoot->child[0]->nextInstruction;
+      while(stmt != NULL){
+        switch(stmt->child[0]->type){
+          case SetNode:
+            treeEvaluateSet(stmt->child[0]);
+            break;
+          case ReadNode:
+            treeEvaluateRead(stmt->child[0]);
+            break;
+          case PrintNode:
+            treeEvaluatePrint(stmt->child[0]);
+            break;
+          case IfNode:
+            treeEvaluateIf(stmt->child[0]);
+            break;
+          case IfelseNode:
+            treeEvaluateIfElse(stmt->child[0]);
+            break;
+          case WhileNode:
+            treeEvaluateWhile(stmt->child[0]);
+            break;
+          case ForNode:
+            treeEvaluateFor(stmt->child[0]);
+            break;
+          case ReturnNode:
+            returnValue = treeEvaluateReturn(stmt->child[0]);
+            flag = true;
+            break;
+          default:
+            break;
+        }
+        if(!flag){
+          stmt = stmt->nextInstruction;
+        }else{
+          stmt = NULL;
+        }
+      }
+      return returnValue;
+    }
+  }
+}
+
 tree_t* createQuaternaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, tree_t * three, tree_t* four){
   printf("Agrego nodo, de tipo: %s\n", getTypeOfTree(type));
   tree_t * newNode = (tree_t*)malloc(sizeof(tree_t));
@@ -862,6 +971,7 @@ tree_t* createQuaternaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two
   newNode->child[newNode->numberOfChilds] = three;
   newNode->numberOfChilds++;
   newNode->child[newNode->numberOfChilds] = four;
+  newNode->child[4] = NULL;
   return newNode;
 }
 
@@ -877,6 +987,8 @@ tree_t* createTernaryNode(enum TreeNodeTypes type, tree_t * one, tree_t * two, t
   newNode->child[newNode->numberOfChilds] = two;
   newNode->numberOfChilds++;
   newNode->child[newNode->numberOfChilds] = three;
+  newNode->child[3] = NULL;
+  newNode->child[4] = NULL;
   return newNode;
 }
 
@@ -896,6 +1008,9 @@ tree_t* createBinaryNode(enum TreeNodeTypes type, tree_t *left, tree_t *right){
   newNode->child[newNode->numberOfChilds] = left;
   newNode->numberOfChilds++;
   newNode->child[newNode->numberOfChilds] = right;
+  newNode->child[2] = NULL;
+  newNode->child[3] = NULL;
+  newNode->child[4] = NULL;
   return newNode;
 }
 
@@ -908,6 +1023,10 @@ tree_t* createUnaryNode(enum TreeNodeTypes type, tree_t *child){
   newNode->numberOfChilds = -1;
   newNode->numberOfChilds++;
   newNode->child[newNode->numberOfChilds] = child;
+  newNode->child[1] = NULL;
+  newNode->child[2] = NULL;
+  newNode->child[3] = NULL;
+  newNode->child[4] = NULL;
   return newNode;
 }
 
@@ -1255,6 +1374,19 @@ trying to be accessed without been declared
 */
 void raiseNoExistingVar(char *name){
   printf("La variable %s no ha sido declarada\n",name);
+  exit(0);
+}
+
+void raiseInvalidParameterType(char *name){
+  printf("La variable %s esperaba otro tipo de dato en la función\n", name);
+  exit(0);
+}
+void raiseInvalidAmountOfParameters(){
+  printf("El número de parámetros es incorrecto\n");
+  exit(0);
+}
+void raiseWrongReturnType(char *name){
+  printf("El valor de retorno para la funcion %s es inválido\n", name);
   exit(0);
 }
 
