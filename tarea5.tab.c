@@ -3376,7 +3376,12 @@ void execute(tree_t* actualInstruction){
       break;
     case ReturnNode:
       printf("ejecuto return, num de hijos: %d\n", actualInstruction->numberOfChilds+1);
-      treeEvaluateReturn(actualInstruction);
+      if(globalFunc){
+        printf("Function's table:\n");
+        printFunctionList(globalFunc);
+      }
+      exit(0);
+      //treeEvaluateReturn(actualInstruction);
       return;
       break;
     case IfNode:
