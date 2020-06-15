@@ -1307,7 +1307,11 @@ node_t ** verifyID(node_t *head, char *name){
 
 
 node_t ** verifyFID(node_t *head, char *name){
-  name[strlen(name)-1] = '\0';
+
+  while(name[strlen(name)-1] == '/' || name[strlen(name)-1] == '+' || name[strlen(name)-1] == '-' || name[strlen(name)-1] == '*' || name[strlen(name)-1] == ';' || name[strlen(name)-1] == '(' || name[strlen(name)-1] == ' ' || name[strlen(name)-1] == '<' || name[strlen(name)-1] == '=' || name[strlen(name)-1] == '>' || name[strlen(name)-1] == ')'){
+    name[strlen(name)-1] = '\0';
+  }
+  
   printf("Verifico %s\n", name);
   node_t ** current = &head;
   while((*current)->next != NULL){

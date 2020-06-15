@@ -3146,7 +3146,11 @@ node_t ** verifyID(node_t *head, char *name){
 
 
 node_t ** verifyFID(node_t *head, char *name){
-  name[strlen(name)-1] = '\0';
+
+  while(name[strlen(name)-1] == '/' || name[strlen(name)-1] == '+' || name[strlen(name)-1] == '-' || name[strlen(name)-1] == '*' || name[strlen(name)-1] == ';' || name[strlen(name)-1] == '(' || name[strlen(name)-1] == ' ' || name[strlen(name)-1] == '<' || name[strlen(name)-1] == '=' || name[strlen(name)-1] == '>' || name[strlen(name)-1] == ')'){
+    name[strlen(name)-1] = '\0';
+  }
+  
   printf("Verifico %s\n", name);
   node_t ** current = &head;
   while((*current)->next != NULL){
@@ -3184,8 +3188,8 @@ void execute(tree_t* actualInstruction){
   switch(actualInstruction->type){
     case SetNode:
       printf("ejecuto set, num de hijos: %d\n", actualInstruction->numberOfChilds+1);
-      printf("Hijo derecha: %s\n", getTypeOfTree(actualInstruction->child[1]->type));
-      printf("Hijo de func: %s\n", getTypeOfTree(actualInstruction->child[1]->child[0]->type));
+      //printf("Hijo derecha: %s\n", getTypeOfTree(actualInstruction->child[1]->type));
+      //printf("Hijo de func: %s\n", getTypeOfTree(actualInstruction->child[1]->child[0]->type));
       treeEvaluateSet(actualInstruction);
       return;
       break;
