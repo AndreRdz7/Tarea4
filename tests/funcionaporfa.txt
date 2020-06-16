@@ -1,0 +1,8 @@
+program dios
+{
+   var x : int
+}
+{
+  read x;
+  print x+1;
+}
