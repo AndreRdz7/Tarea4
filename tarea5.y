@@ -1501,6 +1501,15 @@ node_t ** verifyFID(node_t *head, char *name){
   while(name[strlen(name)-1] == '/' || name[strlen(name)-1] == '+' || name[strlen(name)-1] == '-' || name[strlen(name)-1] == '*' || name[strlen(name)-1] == ';' || name[strlen(name)-1] == '(' || name[strlen(name)-1] == ' ' || name[strlen(name)-1] == '<' || name[strlen(name)-1] == '=' || name[strlen(name)-1] == '>' || name[strlen(name)-1] == ')' || name[strlen(name)-1] == ','){
     name[strlen(name)-1] = '\0';
   }
+
+  char* pPosition = strchr(name, ' ');
+
+  while(pPosition != NULL){
+    name[strlen(name)-1] = '\0';
+    pPosition = strchr(name, ' ');
+
+  }
+  
   
   // printf("Verifico %s\n", name);
   node_t ** current = &head;
@@ -1519,6 +1528,15 @@ func_t * verifyFunctionID(func_t* head, char* name){
   while(name[strlen(name)-1] == '/' || name[strlen(name)-1] == '+' || name[strlen(name)-1] == '-' || name[strlen(name)-1] == '*' || name[strlen(name)-1] == ';' || name[strlen(name)-1] == '(' || name[strlen(name)-1] == ' ' || name[strlen(name)-1] == '<' || name[strlen(name)-1] == '=' || name[strlen(name)-1] == '>' || name[strlen(name)-1] == ')' || name[strlen(name)-1] == ')'){
     name[strlen(name)-1] = '\0';
   }
+
+    char* pPosition = strchr(name, ' ');
+
+  while(pPosition != NULL){
+    name[strlen(name)-1] = '\0';
+    pPosition = strchr(name, ' ');
+
+  }
+  
 
   // printf("Verrifying the function with the name of: %s\n", name);
   func_t * current = head;
