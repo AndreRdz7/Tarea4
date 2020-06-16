@@ -799,7 +799,7 @@ YY_RULE_SETUP
 case 5:
 YY_RULE_SETUP
 #line 21 "tarea5.flex"
-{printf("Leo return\n"); yylval.terminal = yytext; return RETURN;}
+{yylval.terminal = yytext; return RETURN;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
@@ -814,7 +814,7 @@ YY_RULE_SETUP
 case 8:
 YY_RULE_SETUP
 #line 24 "tarea5.flex"
-{printf("Leo INT\n");yylval.type = yytext; return INT;}
+{yylval.type = yytext; return INT;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
@@ -834,7 +834,7 @@ YY_RULE_SETUP
 case 12:
 YY_RULE_SETUP
 #line 28 "tarea5.flex"
-{printf("Print\n");yylval.terminal = yytext; return PRINT;}
+{yylval.terminal = yytext; return PRINT;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
@@ -874,7 +874,7 @@ YY_RULE_SETUP
 case 20:
 YY_RULE_SETUP
 #line 36 "tarea5.flex"
-{printf("ID: %s\n", yytext); yylval.stringValue = yytext; return ID;}
+{yylval.stringValue = yytext; return ID;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
@@ -894,27 +894,27 @@ YY_RULE_SETUP
 case 24:
 YY_RULE_SETUP
 #line 40 "tarea5.flex"
-{printf("Division\n"); yylval.terminal = yytext; return DIVIDE;}
+{yylval.terminal = yytext; return DIVIDE;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 41 "tarea5.flex"
-{printf("Abro parentesis\n"); yylval.terminal = yytext; return PARENI;}
+{yylval.terminal = yytext; return PARENI;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 42 "tarea5.flex"
-{printf("Cierro parentesis\n"); yylval.terminal = yytext; return PAREND;}
+{yylval.terminal = yytext; return PAREND;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 43 "tarea5.flex"
-{printf("Abro llave\n");yylval.terminal = yytext; return LLAVEI;}
+{yylval.terminal = yytext; return LLAVEI;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 44 "tarea5.flex"
-{printf("Cierro llave\n");yylval.terminal = yytext; return LLAVED;}
+{yylval.terminal = yytext; return LLAVED;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
@@ -924,7 +924,7 @@ YY_RULE_SETUP
 case 30:
 YY_RULE_SETUP
 #line 46 "tarea5.flex"
-{printf("Punto y Coma\n"); yylval.terminal = yytext; return SEMICOLON;}
+{yylval.terminal = yytext; return SEMICOLON;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
