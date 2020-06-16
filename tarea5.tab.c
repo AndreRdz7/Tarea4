@@ -2233,6 +2233,7 @@ void treeEvaluateRead(tree_t *node){
   }else if(sym->type == FloatType && !isInt){
     sym->u_val.f = f_val;
   }else{
+    printf("failed here add to read\n");
     raiseInvalidCompatibleTypes();
   }
 }
@@ -2241,6 +2242,7 @@ bool checkCompatibleStructTypes(expr_t first, expr_t second){
   if(first.type == second.type){
     return true;
   }else{
+    printf("failed here add to struct\n");
     raiseInvalidCompatibleTypes();
   }
 }
@@ -2499,9 +2501,11 @@ void treeEvaluateFor(tree_t *node){
         }
       }
     }else{
+      printf("failed here add to for 1\n");
       raiseInvalidCompatibleTypes();
     }
   }else{
+    printf("failed here add to for 2\n");
     raiseInvalidCompatibleTypes();
   }
 }
@@ -2818,6 +2822,21 @@ expr_t treeEvaluateFunction(tree_t *node){
           stmt = NULL;
         }
       }
+      printf(flag ? "true\n" : "false\n");
+      if(!flag){
+        switch(node->funcNode->returnType){
+          case IntType:
+            returnValue.type = IntType;
+            returnValue.i = 0;
+            return returnValue;
+            break;
+          case FloatType:
+            returnValue.type = FloatType;
+            returnValue.f = 0.0;
+            return returnValue;
+            break;
+        }
+      }
       return returnValue;
     }
   }
@@ -3026,6 +3045,7 @@ void addToExpr(node_t *head, char *name){
         heap =  current->type;
       }else{
         if(heap != current->type){
+          printf("failed here add to expr\n");
           raiseInvalidCompatibleTypes();
         }
       }
