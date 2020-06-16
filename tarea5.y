@@ -74,6 +74,7 @@ int counterP = 0;
 
 enum Types heap = NULLType;
 
+bool overrydingFunction = false;
 
 tree_t  * actualFuncNode;
 // TREE functions:
@@ -240,7 +241,7 @@ fun_decls : fun_decls fun_dec
 fun_dec : FUN ID {declareFunction(fsymbol, yylval.stringValue);} PARENI {counterP = 0;} oparams {counterParams(stackFunctions[heighFuncStack]);} PAREND COLON tipo {addTypeToFunction(yylval.type);} fun_op {popFunctionInStack();}
 ;
 
-fun_op : LLAVEI opt_decls LLAVED stmt {$$ = $4;}
+fun_op : LLAVEI opt_decls LLAVED {overrydingFunction=false;} stmt {$$ = $5;}
        | SEMICOLON
 ;
 
@@ -1266,47 +1267,60 @@ Adds the variable to the symbol table, raises error
 if found previously
 */
 void declareVariable(node_t *head, char *name, func_t * scope){
-  node_t *current = head;
 
-  printf("agrego variable a function con name: %s\n", stackFunctions[heighFuncStack]->name);
+  if(overrydingFunction == false){
 
-  while(current->next != NULL){
-    current = current->next;
-    if (strcmp(current->name, name) == 0){
-      raiseDuplicateVar(name);
-    }
+      printf("agrego variable a function con name: %s\n", stackFunctions[heighFuncStack]->name);
+      node_t *current = head;
+      while(current->next != NULL){
+        current = current->next;
+        if (strcmp(current->name, name) == 0){
+          raiseDuplicateVar(name);
+        }
+      }
+      
+
+
+      node_t * newNode = (node_t*)malloc(sizeof(node_t));
+      current->next = newNode;
+      strcpy(newNode->name, name);
+      scope->lastInserted = newNode;
   }
-  
-
-
-  node_t * newNode = (node_t*)malloc(sizeof(node_t));
-  current->next = newNode;
-  strcpy(newNode->name, name);
-  scope->lastInserted = newNode;
+  node_t *current = head;
 }
 
 void declareFunction(func_t * head, char * name){
   func_t *current = head;
+  int override = false;
   // checo que no haya sido ya declarada
   while(current->next != NULL){
     current = current->next;
     if (strcmp(current->name, name) == 0){
-      raiseDuplicateVar(name);
+
+      if(current->syntaxRoot == NULL){
+        overrydingFunction =  true;
+        override = true;
+      }else{
+        raiseDuplicateVar(name);
+      }
     }
   }
-  func_t * newFunc = (func_t*)malloc(sizeof(func_t));
-  current->next = newFunc;
-  strcpy(newFunc->name, name);
-  newFunc->symbolRoot = setTable();
-  newFunc->heighInstructionStack = -1;
-  newFunc->i = 0;
-  newFunc->f = 0.0;
-  newFunc->next = NULL;
-  newFunc->numParams = 0;
-  newFunc->firstInstruction = true;
-
-
-  pushFunctionInStack(newFunc);
+  if(override == false){
+      func_t * newFunc = (func_t*)malloc(sizeof(func_t));
+      current->next = newFunc;
+      strcpy(newFunc->name, name);
+      newFunc->symbolRoot = setTable();
+      newFunc->heighInstructionStack = -1;
+      newFunc->i = 0;
+      newFunc->f = 0.0;
+      newFunc->next = NULL;
+      newFunc->numParams = 0;
+      newFunc->firstInstruction = true;
+      pushFunctionInStack(newFunc);
+  }else{
+      //continue
+      pushFunctionInStack(current);
+  }
 }
 /*
 Validates if float was the last value in heap
